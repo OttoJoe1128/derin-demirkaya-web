@@ -28,6 +28,7 @@ export const bookingStatusEnum = pgEnum("booking_status", ["confirmed", "attende
 export const customers = pgTable("customers", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: text("password_hash"),
   fullName: varchar("full_name", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 50 }),
   role: userRoleEnum("role").default("customer").notNull(),
