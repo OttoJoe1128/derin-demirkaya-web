@@ -20,6 +20,55 @@ export default function FeaturedCollection() {
     filmCode: idx % 3 === 0 ? 'ILFORD_HP5_36A' : idx % 3 === 1 ? 'KODAK_TRI_X_12' : 'FUJI_NEOPAN_08',
   }));
 
+  // Masaüstü Fare ile Sol Tık Tutup Sağa Sola Kaydırma (Desktop Mouse Drag-to-Scroll)
+  const isMouseDownRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const hasMovedRef = useRef(false);
+  const [isMouseDragging, setIsMouseDragging] = useState(false);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0 || !sliderRef.current) return;
+    isMouseDownRef.current = true;
+    hasMovedRef.current = false;
+    startXRef.current = e.pageX - sliderRef.current.offsetLeft;
+    scrollLeftRef.current = sliderRef.current.scrollLeft;
+    sliderRef.current.style.scrollBehavior = 'auto';
+    sliderRef.current.style.scrollSnapType = 'none';
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isMouseDownRef.current || !sliderRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startXRef.current) * 1.5;
+    if (Math.abs(walk) > 5) {
+      hasMovedRef.current = true;
+      setIsMouseDragging(true);
+    }
+    sliderRef.current.scrollLeft = scrollLeftRef.current - walk;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    if (!isMouseDownRef.current) return;
+    isMouseDownRef.current = false;
+    if (sliderRef.current) {
+      sliderRef.current.style.removeProperty('scroll-behavior');
+      sliderRef.current.style.removeProperty('scroll-snap-type');
+    }
+    setTimeout(() => {
+      hasMovedRef.current = false;
+      setIsMouseDragging(false);
+    }, 80);
+  };
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    if (hasMovedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
   // Belirli bir slide indeksine yumuşak geçiş (Smooth Scroll)
   const scrollToSlide = useCallback((index: number) => {
     if (!sliderRef.current) return;
@@ -177,7 +226,13 @@ export default function FeaturedCollection() {
       {/* ========================================================================= */}
       <div
         ref={sliderRef}
-        className="w-full overflow-x-auto scrollbar-none snap-x snap-mandatory flex gap-8 md:gap-12 px-6 sm:px-12 md:px-20 py-6 scroll-smooth cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUpOrLeave}
+        onMouseLeave={handleMouseUpOrLeave}
+        className={`w-full overflow-x-auto scrollbar-none snap-x snap-mandatory flex gap-8 md:gap-12 px-6 sm:px-12 md:px-20 py-6 scroll-smooth ${
+          isMouseDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
+        }`}
       >
         {specimens.map((art, idx) => {
           const isActive = currentIndex === idx;
@@ -218,6 +273,7 @@ export default function FeaturedCollection() {
               {/* Görsel Alanı (Contact Sheet Format with Film Borders) */}
               <Link
                 href={`/koleksiyon/${art.id}`}
+                onClick={handleCardClick}
                 className="block relative aspect-[4/3] sm:aspect-[16/11] w-full bg-neutral-100 overflow-hidden border border-neutral-950 group cursor-pointer"
               >
                 <Image
@@ -227,6 +283,7 @@ export default function FeaturedCollection() {
                   sizes="(max-width: 768px) 85vw, 650px"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter contrast-[1.03]"
                   priority={idx < 2}
+                  draggable={false}
                 />
 
                 {/* Film Şeridi Kenar Çentikleri */}
@@ -254,7 +311,7 @@ export default function FeaturedCollection() {
                   </div>
 
                   <h3 className="font-serif text-3xl sm:text-5xl uppercase tracking-tight text-neutral-950 group-hover:underline">
-                    <Link href={`/koleksiyon/${art.id}`}>
+                    <Link href={`/koleksiyon/${art.id}`} onClick={handleCardClick}>
                       {art.title}
                     </Link>
                   </h3>
@@ -294,6 +351,7 @@ export default function FeaturedCollection() {
 
                   <Link
                     href={`/koleksiyon/${art.id}`}
+                    onClick={handleCardClick}
                     className="inline-flex items-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-white px-5 py-2.5 font-mono text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_#666]"
                   >
                     <span>3D Parallax Detay</span>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import CustomCursor from "../components/CustomCursor";
+import Providers from "../components/Providers";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -37,10 +38,12 @@ export default function RootLayout({
         className="font-sans min-h-screen flex flex-col bg-neutral-50 text-neutral-800 md:cursor-none"
         suppressHydrationWarning
       >
-        <CustomCursor />
-        <Header />
-        <main className="flex-grow w-full">{children}</main>
-        <Footer />
+        <Providers>
+          <CustomCursor />
+          <Header />
+          <main className="flex-grow w-full">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

@@ -18,7 +18,11 @@ import {
   ArrowRight,
   SlidersHorizontal,
   XCircle,
+  QrCode,
+  X,
 } from "lucide-react";
+import { useAuth, UserReservation } from "@/lib/auth-context";
+import { soundFx } from "@/lib/sound-fx";
 
 interface Workshop {
   id: string;
@@ -58,10 +62,54 @@ const MONTH_NAMES_TR = [
 const WEEK_DAYS_TR = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
 
 export default function WorkshopsCalendarPage() {
+  const { isAuthenticated, addReservation, demoLogin } = useAuth();
+
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedWorkshopId, setSelectedWorkshopId] = useState<string | null>(null);
+
+  // Rezervasyon Onay Modalı
+  const [confirmedTicket, setConfirmedTicket] = useState<UserReservation | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleBooking = () => {
+    soundFx.playClick();
+    if (!selectedWorkshop) return;
+
+    if (!isAuthenticated) {
+      demoLogin();
+    }
+
+    const ticket = addReservation({
+      workshopId: selectedWorkshop.id,
+      workshopTitle: selectedWorkshop.title,
+      workshopDate: formatDateString(selectedWorkshop.date),
+      workshopTime: `${selectedWorkshop.durationMinutes} Dakika Atölye Seansı`,
+      location: selectedWorkshop.location,
+      instructor: selectedWorkshop.instructor,
+      seatCount: 1,
+      totalPrice: `₺${Number(selectedWorkshop.price).toLocaleString("tr-TR")}`,
+    });
+
+    setWorkshops((prev) =>
+      prev.map((w) =>
+        w.id === selectedWorkshop.id
+          ? {
+              ...w,
+              enrolledCount: w.enrolledCount + 1,
+              remainingSpots: Math.max(0, w.remainingSpots - 1),
+              isFull: w.remainingSpots - 1 <= 0,
+              fillPercentage: Math.min(100, Math.round(((w.enrolledCount + 1) / w.capacity) * 100)),
+            }
+          : w
+      )
+    );
+
+    setConfirmedTicket(ticket);
+    setShowModal(true);
+    soundFx.playSuccess();
+  };
 
   // Takvim ay ve yılı (varsayılan bugünün ayı veya ilk atölyenin ayı)
   const [currentDate, setCurrentDate] = useState(() => new Date());
@@ -134,9 +182,7 @@ export default function WorkshopsCalendarPage() {
   }, [workshops, availabilityFilter]);
 
   // Seçili atölye
-  const selectedWorkshop = useMemo(() => {
-    return workshops.find((w) => w.id === selectedWorkshopId) || workshops[0] || null;
-  }, [workshops, selectedWorkshopId]);
+  const selectedWorkshop = workshops.find((w) => w.id === selectedWorkshopId) || workshops[0] || null;
 
   // Takvim matrisini hesapla
   const calendarDays = useMemo(() => {
@@ -688,11 +734,7 @@ export default function WorkshopsCalendarPage() {
                       </button>
                     ) : (
                       <button
-                        onClick={() => {
-                          alert(
-                            `"${selectedWorkshop.title}" için rezervasyon seçildi.\n\nSıradaki Adım (Faz 3.2: Stripe / Iyzico Micro-Checkout) ile ödeme ve kayıt tamamlanacaktır.`
-                          );
-                        }}
+                        onClick={handleBooking}
                         className="flex items-center gap-2 rounded-full bg-black px-6 py-2.5 text-xs font-semibold text-white shadow-sm transition-transform active:scale-95 hover:bg-zinc-800"
                       >
                         <span>Rezervasyon Yap</span>
@@ -710,6 +752,82 @@ export default function WorkshopsCalendarPage() {
           </div>
         )}
       </main>
+
+      {/* DİJİTAL ATÖLYE BİLETİ ONAY MODALI (BRUTALIST PASS MODAL) */}
+      {showModal && confirmedTicket && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="relative w-full max-w-lg bg-white border-2 border-neutral-950 p-6 sm:p-8 shadow-[10px_10px_0px_#000] animate-in fade-in zoom-in-95 duration-200">
+            {/* Kapat Butonu */}
+            <button
+              onClick={() => {
+                soundFx.playClick();
+                setShowModal(false);
+              }}
+              className="absolute top-4 right-4 p-1.5 border border-neutral-950 hover:bg-neutral-100 transition-colors"
+            >
+              <X className="w-4 h-4 text-neutral-950" />
+            </button>
+
+            {/* Bilet Başlığı */}
+            <div className="border-b-2 border-neutral-950 pb-4 mb-6">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-500 mb-1">
+                <span className="bg-neutral-950 text-amber-300 px-2 py-0.5 font-bold">ONAYLANDI</span>
+                <span>REZERVASYON NO: {confirmedTicket.ticketCode}</span>
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tight text-neutral-950">
+                Atölye Yeri Rezerve Edildi
+              </h2>
+            </div>
+
+            {/* Bilet Ayrıntıları */}
+            <div className="bg-neutral-50 border border-neutral-200 p-5 space-y-3 text-xs font-mono text-neutral-800 mb-6">
+              <div>
+                <span className="text-[10px] text-neutral-400 block uppercase">ATÖLYE BAŞLIĞI</span>
+                <span className="font-serif text-lg font-bold text-neutral-950">{confirmedTicket.workshopTitle}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-neutral-200">
+                <div>
+                  <span className="text-[10px] text-neutral-400 block uppercase">TARİH & SAAT</span>
+                  <span className="font-bold text-neutral-950">{confirmedTicket.workshopDate}</span>
+                  <span className="text-neutral-600 block">{confirmedTicket.workshopTime}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-neutral-400 block uppercase">EĞİTMEN</span>
+                  <span className="font-bold text-neutral-950">{confirmedTicket.instructor}</span>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-neutral-200">
+                <span className="text-[10px] text-neutral-400 block uppercase">LOKASYON</span>
+                <span className="font-bold text-neutral-950">{confirmedTicket.location}</span>
+              </div>
+            </div>
+
+            {/* QR ve Profil Yönlendirmesi */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t-2 border-dashed border-neutral-950">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="w-12 h-12 bg-neutral-950 text-white flex items-center justify-center p-1.5 shrink-0">
+                  <QrCode className="w-9 h-9" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-neutral-500 uppercase block">DİJİTAL GİRİŞ BARKODU</span>
+                  <span className="font-mono text-xs font-bold text-neutral-950">{confirmedTicket.ticketCode}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Link
+                  href="/profil"
+                  onClick={() => soundFx.playClick()}
+                  className="w-full sm:w-auto text-center bg-neutral-950 hover:bg-neutral-800 text-white font-mono text-xs uppercase tracking-widest px-4 py-2.5 shadow-[2px_2px_0px_#666]"
+                >
+                  Profilime Git →
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
