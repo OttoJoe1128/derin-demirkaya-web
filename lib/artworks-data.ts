@@ -505,11 +505,22 @@ export function getArtworkByIdOrSlug(idOrSlug: string): ArtworkDetail | undefine
 
 export function getLocalizedArtwork(artwork: ArtworkDetail, lang: 'TR' | 'EN'): ArtworkDetail {
   if (lang === 'TR') return artwork;
+  
+  // Format weight to English: "16.4 gr" -> "16.4 g", "(Çift)" -> "(Pair)", "(Tek)" -> "(Single)"
+  let localizedWeight = artwork.weight;
+  if (localizedWeight) {
+    localizedWeight = localizedWeight
+      .replace(/\bgr\b/gi, 'g')
+      .replace(/\(çift\)/gi, '(Pair)')
+      .replace(/\(tek\)/gi, '(Single)');
+  }
+
   return {
     ...artwork,
     category: artwork.categoryEn || artwork.category,
     material: artwork.materialEn || artwork.material,
     dimensions: artwork.dimensionsEn || artwork.dimensions,
+    weight: localizedWeight,
     technique: artwork.techniqueEn || artwork.technique,
     finish: artwork.finishEn || artwork.finish,
     description: artwork.descriptionEn || artwork.description,

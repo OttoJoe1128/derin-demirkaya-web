@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, ArrowUpRight, Film, Sparkles } from 'lucide-react';
-import { ARTWORKS_DATA } from '@/lib/artworks-data';
+import { ARTWORKS_DATA, getLocalizedArtwork } from '@/lib/artworks-data';
 import { useLanguage } from '@/lib/language-context';
 import { soundFx } from '@/lib/sound-fx';
 
@@ -15,13 +15,18 @@ export default function FeaturedCollection() {
   const isUserScrollingRef = useRef(false);
   const { t, language } = useLanguage();
 
-  // 10 Eserin Tamamı (All 10 Artworks in Editorial Brutalism Format)
-  const specimens = ARTWORKS_DATA.map((art, idx) => ({
-    ...art,
-    specimenIndex: idx + 1,
-    specimenCode: `NV-24-${String(idx + 1).padStart(2, '0')}`,
-    filmCode: idx % 3 === 0 ? 'ILFORD_HP5_36A' : idx % 3 === 1 ? 'KODAK_TRI_X_12' : 'FUJI_NEOPAN_08',
-  }));
+  // 10 Eserin Tamamı (All 10 Artworks in Editorial Brutalism Format with full bilingual localization)
+  const specimens = useMemo(() => {
+    return ARTWORKS_DATA.map((art, idx) => {
+      const localized = getLocalizedArtwork(art, language);
+      return {
+        ...localized,
+        specimenIndex: idx + 1,
+        specimenCode: `NV-24-${String(idx + 1).padStart(2, '0')}`,
+        filmCode: idx % 3 === 0 ? 'ILFORD_HP5_36A' : idx % 3 === 1 ? 'KODAK_TRI_X_12' : 'FUJI_NEOPAN_08',
+      };
+    });
+  }, [language]);
 
   // Masaüstü Fare ile Sol Tık Tutup Sağa Sola Kaydırma (Desktop Mouse Drag-to-Scroll)
   const isMouseDownRef = useRef(false);
@@ -264,11 +269,11 @@ export default function FeaturedCollection() {
                   {art.isUniquePiece ? (
                     <span className="inline-flex items-center gap-1 bg-neutral-950 text-amber-300 px-2.5 py-0.5 text-[10px] font-bold tracking-wider">
                       <Sparkles className="w-2.5 h-2.5 text-amber-400" />
-                      1/1 EŞSİZ
+                      {language === 'TR' ? '1/1 EŞSİZ' : '1/1 UNIQUE'}
                     </span>
                   ) : (
                     <span className="border border-neutral-950 px-2 py-0.5 text-[10px] text-neutral-700 font-semibold">
-                      LİMİTLİ SERİ
+                      {language === 'TR' ? 'LİMİTLİ SERİ' : 'LIMITED EDITION'}
                     </span>
                   )}
                   <span className="font-bold text-neutral-950">[+]</span>
@@ -300,7 +305,7 @@ export default function FeaturedCollection() {
 
                 {/* Sağ Alt Hover Çağrısı */}
                 <div className="absolute bottom-0 right-0 bg-neutral-950 text-white px-4 py-2.5 text-xs font-mono uppercase tracking-[0.2em] transition-transform duration-300 translate-y-full group-hover:translate-y-0 flex items-center gap-2">
-                  <span>3D Uzamsal Parallax</span>
+                  <span>{language === 'TR' ? '3D Uzamsal Parallax' : '3D Spatial Parallax'}</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </div>
               </Link>

@@ -1,34 +1,43 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { LayoutGrid, List, ArrowUpRight, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
-import { ArtworkDetail } from '@/lib/artworks-data';
+import { ArtworkDetail, getLocalizedArtwork } from '@/lib/artworks-data';
+import { useLanguage } from '@/lib/language-context';
 
 interface CollectionGalleryProps {
   artworks: ArtworkDetail[];
 }
 
 export default function CollectionGallery({ artworks }: CollectionGalleryProps) {
+  const { language } = useLanguage();
+  const isEn = language === 'EN';
+
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
   const [displayMode, setDisplayMode] = useState<'slide' | 'grid' | 'table'>('slide');
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
   const sliderRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef<boolean>(false);
 
+  // Dil seçimine göre lokalize edilmiş eser listesi
+  const localizedArtworks = useMemo(() => {
+    return artworks.map((a) => getLocalizedArtwork(a, language));
+  }, [artworks, language]);
+
   const categories = [
-    { id: 'ALL', label: 'TÜM ENVANTER', count: artworks.length, code: 'NV-ALL' },
-    { id: 'OBJECT', label: 'OBJECT', count: artworks.filter((a) => a.collectionName.includes('object')).length, code: 'AXIS-01' },
-    { id: 'SPACE', label: 'SPACE', count: artworks.filter((a) => a.collectionName.includes('space')).length, code: 'AXIS-02' },
-    { id: 'LINE', label: 'LINE', count: artworks.filter((a) => a.collectionName.includes('line')).length, code: 'AXIS-03' },
+    { id: 'ALL', label: isEn ? 'FULL INVENTORY' : 'TÜM ENVANTER', count: localizedArtworks.length, code: 'NV-ALL' },
+    { id: 'OBJECT', label: 'OBJECT', count: localizedArtworks.filter((a) => a.collectionName.includes('object')).length, code: 'AXIS-01' },
+    { id: 'SPACE', label: 'SPACE', count: localizedArtworks.filter((a) => a.collectionName.includes('space')).length, code: 'AXIS-02' },
+    { id: 'LINE', label: 'LINE', count: localizedArtworks.filter((a) => a.collectionName.includes('line')).length, code: 'AXIS-03' },
   ];
 
   const filteredArtworks =
     activeCategory === 'ALL'
-      ? artworks
-      : artworks.filter((a) => a.collectionName.toUpperCase().includes(activeCategory));
+      ? localizedArtworks
+      : localizedArtworks.filter((a) => a.collectionName.toUpperCase().includes(activeCategory));
 
   const handleCategorySelect = (catId: string) => {
     setActiveCategory(catId);
@@ -216,13 +225,13 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
         {/* Aks Açıklama Şeridi */}
         <div className="mt-4 pt-3 border-t border-neutral-200 text-[11px] font-mono text-neutral-600 flex flex-col sm:flex-row justify-between gap-2">
           <span>
-            {activeCategory === 'ALL' && 'TÜM ARŞİV: 2018–2025 Tarihleri Arasında Üretilen Tüm Eser Kayıtları'}
-            {activeCategory === 'OBJECT' && 'OBJECT: Doğrudan bedenle temas eden heykelsi takı ve maden araştırmaları'}
-            {activeCategory === 'SPACE' && 'SPACE: Takının bedenden mekana taştığı mekansal heykeller ve enstalasyonlar'}
-            {activeCategory === 'LINE' && 'LINE: Kağıt, ateş ve malzeme karşılaşmalarına ait eskiz ve süreç izleri'}
+            {activeCategory === 'ALL' && (isEn ? 'FULL ARCHIVE: All Specimen Records Produced Between 2018–2025' : 'TÜM ARŞİV: 2018–2025 Tarihleri Arasında Üretilen Tüm Eser Kayıtları')}
+            {activeCategory === 'OBJECT' && (isEn ? 'OBJECT: Sculptural jewelry and metallic explorations in direct dialogue with the body' : 'OBJECT: Doğrudan bedenle temas eden heykelsi takı ve maden araştırmaları')}
+            {activeCategory === 'SPACE' && (isEn ? 'SPACE: Spatial sculptures and installations where jewelry expands beyond the human body' : 'SPACE: Takının bedenden mekana taştığı mekansal heykeller ve enstalasyonlar')}
+            {activeCategory === 'LINE' && (isEn ? 'LINE: Drawings, sketches and process traces of paper, flame and material encounters' : 'LINE: Kağıt, ateş ve malzeme karşılaşmalarına ait eskiz ve süreç izleri')}
           </span>
           <span className="text-neutral-500 text-right uppercase">
-            AKTİF DÜZEN: {displayMode === 'slide' ? 'SLİDE (KAYAR)' : displayMode === 'grid' ? 'IZGARA' : 'TABLO'}
+            {isEn ? 'ACTIVE VIEW:' : 'AKTİF DÜZEN:'} {displayMode === 'slide' ? (isEn ? 'SLIDE' : 'SLİDE (KAYAR)') : displayMode === 'grid' ? (isEn ? 'GRID' : 'IZGARA') : (isEn ? 'TABLE' : 'TABLO')}
           </span>
         </div>
       </div>
@@ -237,7 +246,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
           <div className="flex items-center justify-between border-b-2 border-neutral-950 pb-3 mb-6 font-mono text-xs">
             <div className="flex items-center gap-3">
               <span className="bg-neutral-950 text-white px-2 py-0.5 font-bold">
-                SLİDE {String(currentSlideIndex + 1).padStart(2, '0')} / {String(filteredArtworks.length).padStart(2, '0')}
+                {isEn ? 'SLIDE' : 'SLİDE'} {String(currentSlideIndex + 1).padStart(2, '0')} / {String(filteredArtworks.length).padStart(2, '0')}
               </span>
               <span className="text-neutral-700 hidden sm:inline">
                 [{filteredArtworks[currentSlideIndex]?.title || ''}]
@@ -247,18 +256,18 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
             <div className="flex items-center gap-2">
               <button
                 onClick={handlePrevSlide}
-                aria-label="Önceki Eser"
+                aria-label={isEn ? 'Previous Specimen' : 'Önceki Eser'}
                 className="border border-neutral-950 bg-white hover:bg-neutral-950 hover:text-white px-3 py-1.5 transition-colors shadow-[2px_2px_0px_#000] flex items-center gap-1"
               >
                 <ChevronLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Önceki</span>
+                <span className="hidden sm:inline">{isEn ? 'Previous' : 'Önceki'}</span>
               </button>
               <button
                 onClick={handleNextSlide}
-                aria-label="Sonraki Eser"
+                aria-label={isEn ? 'Next Specimen' : 'Sonraki Eser'}
                 className="border border-neutral-950 bg-white hover:bg-neutral-950 hover:text-white px-3 py-1.5 transition-colors shadow-[2px_2px_0px_#000] flex items-center gap-1"
               >
-                <span className="hidden sm:inline">Sonraki</span>
+                <span className="hidden sm:inline">{isEn ? 'Next' : 'Sonraki'}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
@@ -296,11 +305,11 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                     <div>
                       {item.isUniquePiece ? (
                         <span className="bg-neutral-950 text-amber-300 px-2 py-0.5 text-[9px] font-bold">
-                          1/1 EŞSİZ
+                          {isEn ? '1/1 UNIQUE' : '1/1 EŞSİZ'}
                         </span>
                       ) : (
                         <span className="border border-neutral-400 px-1.5 py-0.5 text-[9px] text-neutral-700">
-                          EDİSYON
+                          {isEn ? 'EDITION' : 'EDİSYON'}
                         </span>
                       )}
                     </div>
@@ -350,11 +359,11 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                     {/* Teknik Matris */}
                     <div className="mt-4 pt-3 border-t border-neutral-950 grid grid-cols-2 gap-2 text-[11px] font-mono uppercase">
                       <div>
-                        <span className="text-neutral-400 block text-[8px]">MATERYAL</span>
+                        <span className="text-neutral-400 block text-[8px]">{isEn ? 'MATERIAL' : 'MATERYAL'}</span>
                         <span className="text-neutral-950 font-semibold truncate block">{item.material}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-neutral-400 block text-[8px]">TEKNİK // AĞIRLIK</span>
+                        <span className="text-neutral-400 block text-[8px]">{isEn ? 'TECHNIQUE // WEIGHT' : 'TEKNİK // AĞIRLIK'}</span>
                         <span className="text-neutral-950 font-semibold truncate block">{item.weight}</span>
                       </div>
                     </div>
@@ -369,7 +378,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                         onClick={handleCardClick}
                         className="inline-flex items-center gap-1.5 bg-neutral-950 hover:bg-neutral-800 text-white px-4 py-2 font-mono text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_#666]"
                       >
-                        <span>Parallax İncele</span>
+                        <span>{isEn ? 'Inspect Parallax' : 'Parallax İncele'}</span>
                         <span>→</span>
                       </Link>
                     </div>
@@ -428,17 +437,17 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                     <span>{item.year}</span>
                     {item.isUniquePiece ? (
                       <span className="bg-neutral-950 text-white px-1.5 py-0.2 text-[8px] font-bold">
-                        1/1 UNIQUE
+                        {isEn ? '1/1 UNIQUE' : '1/1 EŞSİZ'}
                       </span>
                     ) : (
                       <span className="border border-neutral-400 px-1 text-[8px]">
-                        EDİSYON
+                        {isEn ? 'EDITION' : 'EDİSYON'}
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Görsel Alanı (1px Hairline Bordered Archival Photo) */}
+                {/* Görsel Alanı */}
                 <Link
                   href={`/koleksiyon/${item.id}`}
                   className="block relative w-full aspect-[4/5] bg-neutral-100 overflow-hidden border border-neutral-950 group cursor-pointer"
@@ -458,7 +467,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
 
                   {/* Uzamsal Parallax Rozeti */}
                   <div className="absolute bottom-2 right-2 bg-neutral-950 text-white px-3 py-1 text-[9px] font-mono uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                    <span>3D Parallax İncele</span>
+                    <span>{isEn ? 'Inspect 3D Parallax' : '3D Parallax İncele'}</span>
                     <ArrowUpRight className="w-3 h-3" />
                   </div>
                 </Link>
@@ -489,11 +498,11 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                   {/* Brutalist Alt Matris */}
                   <div className="mt-4 pt-3 border-t border-neutral-200 grid grid-cols-2 gap-2 text-[9px] font-mono uppercase text-neutral-500">
                     <div>
-                      <span className="text-neutral-400 block text-[8px]">MATERYAL</span>
+                      <span className="text-neutral-400 block text-[8px]">{isEn ? 'MATERIAL' : 'MATERYAL'}</span>
                       <span className="text-neutral-900 truncate block font-medium">{item.material}</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-neutral-400 block text-[8px]">AĞIRLIK</span>
+                      <span className="text-neutral-400 block text-[8px]">{isEn ? 'WEIGHT' : 'AĞIRLIK'}</span>
                       <span className="text-neutral-900 block font-medium">{item.weight}</span>
                     </div>
                   </div>
@@ -505,7 +514,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                       href={`/koleksiyon/${item.id}`}
                       className="font-bold text-neutral-950 hover:underline flex items-center gap-1"
                     >
-                      <span>Uzamsal Detay</span>
+                      <span>{isEn ? 'Spatial Detail' : 'Uzamsal Detay'}</span>
                       <span>→</span>
                     </Link>
                   </div>
@@ -526,15 +535,15 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
             <thead>
               <tr className="bg-neutral-950 text-white uppercase text-[10px] tracking-widest border-b border-neutral-950">
                 <th className="py-3 px-4 border-r border-neutral-800">REF NO</th>
-                <th className="py-3 px-4 border-r border-neutral-800">MİNYATÜR</th>
-                <th className="py-3 px-4 border-r border-neutral-800">ESER ADI</th>
-                <th className="py-3 px-4 border-r border-neutral-800">AKS / KATEGORİ</th>
-                <th className="py-3 px-4 border-r border-neutral-800">MADEN / MATERYAL</th>
-                <th className="py-3 px-4 border-r border-neutral-800">TEKNİK</th>
-                <th className="py-3 px-4 border-r border-neutral-800">YIL</th>
-                <th className="py-3 px-4 border-r border-neutral-800">EDİSYON</th>
-                <th className="py-3 px-4 border-r border-neutral-800">DEĞER</th>
-                <th className="py-3 px-4 text-center">İŞLEM</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'THUMBNAIL' : 'MİNYATÜR'}</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'SPECIMEN TITLE' : 'ESER ADI'}</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'AXIS / CATEGORY' : 'AKS / KATEGORİ'}</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'METALS & MATERIAL' : 'MADEN / MATERYAL'}</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'TECHNIQUE' : 'TEKNİK'}</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'YEAR' : 'YIL'}</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'EDITION' : 'EDİSYON'}</th>
+                <th className="py-3 px-4 border-r border-neutral-800">{isEn ? 'PRICE' : 'DEĞER'}</th>
+                <th className="py-3 px-4 text-center">{isEn ? 'ACTION' : 'İŞLEM'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-300">
@@ -587,7 +596,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                       href={`/koleksiyon/${item.id}`}
                       className="inline-block bg-neutral-950 hover:bg-neutral-800 text-white px-3 py-1.5 text-[10px] uppercase tracking-wider"
                     >
-                      3D Parallax →
+                      {isEn ? '3D Parallax →' : '3D Parallax →'}
                     </Link>
                   </td>
                 </tr>
