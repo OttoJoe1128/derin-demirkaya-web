@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -41,6 +41,26 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
+  // Fare / Ekran 3 Boyutlu Uzamsal Hareketi (Interactive 3D Mouse Movement)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Ekran merkezine göre normalize edilmiş -1 ile +1 arası değer
+      const { innerWidth, innerHeight } = window;
+      const x = (e.clientX / innerWidth - 0.5) * 2;
+      const y = (e.clientY / innerHeight - 0.5) * 2;
+      setMousePos({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Yumuşak yay fiziği ile 3D tilt
+  const smoothMouseX = useSpring(mousePos.x, { stiffness: 60, damping: 20 });
+  const smoothMouseY = useSpring(mousePos.y, { stiffness: 60, damping: 20 });
+
   // Form State
   const [formData, setFormData] = useState({
     fullName: '',
@@ -50,7 +70,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
     note: '',
   });
 
-  // Global Page Scroll & Parallax
+  // Global Page Scroll
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end end'],
@@ -62,35 +82,47 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
     offset: ['start start', 'end start'],
   });
 
-  // Smooth springs for high-end organic kinetic feel
   const smoothHeroProgress = useSpring(heroScrollProgress, {
-    stiffness: 120,
+    stiffness: 100,
     damping: 24,
     mass: 0.3,
   });
 
-  // 3D Spatial Parallax transforms for Hero Section
-  // Background slow drift
-  const bgY = useTransform(smoothHeroProgress, [0, 1], ['0%', '28%']);
-  const bgScale = useTransform(smoothHeroProgress, [0, 1], [1, 1.15]);
-  const bgOpacity = useTransform(smoothHeroProgress, [0, 0.85], [1, 0.25]);
+  // 1. Tipografi Dönüşümleri (Kameraya yaklaşan devasa tipografi, görsellerin arkasında boğulmaz)
+  const typographyScale = useTransform(smoothHeroProgress, [0, 0.9], [1, 1.35]);
+  const typographyY = useTransform(smoothHeroProgress, [0, 1], ['0%', '-45%']);
+  const typographyOpacity = useTransform(smoothHeroProgress, [0, 0.75, 1], [1, 0.6, 0]);
 
-  // Massive Typography moves TOWARDS the camera (Z-axis scale up & forward drift)
-  const typographyScale = useTransform(smoothHeroProgress, [0, 0.9], [1, 1.85]);
-  const typographyY = useTransform(smoothHeroProgress, [0, 1], ['0%', '-35%']);
-  const typographyOpacity = useTransform(smoothHeroProgress, [0, 0.7, 1], [0.95, 0.4, 0]);
-  const typographyZ = useTransform(smoothHeroProgress, [0, 1], [0, 150]);
+  // 2. Uzamsal Çoklu Görseller (3D Spatially Distributed Floating Images)
+  // Görsel 1: Ana Merkez Kart (Primary Sculpture)
+  const img1Y = useTransform(smoothHeroProgress, [0, 1], ['0%', '18%']);
+  const img1Scale = useTransform(smoothHeroProgress, [0, 1], [1, 0.94]);
+  const img1Rotate = useTransform(smoothHeroProgress, [0, 1], [0, -3]);
 
-  // Central Hero Artwork floating sculpture layer
-  const artworkScale = useTransform(smoothHeroProgress, [0, 1], [1, 0.88]);
-  const artworkY = useTransform(smoothHeroProgress, [0, 1], ['0%', '16%']);
-  const artworkRotate = useTransform(smoothHeroProgress, [0, 1], [0, -4]);
+  // Görsel 2: Sol Alt / Orta Makro Detay Kartı (Daha hızlı yukarı fırlayan katman)
+  const img2Y = useTransform(smoothHeroProgress, [0, 1], ['0%', '-32%']);
+  const img2Scale = useTransform(smoothHeroProgress, [0, 1], [1, 1.12]);
+  const img2Rotate = useTransform(smoothHeroProgress, [0, 1], [-4, 6]);
 
-  // Floating ambient badge
-  const badgeY = useTransform(smoothHeroProgress, [0, 1], ['0%', '-80%']);
+  // Görsel 3: Sağ Üst / Orta Perspektif Kartı (Daha derinlikte yavaş süzülen katman)
+  const img3Y = useTransform(smoothHeroProgress, [0, 1], ['0%', '38%']);
+  const img3Scale = useTransform(smoothHeroProgress, [0, 1], [1, 0.86]);
+  const img3Rotate = useTransform(smoothHeroProgress, [0, 1], [3, -5]);
 
-  // Narrative Progress Bar
+  // Arka plan atmosferi
+  const bgScale = useTransform(smoothHeroProgress, [0, 1], [1, 1.2]);
+  const bgOpacity = useTransform(smoothHeroProgress, [0, 0.85], [1, 0.2]);
+
+  // Alt Rozet
+  const badgeY = useTransform(smoothHeroProgress, [0, 1], ['0%', '-60%']);
   const progressBar = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
+  // Çoklu görsel havuzu (En az 3 görsel temin edilir)
+  const displayImages = [
+    artwork.images[0] || 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=85',
+    artwork.images[1] || artwork.images[0],
+    artwork.images[2] || artwork.images[0],
+  ];
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -122,18 +154,18 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   return (
     <div
       ref={containerRef}
-      className="relative min-h-screen bg-[#0d0d0d] text-neutral-100 selection:bg-white selection:text-black overflow-x-clip"
+      className="relative min-h-screen bg-[#0a0a0a] text-neutral-100 selection:bg-white selection:text-black overflow-x-clip"
     >
-      {/* İnce Akış Göstergesi (Spatial Progress Spine) */}
+      {/* İnce Akış Göstergesi (Spatial Progress Line) */}
       <div className="fixed top-0 left-0 right-0 h-[2px] bg-white/10 z-50">
         <motion.div
           style={{ width: progressBar }}
-          className="h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+          className="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)]"
         />
       </div>
 
-      {/* Üst Zarif Navigasyon */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12 transition-all">
+      {/* Üst Şeffaf Navigasyon */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link
             href="/koleksiyon"
@@ -169,115 +201,196 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       </header>
 
       {/* ========================================================================= */}
-      {/* 🌌 BÖLÜM 1: UZAMSAL PARALLAX HERO (SPATIAL CINEMATIC STAGE) */}
+      {/* 🌌 BÖLÜM 1: UZAMSAL PARALLAX & ÇOKLU GÖRSEL SAHNESİ (SPATIAL STAGE) */}
       {/* ========================================================================= */}
       <section
         ref={heroRef}
-        className="relative h-[130vh] sm:h-[145vh] w-full flex items-center justify-center overflow-hidden [perspective:1200px]"
+        className="relative min-h-[125vh] sm:min-h-[140vh] w-full flex flex-col items-center justify-center overflow-hidden [perspective:1400px] pt-24 pb-20"
       >
-        {/* Katman A: Derin Arka Plan (Deep Spatial Atmosphere) */}
+        {/* Katman A: Derin Arka Plan (Deep Blur Glow Atmosphere) */}
         <motion.div
-          style={{ y: bgY, scale: bgScale, opacity: bgOpacity }}
-          className="absolute inset-0 z-0 will-change-transform"
+          style={{ scale: bgScale, opacity: bgOpacity }}
+          className="absolute inset-0 z-0 pointer-events-none will-change-transform"
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0d0d0d] z-10" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_0%,transparent_70%)] z-10" />
-          
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,0.08)_0%,transparent_65%)] z-10" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0a0a0a] z-10" />
           <Image
-            src={artwork.images[activeImageIndex] || artwork.images[0]}
-            alt={`${artwork.title} Atmosferik Doku`}
+            src={displayImages[0]}
+            alt="Atmosfer"
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-25 filter blur-[32px] scale-125"
+            className="object-cover opacity-20 filter blur-[40px] scale-125"
           />
         </motion.div>
 
-        {/* Katman B: Devasa Tipografi (Kameraya Doğru Yaklaşan Dev Başlık) */}
+        {/* Katman B: ZARİF VE NET TİPOGRAFİ (Görsellerin arkasında boğulmaz, z-30) */}
         <motion.div
           style={{
             scale: typographyScale,
             y: typographyY,
             opacity: typographyOpacity,
-            translateZ: typographyZ,
           }}
-          className="absolute inset-x-0 top-[26%] sm:top-[22%] z-10 pointer-events-none text-center px-4 will-change-transform select-none"
+          className="relative z-30 text-center px-4 mb-8 sm:mb-12 pointer-events-none select-none will-change-transform max-w-5xl mx-auto"
         >
-          <span className="block font-sans text-xs sm:text-sm uppercase tracking-[0.4em] text-neutral-400 mb-3">
-            {artwork.category} • {artwork.year}
-          </span>
-          <h1 className="font-serif text-6xl sm:text-8xl md:text-[10rem] lg:text-[12rem] font-light tracking-tighter text-white/90 uppercase leading-none drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
-            {artwork.title}
-          </h1>
-        </motion.div>
-
-        {/* Katman C: Merkezde Havada Duran Heykelsi Eser Görseli */}
-        <motion.div
-          style={{
-            scale: artworkScale,
-            y: artworkY,
-            rotateZ: artworkRotate,
-          }}
-          className="relative z-20 w-[84vw] sm:w-[55vw] md:w-[42vw] max-w-[540px] aspect-[4/5] will-change-transform shadow-[0_30px_100px_rgba(0,0,0,0.95)] border border-white/10 group cursor-pointer"
-          onClick={() => setIsZoomOpen(true)}
-        >
-          <Image
-            src={artwork.images[activeImageIndex] || artwork.images[0]}
-            alt={artwork.title}
-            fill
-            priority
-            sizes="(max-width: 768px) 85vw, 45vw"
-            className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-          />
-
-          {/* Eser Detay Etiketi */}
-          <div className="absolute top-4 left-4 z-30">
-            {artwork.isUniquePiece ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-[10px] uppercase tracking-widest text-amber-200">
-                <Sparkles className="w-3 h-3 text-amber-300" />
-                1/1 Eşsiz Eser (Unique)
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-[10px] uppercase tracking-widest text-neutral-300">
-                Limitli Atölye Üretimi
-              </span>
-            )}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+            <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-neutral-300">
+              {artwork.category} • {artwork.year}
+            </span>
           </div>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsZoomOpen(true);
-            }}
-            aria-label="Tam Ekran İncele"
-            className="absolute bottom-4 right-4 p-3 bg-black/70 hover:bg-white hover:text-black text-white backdrop-blur-md rounded-full border border-white/20 transition-all opacity-0 group-hover:opacity-100"
-          >
-            <Maximize2 className="w-4 h-4" />
-          </button>
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-light tracking-tight text-white uppercase leading-[0.95] drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
+            {artwork.title}
+          </h1>
+
+          <p className="font-sans text-xs sm:text-sm text-neutral-400 tracking-[0.2em] uppercase mt-4 max-w-lg mx-auto">
+            {artwork.collectionName}
+          </p>
         </motion.div>
 
-        {/* Katman D: Uzamsal Fiyat & Satın Alma Rozeti (Bağımsız Hızla Süzülen) */}
+        {/* ========================================================================= */}
+        {/* Katman C: 3 BOYUTLU ETRAFA DAĞILMIŞ ÇOKLU GÖRSELLER (Spatial Constellation) */}
+        {/* ========================================================================= */}
+        <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 h-[480px] sm:h-[580px] md:h-[650px]">
+          
+          {/* GÖRSEL 1: MERKEZİ HEYKELSİ FORM (PRIMARY FOCUS) */}
+          <motion.div
+            style={{
+              y: img1Y,
+              scale: img1Scale,
+              rotateZ: img1Rotate,
+              x: useTransform(smoothMouseX, (v) => v * 15),
+              rotateY: useTransform(smoothMouseX, (v) => v * 8),
+              rotateX: useTransform(smoothMouseY, (v) => -v * 8),
+            }}
+            onClick={() => {
+              setActiveImageIndex(0);
+              setIsZoomOpen(true);
+            }}
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[72vw] sm:w-[46vw] md:w-[32vw] max-w-[420px] aspect-[4/5] cursor-pointer group will-change-transform shadow-[0_25px_80px_rgba(0,0,0,0.95)] border border-white/15 bg-neutral-900 overflow-hidden"
+          >
+            <Image
+              src={displayImages[0]}
+              alt={`${artwork.title} Ana Form`}
+              fill
+              priority
+              sizes="(max-width: 768px) 75vw, 35vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
+            
+            <div className="absolute top-3 left-3 z-30">
+              {artwork.isUniquePiece ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-amber-500/30 text-[9px] uppercase tracking-widest text-amber-200">
+                  <Sparkles className="w-2.5 h-2.5 text-amber-400" />
+                  1/1 Eşsiz Eser
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-[9px] uppercase tracking-widest text-neutral-300">
+                  Limitli Seri
+                </span>
+              )}
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveImageIndex(0);
+                setIsZoomOpen(true);
+              }}
+              aria-label="Büyüt"
+              className="absolute bottom-3 right-3 p-2 bg-black/70 hover:bg-white hover:text-black text-white rounded-full border border-white/20 transition-all opacity-0 group-hover:opacity-100"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+            <div className="absolute bottom-3 left-3 text-[10px] font-mono text-white/70 uppercase tracking-widest">
+              Ana Form • 01
+            </div>
+          </motion.div>
+
+          {/* GÖRSEL 2: SOL UZAMSAL KART (MAKRO DOKU & YAKIN DETAY) */}
+          <motion.div
+            style={{
+              y: img2Y,
+              scale: img2Scale,
+              rotateZ: img2Rotate,
+              x: useTransform(smoothMouseX, (v) => -v * 28),
+              rotateY: useTransform(smoothMouseX, (v) => -v * 12),
+              rotateX: useTransform(smoothMouseY, (v) => v * 10),
+            }}
+            onClick={() => {
+              setActiveImageIndex(1);
+              setIsZoomOpen(true);
+            }}
+            className="absolute left-[3%] sm:left-[6%] md:left-[8%] top-[28%] sm:top-[22%] z-25 w-[44vw] sm:w-[30vw] md:w-[22vw] max-w-[280px] aspect-square cursor-pointer group will-change-transform shadow-[0_20px_60px_rgba(0,0,0,0.9)] border border-white/20 bg-neutral-900 overflow-hidden"
+          >
+            <Image
+              src={displayImages[1]}
+              alt={`${artwork.title} Makro Açı`}
+              fill
+              sizes="(max-width: 768px) 45vw, 22vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
+              Mikro Doku • 02
+            </div>
+          </motion.div>
+
+          {/* GÖRSEL 3: SAĞ UZAMSAL KART (PERSPEKTİF & AÇI DERİNLİĞİ) */}
+          <motion.div
+            style={{
+              y: img3Y,
+              scale: img3Scale,
+              rotateZ: img3Rotate,
+              x: useTransform(smoothMouseX, (v) => v * 24),
+              rotateY: useTransform(smoothMouseX, (v) => v * 14),
+              rotateX: useTransform(smoothMouseY, (v) => -v * 10),
+            }}
+            onClick={() => {
+              setActiveImageIndex(2);
+              setIsZoomOpen(true);
+            }}
+            className="absolute right-[3%] sm:right-[6%] md:right-[8%] top-[12%] sm:top-[16%] z-15 w-[42vw] sm:w-[28vw] md:w-[20vw] max-w-[260px] aspect-[4/5] cursor-pointer group will-change-transform shadow-[0_20px_60px_rgba(0,0,0,0.9)] border border-white/15 bg-neutral-900 overflow-hidden"
+          >
+            <Image
+              src={displayImages[2]}
+              alt={`${artwork.title} Perspektif Açı`}
+              fill
+              sizes="(max-width: 768px) 45vw, 20vw"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
+              Işık Kırılımı • 03
+            </div>
+          </motion.div>
+
+        </div>
+
+        {/* Katman D: Uzamsal Fiyat & Satın Alma Rozeti */}
         <motion.div
           style={{ y: badgeY }}
-          className="absolute bottom-[14%] sm:bottom-[16%] z-30 flex flex-col items-center gap-3 will-change-transform"
+          className="relative z-30 flex flex-col items-center gap-3 mt-6 sm:mt-10 will-change-transform"
         >
-          <div className="flex items-center gap-4 bg-black/60 backdrop-blur-xl border border-white/15 px-6 py-3 rounded-full shadow-2xl">
+          <div className="flex items-center gap-4 bg-black/80 backdrop-blur-xl border border-white/20 px-6 py-3 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
             <span className="font-serif text-2xl sm:text-3xl text-white font-light">
               {artwork.price}
             </span>
             <div className="h-4 w-[1px] bg-white/20" />
             <button
               onClick={() => setIsOrderModalOpen(true)}
-              className="bg-white text-black hover:bg-neutral-200 px-5 py-2 rounded-full font-sans text-xs uppercase tracking-widest font-medium transition-all active:scale-95 flex items-center gap-1.5"
+              className="bg-white text-black hover:bg-neutral-200 px-5 py-2 rounded-full font-sans text-xs uppercase tracking-widest font-semibold transition-all active:scale-95 flex items-center gap-1.5"
             >
               <span>Satın Al / Rezerve Et</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          <div className="flex items-center gap-2 text-neutral-400 text-xs font-sans tracking-widest uppercase mt-2 animate-pulse">
-            <span>Aşağı Kaydırın ve Keşfedin</span>
-            <ArrowDown className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2 text-neutral-400 text-[11px] font-sans tracking-widest uppercase mt-2 animate-pulse">
+            <span>Aşağı Kaydırın & Detayları İnceleyin</span>
+            <ArrowDown className="w-3 h-3" />
           </div>
         </motion.div>
       </section>
@@ -296,7 +409,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             </h2>
           </div>
           <p className="font-sans text-sm text-neutral-400 max-w-md">
-            Işığın ve el çekicinin yüzeyde bıraktığı rastlantısal mikro çatlaklar, her açıda bambaşka bir gölge oyunu meydana getirir.
+            Işığın ve el çekicinin yüzeyde bıraktığı rastlantısal mikro izler, her açıda bambaşka bir gölge oyunu meydana getirir.
           </p>
         </div>
 
@@ -336,7 +449,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       {/* ========================================================================= */}
       {/* 🗿 BÖLÜM 3: ZANAAT & DERİNLEMESİNE MATERYAL ANATOMİSİ */}
       {/* ========================================================================= */}
-      <section className="relative z-30 bg-[#121212] py-28 border-y border-white/10">
+      <section className="relative z-30 bg-[#0f0f0f] py-28 border-y border-white/10">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           
           {/* Sol: Felsefe & Editoryal Anlatım */}
@@ -381,7 +494,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </div>
 
           {/* Sağ: Teknik Şartname & Satın Alma Terminali */}
-          <div className="lg:col-span-6 bg-black/60 border border-white/15 p-8 sm:p-10 shadow-2xl relative">
+          <div className="lg:col-span-6 bg-black/70 border border-white/15 p-8 sm:p-10 shadow-2xl relative">
             <div className="flex items-center justify-between pb-6 border-b border-white/10">
               <div>
                 <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400">
@@ -497,7 +610,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           >
             <div className="relative w-full max-w-5xl aspect-[4/5] sm:aspect-square max-h-[90vh]">
               <Image
-                src={artwork.images[activeImageIndex] || artwork.images[0]}
+                src={displayImages[activeImageIndex] || displayImages[0]}
                 alt={artwork.title}
                 fill
                 sizes="100vw"
