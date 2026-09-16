@@ -1,24 +1,42 @@
-import Link from 'next/link';
-
 export default function Footer() {
   return (
-    <footer className="border-t border-neutral-100 bg-neutral-50 mt-auto">
-      <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="text-center md:text-left">
-          <span className="font-serif text-xl tracking-widest text-primary uppercase">
-            Derin Demirkaya
+    <footer className="border-t border-neutral-200/80 bg-neutral-50 mt-auto">
+      <div className="max-w-7xl mx-auto px-6 py-14 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+        <div>
+          <span className="font-serif text-2xl tracking-widest text-neutral-950 uppercase block">
+            Derin Buse Demirkaya
           </span>
-          <p className="text-sm text-accent mt-2 font-sans tracking-wide">
-            © {new Date().getFullYear()} Tüm hakları saklıdır.
+          <p className="text-xs text-neutral-500 mt-1 font-mono tracking-widest uppercase">
+            nonvalue jewel • contemporary jewelry & objects
+          </p>
+          <p className="text-xs text-neutral-400 mt-2 font-sans">
+            © {new Date().getFullYear()} Derin Demirkaya. Tüm hakları saklıdır.
           </p>
         </div>
-        <div className="flex gap-6 text-xs font-sans uppercase tracking-widest text-neutral-800">
-          <Link href="/gizlilik" className="hover:text-accent transition-colors duration-300">
-            Gizlilik Politikası
-          </Link>
-          <Link href="/sartlar" className="hover:text-accent transition-colors duration-300">
-            Kullanım Şartları
-          </Link>
+
+        <div className="flex flex-wrap gap-8 text-xs font-mono uppercase tracking-widest text-neutral-700">
+          <a
+            href="https://instagram.com/nonvalue_jewel"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-neutral-950 underline transition-colors"
+          >
+            @nonvalue_jewel
+          </a>
+          <a
+            href="https://instagram.com/derinsem__"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-neutral-950 underline transition-colors"
+          >
+            @derinsem__
+          </a>
+          <a
+            href="mailto:nonvaluejewel@gmail.com"
+            className="hover:text-neutral-950 underline transition-colors"
+          >
+            nonvaluejewel@gmail.com
+          </a>
         </div>
       </div>
     </footer>
