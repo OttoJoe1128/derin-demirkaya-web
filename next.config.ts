@@ -10,6 +10,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/atolyeler",
+        destination: "/atolye",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
