@@ -17,13 +17,15 @@
 @layer base {
   html {
     scroll-behavior: smooth; /* Tıklamalarda akıcı kaydırma */
+    background-color: #ffffff;
   }
 
   body {
-    background-color: var(--color-neutral-50);
+    background-color: #ffffff;
     color: var(--color-neutral-800);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
   }
 
   ::selection {
