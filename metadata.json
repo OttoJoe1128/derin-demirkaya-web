@@ -1,0 +1,6 @@
+{
+  "name": "Derin Demirkaya",
+  "description": "Personal web application for Derin Demirkaya.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
