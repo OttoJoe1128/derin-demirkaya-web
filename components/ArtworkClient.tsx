@@ -21,16 +21,23 @@ import {
   Mail,
   ChevronRight,
   Send,
-  Compass,
   ArrowDown,
 } from 'lucide-react';
 import type { ArtworkDetail } from '@/lib/artworks-data';
+import { getLocalizedArtwork } from '@/lib/artworks-data';
+import { useLanguage } from '@/lib/language-context';
 
 interface ArtworkClientProps {
   artwork: ArtworkDetail;
 }
 
 export default function ArtworkClient({ artwork }: ArtworkClientProps) {
+  const { language, t } = useLanguage();
+  const localizedArtwork = useMemo(
+    () => getLocalizedArtwork(artwork, language),
+    [artwork, language]
+  );
+
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -43,36 +50,42 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
   // 3D Uzamsal Parallax Modları & İğneleri (Spatial Parallax Modes)
   const [spatialMode, setSpatialMode] = useState<'orbit' | 'exploded' | 'specular'>('orbit');
-  const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
+  
+  // Aktif Telemetri İğnesi (Default: 1 - Doku ve Materyal)
+  const [activeHotspot, setActiveHotspot] = useState<number | null>(1);
 
-  // Eser Özelinde Dinamik ve Kristal Netliğinde Mikro Analiz Noktaları (Crystal-Clear Specimen Telemetry)
+  // Eser Özelinde Dinamik ve Kristal Netliğinde Mikro Analiz Noktaları
   const specimenHotspots = useMemo(() => {
+    const isEn = language === 'EN';
     return [
       {
         id: 1,
-        code: 'SP-01 // MATERYAL & DOKU',
-        title: artwork.material,
-        description: artwork.description,
+        pinNumber: '01',
+        code: isEn ? 'SP-01 // MATERIAL & SURFACE TEXTURE' : 'SP-01 // MATERYAL & DOKUSAL KATMAN',
+        tag: isEn ? 'SURFACE TEXTURE' : 'DOKUSAL YÜZEY',
+        title: localizedArtwork.material,
+        description: localizedArtwork.description,
         position: { top: '34%', left: '26%' },
-        tag: 'DOKUSAL YÜZEY',
       },
       {
         id: 2,
-        code: 'SP-02 // ZANAAT & DÖKÜM',
-        title: artwork.technique,
-        description: `Edisyon Durumu: ${artwork.isUniquePiece ? '1/1 Eşsiz Parça (Tek Nüsha)' : 'Limitli Koleksiyon Serisi'} • Eser Ağırlığı: ${artwork.weight} • Üretim Yılı: ${artwork.year}. Doğrudan ateş ve el aletleriyle biçimlendirilmiştir.`,
-        position: { bottom: '28%', right: '22%' },
-        tag: 'ÜRETİM TEKNİĞİ',
+        pinNumber: '02',
+        code: isEn ? 'SP-02 // CRAFT & FORGING TECHNIQUE' : 'SP-02 // ZANAAT & DÖKÜM TEKNİĞİ',
+        tag: isEn ? 'FORGING TECHNIQUE' : 'ÜRETİM TEKNİĞİ',
+        title: localizedArtwork.technique,
+        description: isEn
+          ? `Edition: ${localizedArtwork.isUniquePiece ? '1/1 Unique Specimen' : 'Limited Studio Series'} • Weight: ${localizedArtwork.weight} • Year: ${localizedArtwork.year}. Hand-shaped on hearth with open flame and artisan steel hammers.`
+          : `Edisyon Durumu: ${localizedArtwork.isUniquePiece ? '1/1 Eşsiz Parça (Tek Nüsha)' : 'Limitli Koleksiyon Serisi'} • Eser Ağırlığı: ${localizedArtwork.weight} • Üretim Yılı: ${localizedArtwork.year}. Doğrudan ocak ateşi ve el aletleriyle biçimlendirilmiştir.`,
+        position: { bottom: '28%', right: '24%' },
       },
     ];
-  }, [artwork]);
+  }, [localizedArtwork, language]);
 
   // Fare / Ekran 3 Boyutlu Uzamsal Hareketi (Interactive 3D Mouse Movement)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Ekran merkezine göre normalize edilmiş -1 ile +1 arası değer
       const { innerWidth, innerHeight } = window;
       const x = (e.clientX / innerWidth - 0.5) * 2;
       const y = (e.clientY / innerHeight - 0.5) * 2;
@@ -114,23 +127,20 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
     mass: 0.3,
   });
 
-  // 1. Tipografi Dönüşümleri (Kameraya yaklaşan devasa tipografi, görsellerin arkasında boğulmaz)
+  // 1. Tipografi Dönüşümleri
   const typographyScale = useTransform(smoothHeroProgress, [0, 0.9], [1, 1.35]);
   const typographyY = useTransform(smoothHeroProgress, [0, 1], ['0%', '-45%']);
   const typographyOpacity = useTransform(smoothHeroProgress, [0, 0.75, 1], [1, 0.6, 0]);
 
   // 2. Uzamsal Çoklu Görseller (3D Spatially Distributed Floating Images)
-  // Görsel 1: Ana Merkez Kart (Primary Sculpture)
   const img1Y = useTransform(smoothHeroProgress, [0, 1], ['0%', '18%']);
   const img1Scale = useTransform(smoothHeroProgress, [0, 1], [1, 0.94]);
   const img1Rotate = useTransform(smoothHeroProgress, [0, 1], [0, -3]);
 
-  // Görsel 2: Sol Alt / Orta Makro Detay Kartı (Daha hızlı yukarı fırlayan katman)
   const img2Y = useTransform(smoothHeroProgress, [0, 1], ['0%', '-32%']);
   const img2Scale = useTransform(smoothHeroProgress, [0, 1], [1, 1.12]);
   const img2Rotate = useTransform(smoothHeroProgress, [0, 1], [-4, 6]);
 
-  // Görsel 3: Sağ Üst / Orta Perspektif Kartı (Daha derinlikte yavaş süzülen katman)
   const img3Y = useTransform(smoothHeroProgress, [0, 1], ['0%', '38%']);
   const img3Scale = useTransform(smoothHeroProgress, [0, 1], [1, 0.86]);
   const img3Rotate = useTransform(smoothHeroProgress, [0, 1], [3, -5]);
@@ -145,23 +155,23 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
   // Çoklu görsel havuzu (En az 3 görsel temin edilir)
   const displayImages = [
-    artwork.images[0] || 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=85',
-    artwork.images[1] || artwork.images[0],
-    artwork.images[2] || artwork.images[0],
+    localizedArtwork.images[0] || 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1400&q=85',
+    localizedArtwork.images[1] || localizedArtwork.images[0],
+    localizedArtwork.images[2] || localizedArtwork.images[0],
   ];
 
   const handleShare = async () => {
-    if (navigator.share) {
+    if (typeof window !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
-          title: `${artwork.title} — Derin Demirkaya`,
-          text: artwork.description,
+          title: `${localizedArtwork.title} — Derin Buse Demirkaya`,
+          text: localizedArtwork.description,
           url: window.location.href,
         });
       } catch {
         // Kullanıcı iptal etti
       }
-    } else {
+    } else if (typeof window !== 'undefined') {
       await navigator.clipboard.writeText(window.location.href);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2500);
@@ -176,6 +186,8 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       setIsSuccess(true);
     }, 900);
   };
+
+  const activeSpotData = activeHotspot === 2 ? specimenHotspots[1] : specimenHotspots[0];
 
   return (
     <div
@@ -198,12 +210,12 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] font-sans text-neutral-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-            <span>Koleksiyon Arşivi</span>
+            <span>{language === 'EN' ? 'Back to Collection' : 'Koleksiyon Arşivi'}</span>
           </Link>
 
           <div className="flex items-center gap-6">
             <span className="hidden sm:inline-block text-[11px] font-mono tracking-widest uppercase text-neutral-400">
-              {artwork.collectionName} — {artwork.year}
+              {localizedArtwork.collectionName} — {localizedArtwork.year}
             </span>
 
             <button
@@ -213,12 +225,14 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               {isCopied ? (
                 <>
                   <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-300">Kopyalandı</span>
+                  <span className="text-emerald-300">
+                    {language === 'EN' ? 'Link Copied' : 'Kopyalandı'}
+                  </span>
                 </>
               ) : (
                 <>
                   <Share2 className="w-3.5 h-3.5" />
-                  <span>Paylaş</span>
+                  <span>{language === 'EN' ? 'Share' : 'Paylaş'}</span>
                 </>
               )}
             </button>
@@ -250,7 +264,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           />
         </motion.div>
 
-        {/* Katman B: ZARİF VE NET TİPOGRAFİ (Görsellerin arkasında boğulmaz, z-30) */}
+        {/* Katman B: ZARİF VE NET TİPOGRAFİ */}
         <motion.div
           style={{
             scale: typographyScale,
@@ -262,19 +276,19 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-white/10 bg-black/40 backdrop-blur-md mb-4">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
             <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.3em] text-neutral-300">
-              {artwork.category} • {artwork.year}
+              {localizedArtwork.category} • {localizedArtwork.year}
             </span>
           </div>
 
           <h1 className="font-serif text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-light tracking-tight text-white uppercase leading-[0.95] drop-shadow-[0_10px_35px_rgba(0,0,0,0.9)]">
-            {artwork.title}
+            {localizedArtwork.title}
           </h1>
 
           <p className="font-sans text-xs sm:text-sm text-neutral-400 tracking-[0.2em] uppercase mt-4 max-w-lg mx-auto">
-            {artwork.collectionName}
+            {localizedArtwork.collectionName}
           </p>
 
-          {/* Uzamsal Parallax Mod Seçici (Spatial Perspective Controls) */}
+          {/* Uzamsal Parallax Mod Seçici */}
           <div className="mt-6 inline-flex items-center gap-2 p-1.5 bg-black/90 border border-neutral-700 rounded-full pointer-events-auto shadow-xl">
             <button
               onClick={() => setSpatialMode('orbit')}
@@ -284,7 +298,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                   : 'text-neutral-300 hover:text-white'
               }`}
             >
-              3D Yörünge
+              {t('artwork.orbit')}
             </button>
             <button
               onClick={() => setSpatialMode('exploded')}
@@ -294,7 +308,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                   : 'text-neutral-300 hover:text-white'
               }`}
             >
-              Katmanlı Uzay
+              {t('artwork.exploded')}
             </button>
             <button
               onClick={() => setSpatialMode('specular')}
@@ -304,47 +318,8 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                   : 'text-neutral-300 hover:text-white'
               }`}
             >
-              Işık Kırılımı
+              {t('artwork.specular')}
             </button>
-          </div>
-
-          {/* Kristal Netliğinde Mikro İçerik ve Malzeme Şeridi (Crystal Clear Specimen Telemetry) */}
-          <div className="mt-5 max-w-2xl mx-auto pointer-events-auto">
-            <div className="bg-neutral-950/95 border border-neutral-700 p-3 sm:p-4 text-left font-mono text-xs shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <span className="text-[10px] text-amber-400 font-bold block uppercase tracking-widest">
-                  [+] MİKRO MATERYAL ANALİZİ // YÜKSEK ÇÖZÜNÜRLÜK
-                </span>
-                <span className="text-white text-xs sm:text-sm font-medium block truncate">
-                  {artwork.material}
-                </span>
-                <span className="text-neutral-400 text-[11px] block mt-0.5">
-                  Teknik: {artwork.technique} • Ağırlık: {artwork.weight}
-                </span>
-              </div>
-              <div className="shrink-0 flex items-center gap-2">
-                <button
-                  onClick={() => setActiveHotspot(activeHotspot === 1 ? null : 1)}
-                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors ${
-                    activeHotspot === 1
-                      ? 'bg-amber-400 text-black border-amber-400 font-bold'
-                      : 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-white'
-                  }`}
-                >
-                  İğne 01: Doku
-                </button>
-                <button
-                  onClick={() => setActiveHotspot(activeHotspot === 2 ? null : 2)}
-                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors ${
-                    activeHotspot === 2
-                      ? 'bg-white text-black border-white font-bold'
-                      : 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-white'
-                  }`}
-                >
-                  İğne 02: Zanaat
-                </button>
-              </div>
-            </div>
           </div>
         </motion.div>
 
@@ -371,7 +346,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           >
             <Image
               src={displayImages[0]}
-              alt={`${artwork.title} Ana Form`}
+              alt={`${localizedArtwork.title} Ana Form`}
               fill
               priority
               sizes="(max-width: 768px) 75vw, 35vw"
@@ -390,71 +365,58 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
             
-            <div className="absolute top-3 left-3 z-30">
-              {artwork.isUniquePiece ? (
+            {/* Eser Durum Rozeti */}
+            <div className="absolute top-3 left-3 z-30 pointer-events-none">
+              {localizedArtwork.isUniquePiece ? (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-black text-amber-300 border border-amber-400 font-mono text-xs uppercase tracking-wider font-semibold shadow-md">
                   <Sparkles className="w-3 h-3 text-amber-400" />
-                  1/1 Eşsiz Eser
+                  {t('artwork.unique')}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 px-3 py-1 bg-black text-neutral-200 border border-white/40 font-mono text-xs uppercase tracking-wider font-semibold shadow-md">
-                  Limitli Seri
+                  {t('artwork.limited')}
                 </span>
               )}
             </div>
 
-            {/* 3D UZAMSAL KOORDİNAT İĞNELERİ (DİNAMİK VE KRİSTAL NETLİKTE) */}
-            {specimenHotspots.map((spot) => (
-              <div
-                key={spot.id}
-                style={{ top: spot.position.top, left: spot.position.left, bottom: spot.position.bottom, right: spot.position.right }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveHotspot(activeHotspot === spot.id ? null : spot.id);
-                }}
-                className="absolute z-40 cursor-pointer group/pin"
-                title={`${spot.tag}: Tıklayarak inceleyin`}
-              >
-                <div className="relative flex items-center justify-center">
-                  <span className="animate-ping absolute inline-flex h-7 w-7 rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-300 border-2 border-black shadow-[0_0_12px_#f59e0b]"></span>
-                </div>
-
-                {/* Yüksek Çözünürlüklü Kristal Netliğinde Bilgi Kartı */}
-                {activeHotspot === spot.id && (
-                  <div
-                    onClick={(e) => e.stopPropagation()}
-                    className="absolute left-6 top-0 w-64 sm:w-72 bg-neutral-950 text-white border-2 border-amber-400 p-4 shadow-[0_20px_60px_rgba(0,0,0,1)] z-50 animate-in fade-in zoom-in-95 font-mono"
-                  >
-                    <div className="flex items-center justify-between border-b border-neutral-800 pb-2 mb-2">
-                      <span className="text-amber-400 text-xs font-bold tracking-widest uppercase">
-                        [+] {spot.code}
-                      </span>
-                      <button
-                        onClick={() => setActiveHotspot(null)}
-                        className="text-neutral-400 hover:text-white text-xs px-1 font-bold"
-                        aria-label="Kapat"
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    <h4 className="font-serif text-sm text-white uppercase tracking-tight mb-1.5 font-normal">
-                      {spot.title}
-                    </h4>
-
-                    <p className="font-sans text-xs text-neutral-300 leading-relaxed font-light">
-                      {spot.description}
-                    </p>
-
-                    <div className="mt-3 pt-2 border-t border-neutral-800 flex justify-between items-center text-[10px] text-neutral-400 uppercase tracking-widest">
-                      <span>DOKU KODU: OKUNDU</span>
-                      <span className="text-amber-400 font-bold">100% NET ÇÖZÜNÜRLÜK</span>
+            {/* 3D KOORDİNAT İĞNELERİ (Hotspots with Zero-Overflow & High Contrast Beacon) */}
+            {specimenHotspots.map((spot) => {
+              const isSelected = activeHotspot === spot.id;
+              return (
+                <div
+                  key={spot.id}
+                  style={{
+                    top: spot.position.top,
+                    left: spot.position.left,
+                    bottom: spot.position.bottom,
+                    right: spot.position.right,
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveHotspot(isSelected ? null : spot.id);
+                  }}
+                  className="absolute z-40 cursor-pointer group/pin"
+                  title={`${spot.tag}: ${language === 'EN' ? 'Click to inspect in docked console below' : 'Aşağıdaki panelde incelemek için tıklayın'}`}
+                >
+                  <div className="relative flex items-center justify-center">
+                    <span
+                      className={`animate-ping absolute inline-flex h-8 w-8 rounded-full ${
+                        isSelected ? 'bg-amber-400 opacity-90' : 'bg-white opacity-60'
+                      }`}
+                    />
+                    <div
+                      className={`relative inline-flex items-center justify-center rounded-full h-6 w-6 font-mono text-[10px] font-bold transition-all shadow-[0_0_15px_rgba(0,0,0,0.8)] border-2 ${
+                        isSelected
+                          ? 'bg-amber-400 text-black border-white scale-110 shadow-[0_0_18px_#f59e0b]'
+                          : 'bg-black text-white border-amber-300 group-hover/pin:scale-110'
+                      }`}
+                    >
+                      {spot.pinNumber}
                     </div>
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
 
             <button
               onClick={(e) => {
@@ -468,7 +430,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               <Maximize2 className="w-4 h-4" />
             </button>
             <div className="absolute bottom-3 left-3 text-xs font-mono font-semibold text-white bg-black/90 px-2.5 py-1 border border-white/30 uppercase tracking-widest">
-              Ana Form • 01 [Z: 0mm]
+              {language === 'EN' ? 'Primary Focus • 01 [Z: 0mm]' : 'Ana Form • 01 [Z: 0mm]'}
             </div>
           </motion.div>
 
@@ -490,14 +452,14 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           >
             <Image
               src={displayImages[1]}
-              alt={`${artwork.title} Makro Açı`}
+              alt={`${localizedArtwork.title} Makro Açı`}
               fill
               sizes="(max-width: 768px) 45vw, 22vw"
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
             <div className="absolute bottom-2 left-2 bg-black text-white px-2.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider border border-white/30">
-              Mikro Doku • 02 [Z: +80mm]
+              {language === 'EN' ? 'Micro-Texture • 02 [Z: +80mm]' : 'Mikro Doku • 02 [Z: +80mm]'}
             </div>
           </motion.div>
 
@@ -519,40 +481,128 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           >
             <Image
               src={displayImages[2]}
-              alt={`${artwork.title} Perspektif Açı`}
+              alt={`${localizedArtwork.title} Perspektif Açı`}
               fill
               sizes="(max-width: 768px) 45vw, 20vw"
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
             <div className="absolute bottom-2 left-2 bg-black text-white px-2.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider border border-white/30">
-              Işık Kırılımı • 03 [Z: -60mm]
+              {language === 'EN' ? 'Light Angle • 03 [Z: -60mm]' : 'Işık Kırılımı • 03 [Z: -60mm]'}
             </div>
           </motion.div>
 
         </div>
 
+        {/* ========================================================================= */}
+        {/* 🔬 KRİSTAL NETLİĞİNDE DİJİTAL TELEMETRİ KONSOLU (Ultra-Crisp Docked Console) */}
+        {/* Görselin dışında yer alır: Asla taşmaz, 3D bulanıklığı yaşamaz, %100 net */}
+        {/* ========================================================================= */}
+        <div className="relative z-30 w-full max-w-4xl mx-auto px-4 sm:px-6 mt-6 sm:mt-10">
+          <div className="bg-neutral-950/95 border-2 border-white/20 hover:border-white/35 transition-all p-5 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.95)] backdrop-blur-xl">
+            {/* Konsol Üst Şeridi */}
+            <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-neutral-800">
+              <div className="flex items-center gap-3">
+                <span className="flex h-3 w-3 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-85"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                </span>
+                <div>
+                  <span className="text-amber-400 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-[0.2em] block">
+                    {activeSpotData.code}
+                  </span>
+                  <span className="text-neutral-400 font-mono text-[10px] uppercase tracking-wider block">
+                    {language === 'EN' ? 'HIGH-RESOLUTION SPECIMEN SURFACE TELEMETRY' : 'YÜKSEK ÇÖZÜNÜRLÜKLÜ ESER YÜZEY TELEMETRİSİ'}
+                  </span>
+                </div>
+              </div>
+              
+              {/* İğne Seçici Butonlar */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveHotspot(1)}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-all flex items-center gap-1.5 ${
+                    activeHotspot === 1
+                      ? 'bg-amber-400 text-black border-amber-400 font-bold shadow-[0_0_15px_rgba(251,191,36,0.35)]'
+                      : 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-white'
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                  <span>{t('artwork.pin1')}</span>
+                </button>
+                <button
+                  onClick={() => setActiveHotspot(2)}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-all flex items-center gap-1.5 ${
+                    activeHotspot === 2
+                      ? 'bg-amber-400 text-black border-amber-400 font-bold shadow-[0_0_15px_rgba(251,191,36,0.35)]'
+                      : 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-white'
+                  }`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                  <span>{t('artwork.pin2')}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* İçerik Alanı - Kristal Netliğinde Tipografi */}
+            <div className="pt-5 space-y-3 font-sans">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-mono uppercase tracking-widest text-amber-300 font-semibold">
+                  {activeSpotData.tag}
+                </span>
+                <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest border border-neutral-800 px-2 py-0.5">
+                  {language === 'EN' ? '100% NATIVE DENSITY • CRYSTAL RESOLUTION' : '100% ÇÖZÜNÜRLÜK • KRİSTAL NETLİK'}
+                </span>
+              </div>
+
+              <h4 className="font-serif text-xl sm:text-2xl text-white font-normal leading-snug">
+                {activeSpotData.title}
+              </h4>
+
+              <p className="text-sm sm:text-base text-neutral-200 leading-relaxed font-light">
+                {activeSpotData.description}
+              </p>
+
+              {/* Teknik Parametreler */}
+              <div className="pt-4 mt-2 border-t border-neutral-800/80 flex flex-wrap items-center justify-between gap-3 text-xs font-mono text-neutral-300">
+                <span className="flex items-center gap-1.5">
+                  <span className="text-neutral-500 uppercase">{t('artwork.dimensions')}:</span>
+                  <span className="text-white font-medium">{localizedArtwork.dimensions}</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-neutral-500 uppercase">{t('artwork.weight')}:</span>
+                  <span className="text-white font-medium">{localizedArtwork.weight}</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-neutral-500 uppercase">{language === 'EN' ? 'FINISH:' : 'BİTİŞ:'}</span>
+                  <span className="text-white font-medium">{localizedArtwork.finish}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Katman D: Uzamsal Fiyat & Satın Alma Rozeti */}
         <motion.div
           style={{ y: badgeY }}
-          className="relative z-30 flex flex-col items-center gap-3 mt-6 sm:mt-10 will-change-transform"
+          className="relative z-30 flex flex-col items-center gap-3 mt-8 sm:mt-10 will-change-transform"
         >
           <div className="flex items-center gap-4 bg-black/80 backdrop-blur-xl border border-white/20 px-6 py-3 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
             <span className="font-serif text-2xl sm:text-3xl text-white font-light">
-              {artwork.price}
+              {localizedArtwork.price}
             </span>
             <div className="h-4 w-[1px] bg-white/20" />
             <button
               onClick={() => setIsOrderModalOpen(true)}
               className="bg-white text-black hover:bg-neutral-200 px-5 py-2 rounded-full font-sans text-xs uppercase tracking-widest font-semibold transition-all active:scale-95 flex items-center gap-1.5"
             >
-              <span>Satın Al / Rezerve Et</span>
+              <span>{t('artwork.buy')}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
           <div className="flex items-center gap-2 text-neutral-400 text-[11px] font-sans tracking-widest uppercase mt-2 animate-pulse">
-            <span>Aşağı Kaydırın & Detayları İnceleyin</span>
+            <span>{t('artwork.scrollHint')}</span>
             <ArrowDown className="w-3 h-3" />
           </div>
         </motion.div>
@@ -565,20 +615,20 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <span className="text-xs font-mono uppercase tracking-[0.3em] text-neutral-400 block mb-2">
-              Perspektif & Dokusal Yansımalar
+              {t('artwork.anatomySub')}
             </span>
             <h2 className="font-serif text-3xl sm:text-5xl text-white tracking-tight">
-              Eserin Görsel Anatomisi
+              {t('artwork.anatomyTitle')}
             </h2>
           </div>
           <p className="font-sans text-sm text-neutral-400 max-w-md">
-            Işığın ve el çekicinin yüzeyde bıraktığı rastlantısal mikro izler, her açıda bambaşka bir gölge oyunu meydana getirir.
+            {t('artwork.anatomyDesc')}
           </p>
         </div>
 
         {/* Çoklu Görsel Karuseli / Izgarası */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {artwork.images.map((img, idx) => (
+          {displayImages.map((img, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 40 }}
@@ -594,15 +644,21 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               <div className="relative aspect-[4/5] bg-neutral-900 overflow-hidden border border-white/10 group-hover:border-white/40 transition-colors">
                 <Image
                   src={img}
-                  alt={`${artwork.title} Açı ${idx + 1}`}
+                  alt={`${localizedArtwork.title} Açı ${idx + 1}`}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
                 />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
-                  Görünüm 0{idx + 1}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                <div className="absolute top-4 right-4 p-2 bg-black/70 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Maximize2 className="w-4 h-4" />
                 </div>
+              </div>
+              <div className="flex items-center justify-between text-xs font-mono text-neutral-400 uppercase tracking-widest pt-2 border-t border-white/10">
+                <span>{t('artwork.view')} 0{idx + 1}</span>
+                <span className="text-white group-hover:text-amber-300 transition-colors">
+                  {language === 'EN' ? 'Inspect Detail →' : 'Detayı İncele →'}
+                </span>
               </div>
             </motion.div>
           ))}
@@ -610,47 +666,45 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       </section>
 
       {/* ========================================================================= */}
-      {/* 🗿 BÖLÜM 3: ZANAAT & DERİNLEMESİNE MATERYAL ANATOMİSİ */}
+      {/* 📜 BÖLÜM 3: EDİTORYAL FELSEFE & TEKNİK ŞARTNAME (FİNAL ALIM BLOĞU) */}
       {/* ========================================================================= */}
-      <section className="relative z-30 bg-[#0f0f0f] py-28 border-y border-white/10">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+      <section className="relative z-30 max-w-7xl mx-auto px-6 py-24 border-t border-white/10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           
-          {/* Sol: Felsefe & Editoryal Anlatım */}
+          {/* Sol: Küratöryel Anlatı & Felsefe */}
           <div className="lg:col-span-6 space-y-8">
-            <div className="space-y-3">
-              <span className="text-xs font-mono uppercase tracking-[0.3em] text-amber-300 flex items-center gap-2">
-                <Compass className="w-3.5 h-3.5" />
-                <span>Malzemenin Belleği & Felsefe</span>
+            <div>
+              <span className="text-xs font-mono uppercase tracking-[0.3em] text-neutral-400 block mb-2">
+                {t('artwork.philosophySub')}
               </span>
               <h3 className="font-serif text-3xl sm:text-4xl text-white">
-                Kusurluluktaki Ebedi Uyum
+                {t('artwork.philosophyTitle')}
               </h3>
             </div>
 
-            <p className="font-sans text-base text-neutral-300 leading-relaxed">
-              {artwork.description}
+            <p className="font-sans text-base sm:text-lg text-neutral-300 leading-relaxed font-light">
+              {localizedArtwork.description}
             </p>
 
-            <blockquote className="border-l-2 border-white/40 pl-6 py-2 italic font-serif text-lg text-neutral-300 bg-white/[0.02]">
-              &ldquo;{artwork.editorialNote}&rdquo;
+            <blockquote className="border-l-2 border-amber-300/60 pl-6 py-2 italic font-serif text-lg text-neutral-200">
+              &ldquo;{localizedArtwork.editorialNote}&rdquo;
             </blockquote>
 
-            <div className="grid grid-cols-2 gap-6 pt-4">
-              <div className="border border-white/10 p-5 bg-black/40">
-                <span className="text-[11px] font-mono uppercase text-neutral-400 block mb-1">
-                  Maden / Çamur
+            <div className="pt-6 border-t border-white/10 grid grid-cols-2 gap-6">
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-400 block mb-1">
+                  {t('artwork.metalClay')}
                 </span>
                 <p className="font-sans text-sm text-white font-medium">
-                  {artwork.material}
+                  {localizedArtwork.material}
                 </p>
               </div>
-
-              <div className="border border-white/10 p-5 bg-black/40">
-                <span className="text-[11px] font-mono uppercase text-neutral-400 block mb-1">
-                  İşleme Tekniği
+              <div>
+                <span className="text-xs font-mono uppercase tracking-widest text-neutral-400 block mb-1">
+                  {t('artwork.technique')}
                 </span>
                 <p className="font-sans text-sm text-white font-medium">
-                  {artwork.technique}
+                  {localizedArtwork.technique}
                 </p>
               </div>
             </div>
@@ -661,37 +715,39 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             <div className="flex items-center justify-between pb-6 border-b border-white/10">
               <div>
                 <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400">
-                  Resmi Eser Kaydı
+                  {t('artwork.recordTitle')}
                 </span>
                 <h4 className="font-serif text-2xl text-white mt-0.5">
-                  {artwork.title}
+                  {localizedArtwork.title}
                 </h4>
               </div>
               <span className="font-serif text-2xl text-amber-200">
-                {artwork.price}
+                {localizedArtwork.price}
               </span>
             </div>
 
-            {/* Özellikler Tablosu */}
+            {/* Özellikler Tablosu (Fully Localized) */}
             <div className="divide-y divide-white/10 font-sans text-xs py-4">
-              {artwork.specs.map((item, i) => (
+              {localizedArtwork.specs.map((item, i) => (
                 <div key={i} className="py-3 flex justify-between items-center gap-4">
                   <span className="text-neutral-400 uppercase tracking-wider">{item.label}</span>
                   <span className="text-white text-right font-mono font-medium">{item.value}</span>
                 </div>
               ))}
               <div className="py-3 flex justify-between items-center gap-4">
-                <span className="text-neutral-400 uppercase tracking-wider">Boyut & Ölçü</span>
-                <span className="text-white text-right font-mono font-medium">{artwork.dimensions}</span>
+                <span className="text-neutral-400 uppercase tracking-wider">{t('artwork.dimensions')}</span>
+                <span className="text-white text-right font-mono font-medium">{localizedArtwork.dimensions}</span>
               </div>
               <div className="py-3 flex justify-between items-center gap-4">
-                <span className="text-neutral-400 uppercase tracking-wider">Ağırlık</span>
-                <span className="text-white text-right font-mono font-medium">{artwork.weight}</span>
+                <span className="text-neutral-400 uppercase tracking-wider">{t('artwork.weight')}</span>
+                <span className="text-white text-right font-mono font-medium">{localizedArtwork.weight}</span>
               </div>
               <div className="py-3 flex justify-between items-center gap-4">
-                <span className="text-neutral-400 uppercase tracking-wider">Durum</span>
+                <span className="text-neutral-400 uppercase tracking-wider">{t('artwork.status')}</span>
                 <span className="text-emerald-400 uppercase font-mono tracking-wider">
-                  {artwork.stock > 0 ? `Atölyede Mevcut (${artwork.stock} Adet)` : 'Özel Sipariş'}
+                  {localizedArtwork.stock > 0
+                    ? `${t('artwork.inStudio')} (${localizedArtwork.stock} ${t('artwork.pieces')})`
+                    : t('artwork.customOrder')}
                 </span>
               </div>
             </div>
@@ -702,16 +758,20 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 onClick={() => setIsOrderModalOpen(true)}
                 className="w-full py-4 px-6 bg-white hover:bg-neutral-200 text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.99] flex items-center justify-center gap-2"
               >
-                <span>Satın Al / Rezervasyon Talebi</span>
+                <span>{t('artwork.orderBtn')}</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
 
               <a
-                href={`mailto:sircaedebiyat@gmail.com?subject=Eser%20Talebi%3A%20${encodeURIComponent(artwork.title)}`}
+                href={`mailto:sircaedebiyat@gmail.com?subject=${encodeURIComponent(
+                  language === 'EN'
+                    ? `Artwork Inquiry: ${localizedArtwork.title}`
+                    : `Eser Talebi: ${localizedArtwork.title}`
+                )}`}
                 className="w-full py-3.5 px-6 border border-white/20 hover:border-white text-white font-sans text-xs uppercase tracking-[0.2em] transition-all text-center flex items-center justify-center gap-2"
               >
                 <Mail className="w-3.5 h-3.5" />
-                <span>Sanatçıya Doğrudan Soru Sor</span>
+                <span>{t('artwork.contactBtn')}</span>
               </a>
             </div>
 
@@ -719,11 +779,11 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             <div className="grid grid-cols-2 gap-4 pt-6 mt-6 border-t border-white/10 text-xs">
               <div className="flex items-start gap-2 text-neutral-300">
                 <ShieldCheck className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
-                <span>Sanatçı imzalı orijinallik sertifikası dahildir.</span>
+                <span>{t('artwork.cert')}</span>
               </div>
               <div className="flex items-start gap-2 text-neutral-300">
                 <Truck className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
-                <span>Özel korunaklı sandık ile sigortalı teslimat.</span>
+                <span>{t('artwork.crate')}</span>
               </div>
             </div>
           </div>
@@ -736,24 +796,24 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       {/* ========================================================================= */}
       <section className="relative py-24 text-center border-b border-white/10">
         <div className="max-w-3xl mx-auto px-6 space-y-6">
-          <span className="text-xs font-mono uppercase tracking-[0.3em] text-neutral-500">
-            Koleksiyon Keşfi
+          <span className="text-xs font-mono uppercase tracking-[0.3em] text-neutral-400">
+            {t('artwork.exploreSub')}
           </span>
           <h3 className="font-serif text-3xl sm:text-5xl text-white">
-            Diğer Heykel ve Formları İnceleyin
+            {t('artwork.exploreTitle')}
           </h3>
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/koleksiyon"
               className="px-8 py-3.5 bg-neutral-900 border border-white/20 hover:border-white text-white font-sans text-xs uppercase tracking-widest transition-colors"
             >
-              Tüm Koleksiyon Arşivi
+              {t('artwork.exploreAll')}
             </Link>
             <Link
               href="/atolye"
               className="px-8 py-3.5 bg-white text-black hover:bg-neutral-200 font-sans text-xs uppercase tracking-widest transition-colors font-medium"
             >
-              Atölye Takvimini İncele
+              {t('artwork.exploreWorkshops')}
             </Link>
           </div>
         </div>
@@ -774,7 +834,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             <div className="relative w-full max-w-5xl aspect-[4/5] sm:aspect-square max-h-[90vh]">
               <Image
                 src={displayImages[activeImageIndex] || displayImages[0]}
-                alt={artwork.title}
+                alt={localizedArtwork.title}
                 fill
                 sizes="100vw"
                 className="object-contain"
@@ -784,7 +844,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               onClick={() => setIsZoomOpen(false)}
               className="absolute top-6 right-6 text-white/80 hover:text-white uppercase font-sans text-xs tracking-widest px-4 py-2 border border-white/20 rounded-full"
             >
-              Kapat ✕
+              {t('artwork.close')} ✕
             </button>
           </motion.div>
         )}
@@ -814,7 +874,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 }}
                 className="absolute top-6 right-6 text-neutral-400 hover:text-white text-xs font-sans uppercase tracking-widest"
               >
-                ✕ Kapat
+                ✕ {t('artwork.close')}
               </button>
 
               {isSuccess ? (
@@ -823,11 +883,20 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                     <Check className="w-7 h-7" />
                   </div>
                   <h3 className="font-serif text-2xl text-white">
-                    Rezervasyon Talebiniz Alındı
+                    {language === 'EN' ? 'Reservation Request Received' : 'Rezervasyon Talebiniz Alındı'}
                   </h3>
                   <p className="font-sans text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
-                    <strong>{artwork.title}</strong> eseri için talebiniz atölyemize ulaştı. 
-                    Detaylar ve güvenli ödeme/teslimat planı için 24 saat içinde <strong>{formData.email}</strong> adresine dönüş yapılacaktır.
+                    {language === 'EN' ? (
+                      <>
+                        Your request for <strong>{localizedArtwork.title}</strong> has reached our studio.
+                        A private viewing and acquisition plan will be sent to <strong>{formData.email}</strong> within 24 hours.
+                      </>
+                    ) : (
+                      <>
+                        <strong>{localizedArtwork.title}</strong> eseri için talebiniz atölyemize ulaştı.
+                        Detaylar ve güvenli alım planı için 24 saat içinde <strong>{formData.email}</strong> adresine dönüş yapılacaktır.
+                      </>
+                    )}
                   </p>
                   <button
                     onClick={() => {
@@ -836,32 +905,34 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                     }}
                     className="mt-6 px-6 py-3 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 font-medium"
                   >
-                    Kapat
+                    {t('artwork.close')}
                   </button>
                 </div>
               ) : (
                 <div>
                   <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 block mb-1">
-                    Eser Rezervasyonu & Satın Alma
+                    {t('artwork.modalTitle')}
                   </span>
                   <h2 className="font-serif text-2xl text-white mb-1">
-                    {artwork.title}
+                    {localizedArtwork.title}
                   </h2>
                   <p className="font-sans text-sm text-neutral-300 mb-6">
-                    Tutar: <span className="font-semibold text-white">{artwork.price}</span> (Sigortalı kargo ve sertifika dahil)
+                    {language === 'EN' ? 'Amount:' : 'Tutar:'}{' '}
+                    <span className="font-semibold text-white">{localizedArtwork.price}</span>{' '}
+                    ({language === 'EN' ? 'Insured courier & authenticity certificate included' : 'Sigortalı kargo ve sertifika dahil'})
                   </p>
 
                   <form onSubmit={handleOrderSubmit} className="space-y-4 font-sans text-xs">
                     <div>
                       <label className="block text-neutral-300 uppercase tracking-wider mb-1">
-                        Adınız Soyadınız *
+                        {language === 'EN' ? 'Full Name *' : 'Adınız Soyadınız *'}
                       </label>
                       <input
                         type="text"
                         required
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        placeholder="Örn: Selin Yılmaz"
+                        placeholder={language === 'EN' ? 'e.g. Eleanor Vance' : 'Örn: Selin Yılmaz'}
                         className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white"
                       />
                     </div>
@@ -869,20 +940,20 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-neutral-300 uppercase tracking-wider mb-1">
-                          E-posta *
+                          {language === 'EN' ? 'Email Address *' : 'E-posta *'}
                         </label>
                         <input
                           type="email"
                           required
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          placeholder="ornek@alanadi.com"
+                          placeholder="name@domain.com"
                           className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white"
                         />
                       </div>
                       <div>
                         <label className="block text-neutral-300 uppercase tracking-wider mb-1">
-                          Telefon *
+                          {language === 'EN' ? 'Phone Number *' : 'Telefon *'}
                         </label>
                         <input
                           type="tel"
@@ -897,26 +968,30 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
                     <div>
                       <label className="block text-neutral-300 uppercase tracking-wider mb-1">
-                        Teslimat Şehri
+                        {language === 'EN' ? 'Delivery City / Country' : 'Teslimat Şehri'}
                       </label>
                       <input
                         type="text"
                         value={formData.city}
                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        placeholder="Örn: İstanbul / Kadıköy"
+                        placeholder={language === 'EN' ? 'e.g. London / UK or Istanbul' : 'Örn: İstanbul / Kadıköy'}
                         className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white"
                       />
                     </div>
 
                     <div>
                       <label className="block text-neutral-300 uppercase tracking-wider mb-1">
-                        Özel Not veya Ölçü Talebi (Opsiyonel)
+                        {language === 'EN' ? 'Sizing or Specific Requests (Optional)' : 'Özel Not veya Ölçü Talebi (Opsiyonel)'}
                       </label>
                       <textarea
                         rows={3}
                         value={formData.note}
                         onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-                        placeholder="Varsa parmak ölçünüz veya teslimat notunuz..."
+                        placeholder={
+                          language === 'EN'
+                            ? 'Ring size, wrist circumference, or custom questions...'
+                            : 'Varsa parmak ölçünüz veya teslimat notunuz...'
+                        }
                         className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white resize-none"
                       />
                     </div>
@@ -927,16 +1002,20 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                       className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-sans text-xs uppercase tracking-widest font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-4 shadow-lg"
                     >
                       {isSubmitting ? (
-                        <span>İletiliyor...</span>
+                        <span>{language === 'EN' ? 'Transmitting...' : 'İletiliyor...'}</span>
                       ) : (
                         <>
                           <Send className="w-3.5 h-3.5" />
-                          <span>Talebi İlet ({artwork.price})</span>
+                          <span>
+                            {language === 'EN' ? 'Submit Request' : 'Talebi İlet'} ({localizedArtwork.price})
+                          </span>
                         </>
                       )}
                     </button>
                     <p className="text-[11px] text-neutral-400 text-center mt-2">
-                      Bu işlem kartınızdan çekim yapmaz. Atölye sizinle iletişime geçer.
+                      {language === 'EN'
+                        ? 'This action does not charge your card. Our artisan studio will contact you directly.'
+                        : 'Bu işlem kartınızdan çekim yapmaz. Atölye sizinle doğrudan iletişime geçer.'}
                     </p>
                   </form>
                 </div>
