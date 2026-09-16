@@ -33,7 +33,32 @@
 - [ ] **Müşteri Profil & Rezervasyonlarım (`/profil`)**:
   - [ ] Kayıtlı olunan atölye etkinlikleri, rezervasyon durumları ve bilet bilgileri.
 
-### Faz 3: Globalleşme, SEO & Mikro Etkileşimler
-- [ ] **Çoklu Dil Desteği (TR / EN)**: Uluslararası küratörler ve koleksiyonerler için dil seçeneği.
-- [ ] **Gelişmiş Schema.org & SEO**: Eserler ve atölyeler için Google zengin sonuç (Rich Snippet) etiketleri.
-- [ ] **Atölye ve Eser Arama & Filtreleme**: Kategori bazlı hızlı filtreleme.
+### Faz 3: Globalleşme, SEO & Mikro Etkileşimler (Tamamlandı)
+- [x] **Çoklu Dil Desteği (TR / EN)**: Uluslararası küratörler ve koleksiyonerler için tüm site (Eserler, Atölyeler, Hakkında, İletişim, Filtreler, Arama, Biletler) iki dilli olarak entegre edildi.
+- [x] **Gelişmiş Schema.org & SEO**: 
+  - [x] Global layout için `Person`, `VisualArtist`, `JewelryStore` / `ArtGallery`, `WebSite` JSON-LD tanımları.
+  - [x] Eser detay sayfası (`/koleksiyon/[id]`) için `VisualArtwork` & `Product` Rich Snippet şeması.
+  - [x] Atölye takvimi (`/atolye`) için `EducationEvent` / `Event` ve `Offer` Rich Snippet şeması.
+- [x] **Atölye ve Eser Arama & Filtreleme**: 
+  - [x] Global `Cmd+K` / `Ctrl+K` erişimli Command Palette modalı (`QuickSearchModal`).
+  - [x] Eserler ve atölyeler arasında anlık başlık, teknik, malzeme ve kategori filtreleme.
+  - [x] Atölye takviminde yerleşik arama çubuğu ve durum filtreleri.
+
+---
+
+### Faz 4: B2B Sanatçı Yönetim Paneli ve CMS (`/admin`)
+- [x] **4.1. Sanatçı CMS / Eser & Medya Havuzu Yönetimi**:
+  - [x] Supabase arayüzüne girmeden doğrudan stüdyodan yönetilebilen entegre CRUD mimarisi (`/api/admin/artworks`).
+  - [x] Eser ekleme / düzenleme / silme modalı (TR/EN Başlık, Malzeme, Boyutlar, Teknik, Fiyat, Stok, Edisyon).
+  - [x] Tek tıkla Vitrin (`isFeatured`) yönetimi ile ana sayfa brutalist kırık ızgara senkronizasyonu.
+  - [x] Medya havuzu: Çoklu görsel URL yönetimi, hazır stüdyo fotoğraf kütüphanesinden hızlı seçim ve canlı görsel önizlemesi.
+  - [x] Hızlı anlık stok güncelleme (+/-) kontrolleri.
+- [x] **4.2. Tek Ekran Analitik Dashboard (Single-Screen Analytics)**:
+  - [x] Tek bakışta stüdyo nabzını gösteren monokrom lüks brutalist kontrol merkezi (`/admin`).
+  - [x] Toplam Ciro, Eser Gelirleri ve Atölye Bilet Gelirleri ayrımı.
+  - [x] Atölye Kapasite & Doluluk Isı Haritası (Kayıtlı katılımcı, kalan kontenjan ve interaktif +1/-1 kayıt kontrolü).
+  - [x] Kritik Stok & Edisyon Alarmları (Stoku ≤ 1 olan heykelsi eserler ve hızlı takviye).
+  - [x] Canlı Sipariş & QR Bilet Akışı (Ödeme ve kargolama aşaması değiştirici).
+- [ ] **4.3. Sürükle-Bırak Vitrin Blok Yönetimi**: Sıradaki adım.
+- [ ] **4.4. Arşiv Tuval İnteraktif Sürükle-Bırak Konumlandırma**: Sıradaki adım (önizlemesi entegre edildi).
+

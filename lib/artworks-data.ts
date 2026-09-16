@@ -26,6 +26,8 @@ export interface ArtworkDetail {
   images: string[];
   specs: { label: string; value: string }[];
   specsEn?: { label: string; value: string }[];
+  isFeatured?: boolean;
+  archiveCoords?: { x: number; y: number };
 }
 
 export const ARTWORKS_DATA: ArtworkDetail[] = [
@@ -79,6 +81,8 @@ export const ARTWORKS_DATA: ArtworkDetail[] = [
       { label: "Exhibition Record", value: "Tozman Solo Exhibition (2024)" },
       { label: "Certificate", value: "Hand-Signed Certificate of Authenticity" },
     ],
+    isFeatured: true,
+    archiveCoords: { x: 28, y: 34 },
   },
   {
     id: "2",

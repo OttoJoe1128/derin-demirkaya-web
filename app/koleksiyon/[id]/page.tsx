@@ -49,5 +49,43 @@ export default async function ArtworkDetailPage({ params }: Props) {
     notFound();
   }
 
-  return <ArtworkClient artwork={artwork} />;
+  // Schema.org VisualArtwork & Product structured data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": ["VisualArtwork", "Product"],
+    "name": artwork.title,
+    "image": artwork.images,
+    "description": artwork.description,
+    "artform": "Contemporary Jewelry / Spatial Sculpture",
+    "artMedium": artwork.material,
+    "artworkSurface": artwork.technique,
+    "creator": {
+      "@type": "Person",
+      "name": "Derin Buse Demirkaya",
+      "sameAs": "https://instagram.com/nonvalue_jewel",
+    },
+    "dateCreated": artwork.year,
+    "offers": {
+      "@type": "Offer",
+      "price": artwork.price.replace(/[^\d.]/g, "") || "0",
+      "priceCurrency": "TRY",
+      "availability": artwork.isUniquePiece
+        ? "https://schema.org/LimitedAvailability"
+        : "https://schema.org/InStock",
+      "seller": {
+        "@type": "JewelryStore",
+        "name": "nonvalue jewel",
+      },
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ArtworkClient artwork={artwork} />
+    </>
+  );
 }
