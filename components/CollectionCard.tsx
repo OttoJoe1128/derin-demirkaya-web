@@ -11,41 +11,49 @@ interface CollectionCardProps {
 
 export default function CollectionCard({ id, title, category, price, imageUrl }: CollectionCardProps) {
   return (
-    <article className="group cursor-pointer flex flex-col gap-4">
+    <article className="group bg-white border border-neutral-950 p-3.5 shadow-[4px_4px_0px_#000] flex flex-col justify-between font-sans">
+      {/* Üst Teknik Çapraz Çizgiler */}
+      <div className="flex items-center justify-between border-b border-neutral-950 pb-2 mb-2 text-[10px] font-mono tracking-widest uppercase text-neutral-600">
+        <span className="font-bold text-neutral-950">[+] REF // {id.toUpperCase()}</span>
+        <span>[+]</span>
+      </div>
+
       {/* Görsel Alanı */}
-      <Link href={`/koleksiyon/${id}`} className="block relative w-full aspect-[4/5] bg-neutral-100 overflow-hidden border border-neutral-200/50">
-        <div className="absolute inset-0 bg-neutral-900/0 group-hover:bg-neutral-900/10 transition-colors duration-500 z-10" />
-        
+      <Link
+        href={`/koleksiyon/${id}`}
+        className="block relative w-full aspect-[4/5] bg-neutral-100 overflow-hidden border border-neutral-950"
+      >
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter contrast-[1.02]"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-neutral-400 font-sans text-xs tracking-widest uppercase">
-            Görsel Bekleniyor
+          <div className="w-full h-full flex items-center justify-center text-neutral-400 font-mono text-xs tracking-widest uppercase">
+            GÖRSEL BEKLENİYOR
           </div>
         )}
+
+        <div className="absolute bottom-2 right-2 bg-neutral-950 text-white px-2.5 py-1 text-[9px] font-mono uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+          3D Detay →
+        </div>
       </Link>
-      
-      {/* Metin Alanı */}
-      <div className="flex flex-col items-center text-center space-y-1.5 pt-1">
-        <span className="text-[11px] font-sans text-neutral-400 uppercase tracking-widest">
-          {category}
-        </span>
-        <h3 className="font-serif text-lg text-neutral-900">
-          <Link href={`/koleksiyon/${id}`} className="hover:opacity-70 transition-opacity">
+
+      {/* Metin ve Fiyat */}
+      <div className="flex flex-col pt-3 space-y-1">
+        <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+          <span>{category}</span>
+          {price && <span className="font-bold text-neutral-950">{price}</span>}
+        </div>
+
+        <h3 className="font-serif text-xl uppercase tracking-tight text-neutral-950 group-hover:underline">
+          <Link href={`/koleksiyon/${id}`}>
             {title}
           </Link>
         </h3>
-        {price && (
-          <span className="text-sm font-sans text-neutral-800 font-light">
-            {price}
-          </span>
-        )}
       </div>
     </article>
   );

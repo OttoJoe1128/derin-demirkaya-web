@@ -41,6 +41,10 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
+  // 3D Uzamsal Parallax Modları & İğneleri (Spatial Parallax Modes)
+  const [spatialMode, setSpatialMode] = useState<'orbit' | 'exploded' | 'specular'>('orbit');
+  const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
+
   // Fare / Ekran 3 Boyutlu Uzamsal Hareketi (Interactive 3D Mouse Movement)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -247,12 +251,46 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           <p className="font-sans text-xs sm:text-sm text-neutral-400 tracking-[0.2em] uppercase mt-4 max-w-lg mx-auto">
             {artwork.collectionName}
           </p>
+
+          {/* Uzamsal Parallax Mod Seçici (Spatial Perspective Controls) */}
+          <div className="mt-6 inline-flex items-center gap-1.5 p-1 bg-black/60 backdrop-blur-xl border border-white/20 rounded-full pointer-events-auto">
+            <button
+              onClick={() => setSpatialMode('orbit')}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${
+                spatialMode === 'orbit'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              3D Yörünge
+            </button>
+            <button
+              onClick={() => setSpatialMode('exploded')}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${
+                spatialMode === 'exploded'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              Katmanlı Uzay
+            </button>
+            <button
+              onClick={() => setSpatialMode('specular')}
+              className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${
+                spatialMode === 'specular'
+                  ? 'bg-amber-300 text-black font-semibold'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              Işık Kırılımı
+            </button>
+          </div>
         </motion.div>
 
         {/* ========================================================================= */}
         {/* Katman C: 3 BOYUTLU ETRAFA DAĞILMIŞ ÇOKLU GÖRSELLER (Spatial Constellation) */}
         {/* ========================================================================= */}
-        <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 h-[480px] sm:h-[580px] md:h-[650px]">
+        <div className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 h-[480px] sm:h-[580px] md:h-[650px] [transform-style:preserve-3d]">
           
           {/* GÖRSEL 1: MERKEZİ HEYKELSİ FORM (PRIMARY FOCUS) */}
           <motion.div
@@ -260,15 +298,15 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               y: img1Y,
               scale: img1Scale,
               rotateZ: img1Rotate,
-              x: useTransform(smoothMouseX, (v) => v * 15),
-              rotateY: useTransform(smoothMouseX, (v) => v * 8),
-              rotateX: useTransform(smoothMouseY, (v) => -v * 8),
+              x: useTransform(smoothMouseX, (v) => v * (spatialMode === 'exploded' ? 25 : 15)),
+              rotateY: useTransform(smoothMouseX, (v) => v * (spatialMode === 'exploded' ? 16 : 8)),
+              rotateX: useTransform(smoothMouseY, (v) => -v * (spatialMode === 'exploded' ? 16 : 8)),
             }}
             onClick={() => {
               setActiveImageIndex(0);
               setIsZoomOpen(true);
             }}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[72vw] sm:w-[46vw] md:w-[32vw] max-w-[420px] aspect-[4/5] cursor-pointer group will-change-transform shadow-[0_25px_80px_rgba(0,0,0,0.95)] border border-white/15 bg-neutral-900 overflow-hidden"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[72vw] sm:w-[46vw] md:w-[32vw] max-w-[420px] aspect-[4/5] cursor-pointer group will-change-transform shadow-[0_25px_80px_rgba(0,0,0,0.95)] border border-white/20 bg-neutral-900 overflow-hidden [transform-style:preserve-3d]"
           >
             <Image
               src={displayImages[0]}
@@ -278,6 +316,17 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               sizes="(max-width: 768px) 75vw, 35vw"
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
             />
+            
+            {/* Dinamik Işık Parlaması (Specular Light Sheen) */}
+            <div
+              className={`absolute inset-0 pointer-events-none transition-opacity duration-300 ${
+                spatialMode === 'specular' ? 'opacity-90' : 'opacity-30'
+              }`}
+              style={{
+                background: `radial-gradient(circle 320px at ${(mousePos.x + 0.5) * 100}% ${(mousePos.y + 0.5) * 100}%, rgba(255,255,255,0.4) 0%, transparent 70%)`,
+              }}
+            />
+
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-80" />
             
             <div className="absolute top-3 left-3 z-30">
@@ -293,6 +342,50 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               )}
             </div>
 
+            {/* 3D UZAMSAL KOORDİNAT İĞNESİ 1: DÖKÜM DOKUSU */}
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveHotspot(activeHotspot === 1 ? null : 1);
+              }}
+              className="absolute top-[35%] left-[25%] z-40 cursor-pointer group/pin"
+            >
+              <div className="relative flex items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-amber-400 opacity-60"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-300 border border-black shadow-[0_0_10px_#f59e0b]"></span>
+              </div>
+              {activeHotspot === 1 && (
+                <div className="absolute left-6 top-0 w-44 bg-black/90 backdrop-blur-md border border-amber-400/50 p-2.5 text-[10px] font-mono text-white shadow-2xl z-50 animate-in fade-in zoom-in-95">
+                  <span className="text-amber-300 font-bold block mb-1">[+] DÖKÜM GÖZENEKLERİ</span>
+                  <p className="text-neutral-300 leading-tight">
+                    Kum döküm tekniğinin erimiş gümüş üzerinde bıraktığı jeolojik mikro kraterler.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* 3D UZAMSAL KOORDİNAT İĞNESİ 2: OKSİT PATİNASI */}
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveHotspot(activeHotspot === 2 ? null : 2);
+              }}
+              className="absolute bottom-[30%] right-[22%] z-40 cursor-pointer group/pin"
+            >
+              <div className="relative flex items-center justify-center">
+                <span className="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-white opacity-50"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-white border border-black shadow-[0_0_10px_#ffffff]"></span>
+              </div>
+              {activeHotspot === 2 && (
+                <div className="absolute right-6 bottom-0 w-44 bg-black/90 backdrop-blur-md border border-white/50 p-2.5 text-[10px] font-mono text-white shadow-2xl z-50 animate-in fade-in zoom-in-95">
+                  <span className="text-white font-bold block mb-1">[+] 925 SOM GÜMÜŞ</span>
+                  <p className="text-neutral-300 leading-tight">
+                    Ateş ve kükürt patinasıyla koyulaştırılmış, tenle temas ettikçe parlayan yüzey.
+                  </p>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -305,7 +398,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               <Maximize2 className="w-3.5 h-3.5" />
             </button>
             <div className="absolute bottom-3 left-3 text-[10px] font-mono text-white/70 uppercase tracking-widest">
-              Ana Form • 01
+              Ana Form • 01 [Z: 0mm]
             </div>
           </motion.div>
 
@@ -315,9 +408,9 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               y: img2Y,
               scale: img2Scale,
               rotateZ: img2Rotate,
-              x: useTransform(smoothMouseX, (v) => -v * 28),
-              rotateY: useTransform(smoothMouseX, (v) => -v * 12),
-              rotateX: useTransform(smoothMouseY, (v) => v * 10),
+              x: useTransform(smoothMouseX, (v) => -v * (spatialMode === 'exploded' ? 55 : 28)),
+              rotateY: useTransform(smoothMouseX, (v) => -v * (spatialMode === 'exploded' ? 22 : 12)),
+              rotateX: useTransform(smoothMouseY, (v) => v * (spatialMode === 'exploded' ? 18 : 10)),
             }}
             onClick={() => {
               setActiveImageIndex(1);
@@ -334,7 +427,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
             <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
-              Mikro Doku • 02
+              Mikro Doku • 02 [Z: +80mm]
             </div>
           </motion.div>
 
@@ -344,9 +437,9 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               y: img3Y,
               scale: img3Scale,
               rotateZ: img3Rotate,
-              x: useTransform(smoothMouseX, (v) => v * 24),
-              rotateY: useTransform(smoothMouseX, (v) => v * 14),
-              rotateX: useTransform(smoothMouseY, (v) => -v * 10),
+              x: useTransform(smoothMouseX, (v) => v * (spatialMode === 'exploded' ? 48 : 24)),
+              rotateY: useTransform(smoothMouseX, (v) => v * (spatialMode === 'exploded' ? 24 : 14)),
+              rotateX: useTransform(smoothMouseY, (v) => -v * (spatialMode === 'exploded' ? 18 : 10)),
             }}
             onClick={() => {
               setActiveImageIndex(2);
@@ -363,7 +456,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
             <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
-              Işık Kırılımı • 03
+              Işık Kırılımı • 03 [Z: -60mm]
             </div>
           </motion.div>
 
