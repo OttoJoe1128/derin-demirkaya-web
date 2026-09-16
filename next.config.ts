@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // SaaS standartlarında temiz config
 };
 
 export default nextConfig;

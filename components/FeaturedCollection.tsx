@@ -4,10 +4,32 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 export default function FeaturedCollection() {
+  // Tamamen bağımsız, hatasız ve hızlı kurumsal veri dizisi
   const artworks = [
-    { id: '1', title: 'Ham Gümüş Yüzük', subtitle: 'Koleksiyon 01', type: 'Takı', align: 'items-start' },
-    { id: '3', title: 'Seramik Obje', subtitle: 'Toprak Serisi', type: 'Heykel', align: 'items-end' },
-    { id: '4', title: 'Bronz Küpe', subtitle: 'Koleksiyon 02', type: 'Takı', align: 'items-center' },
+    { 
+      id: '1', 
+      title: 'Ham Gümüş Yüzük', 
+      subtitle: 'Koleksiyon 01', 
+      type: 'Takı Tasarımı', 
+      price: '₺1.250',
+      align: 'items-start' 
+    },
+    { 
+      id: '3', 
+      title: 'Toprak ve Form Obje', 
+      subtitle: 'Heykel Serisi', 
+      type: 'Heykel & Obje', 
+      price: '₺2.100',
+      align: 'items-end' 
+    },
+    { 
+      id: '4', 
+      title: 'Bronz Dövme Küpe', 
+      subtitle: 'Koleksiyon 02', 
+      type: 'Takı Tasarımı', 
+      price: '₺950',
+      align: 'items-center' 
+    },
   ];
 
   return (
@@ -23,7 +45,7 @@ export default function FeaturedCollection() {
 
         {/* Kırık Izgara (Broken Grid) Yapısı */}
         <div className="flex flex-col space-y-40 md:space-y-64">
-          {artworks.map((art, index) => (
+          {artworks.map((art) => (
             <motion.div 
               key={art.id}
               initial={{ opacity: 0, y: 100 }}
@@ -33,19 +55,17 @@ export default function FeaturedCollection() {
               className={`flex flex-col ${art.align} w-full group`}
             >
               <Link href={`/koleksiyon/${art.id}`} className="block relative w-[90%] md:w-[45%] aspect-[3/4] bg-neutral-100 overflow-hidden">
-                {/* Gelecekte gerçek görsel burada olacak */}
                 <div className="absolute inset-0 bg-neutral-200 transition-transform duration-1000 group-hover:scale-105" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="font-sans text-xs tracking-[0.3em] uppercase text-accent/50 rotate-90">
-                    Görsel Alanı
+                    {art.type}
                   </span>
                 </div>
               </Link>
               
-              {/* Asimetrik Metin */}
               <div className="mt-8 md:mt-12 max-w-sm">
                 <p className="text-xs font-sans text-accent uppercase tracking-widest mb-4">
-                  {art.type} — {art.subtitle}
+                  {art.type} — {art.subtitle} ({art.price})
                 </p>
                 <h3 className="font-serif text-3xl md:text-5xl text-neutral-900 group-hover:italic transition-all duration-500">
                   {art.title}
