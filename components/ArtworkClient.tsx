@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -44,6 +44,28 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   // 3D Uzamsal Parallax Modları & İğneleri (Spatial Parallax Modes)
   const [spatialMode, setSpatialMode] = useState<'orbit' | 'exploded' | 'specular'>('orbit');
   const [activeHotspot, setActiveHotspot] = useState<number | null>(null);
+
+  // Eser Özelinde Dinamik ve Kristal Netliğinde Mikro Analiz Noktaları (Crystal-Clear Specimen Telemetry)
+  const specimenHotspots = useMemo(() => {
+    return [
+      {
+        id: 1,
+        code: 'SP-01 // MATERYAL & DOKU',
+        title: artwork.material,
+        description: artwork.description,
+        position: { top: '34%', left: '26%' },
+        tag: 'DOKUSAL YÜZEY',
+      },
+      {
+        id: 2,
+        code: 'SP-02 // ZANAAT & DÖKÜM',
+        title: artwork.technique,
+        description: `Edisyon Durumu: ${artwork.isUniquePiece ? '1/1 Eşsiz Parça (Tek Nüsha)' : 'Limitli Koleksiyon Serisi'} • Eser Ağırlığı: ${artwork.weight} • Üretim Yılı: ${artwork.year}. Doğrudan ateş ve el aletleriyle biçimlendirilmiştir.`,
+        position: { bottom: '28%', right: '22%' },
+        tag: 'ÜRETİM TEKNİĞİ',
+      },
+    ];
+  }, [artwork]);
 
   // Fare / Ekran 3 Boyutlu Uzamsal Hareketi (Interactive 3D Mouse Movement)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -253,37 +275,76 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </p>
 
           {/* Uzamsal Parallax Mod Seçici (Spatial Perspective Controls) */}
-          <div className="mt-6 inline-flex items-center gap-1.5 p-1 bg-black/60 backdrop-blur-xl border border-white/20 rounded-full pointer-events-auto">
+          <div className="mt-6 inline-flex items-center gap-2 p-1.5 bg-black/90 border border-neutral-700 rounded-full pointer-events-auto shadow-xl">
             <button
               onClick={() => setSpatialMode('orbit')}
-              className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${
+              className={`px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all ${
                 spatialMode === 'orbit'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-neutral-400 hover:text-white'
+                  ? 'bg-white text-black font-bold shadow-md'
+                  : 'text-neutral-300 hover:text-white'
               }`}
             >
               3D Yörünge
             </button>
             <button
               onClick={() => setSpatialMode('exploded')}
-              className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${
+              className={`px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all ${
                 spatialMode === 'exploded'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-neutral-400 hover:text-white'
+                  ? 'bg-white text-black font-bold shadow-md'
+                  : 'text-neutral-300 hover:text-white'
               }`}
             >
               Katmanlı Uzay
             </button>
             <button
               onClick={() => setSpatialMode('specular')}
-              className={`px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest transition-all ${
+              className={`px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider transition-all ${
                 spatialMode === 'specular'
-                  ? 'bg-amber-300 text-black font-semibold'
-                  : 'text-neutral-400 hover:text-white'
+                  ? 'bg-amber-300 text-black font-bold shadow-md'
+                  : 'text-neutral-300 hover:text-white'
               }`}
             >
               Işık Kırılımı
             </button>
+          </div>
+
+          {/* Kristal Netliğinde Mikro İçerik ve Malzeme Şeridi (Crystal Clear Specimen Telemetry) */}
+          <div className="mt-5 max-w-2xl mx-auto pointer-events-auto">
+            <div className="bg-neutral-950/95 border border-neutral-700 p-3 sm:p-4 text-left font-mono text-xs shadow-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-[10px] text-amber-400 font-bold block uppercase tracking-widest">
+                  [+] MİKRO MATERYAL ANALİZİ // YÜKSEK ÇÖZÜNÜRLÜK
+                </span>
+                <span className="text-white text-xs sm:text-sm font-medium block truncate">
+                  {artwork.material}
+                </span>
+                <span className="text-neutral-400 text-[11px] block mt-0.5">
+                  Teknik: {artwork.technique} • Ağırlık: {artwork.weight}
+                </span>
+              </div>
+              <div className="shrink-0 flex items-center gap-2">
+                <button
+                  onClick={() => setActiveHotspot(activeHotspot === 1 ? null : 1)}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors ${
+                    activeHotspot === 1
+                      ? 'bg-amber-400 text-black border-amber-400 font-bold'
+                      : 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-white'
+                  }`}
+                >
+                  İğne 01: Doku
+                </button>
+                <button
+                  onClick={() => setActiveHotspot(activeHotspot === 2 ? null : 2)}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider border transition-colors ${
+                    activeHotspot === 2
+                      ? 'bg-white text-black border-white font-bold'
+                      : 'bg-neutral-900 text-neutral-300 border-neutral-700 hover:border-white'
+                  }`}
+                >
+                  İğne 02: Zanaat
+                </button>
+              </div>
+            </div>
           </div>
         </motion.div>
 
@@ -331,60 +392,69 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             
             <div className="absolute top-3 left-3 z-30">
               {artwork.isUniquePiece ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-amber-500/30 text-[9px] uppercase tracking-widest text-amber-200">
-                  <Sparkles className="w-2.5 h-2.5 text-amber-400" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-black text-amber-300 border border-amber-400 font-mono text-xs uppercase tracking-wider font-semibold shadow-md">
+                  <Sparkles className="w-3 h-3 text-amber-400" />
                   1/1 Eşsiz Eser
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-[9px] uppercase tracking-widest text-neutral-300">
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-black text-neutral-200 border border-white/40 font-mono text-xs uppercase tracking-wider font-semibold shadow-md">
                   Limitli Seri
                 </span>
               )}
             </div>
 
-            {/* 3D UZAMSAL KOORDİNAT İĞNESİ 1: DÖKÜM DOKUSU */}
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveHotspot(activeHotspot === 1 ? null : 1);
-              }}
-              className="absolute top-[35%] left-[25%] z-40 cursor-pointer group/pin"
-            >
-              <div className="relative flex items-center justify-center">
-                <span className="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-amber-400 opacity-60"></span>
-                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-300 border border-black shadow-[0_0_10px_#f59e0b]"></span>
-              </div>
-              {activeHotspot === 1 && (
-                <div className="absolute left-6 top-0 w-44 bg-black/90 backdrop-blur-md border border-amber-400/50 p-2.5 text-[10px] font-mono text-white shadow-2xl z-50 animate-in fade-in zoom-in-95">
-                  <span className="text-amber-300 font-bold block mb-1">[+] DÖKÜM GÖZENEKLERİ</span>
-                  <p className="text-neutral-300 leading-tight">
-                    Kum döküm tekniğinin erimiş gümüş üzerinde bıraktığı jeolojik mikro kraterler.
-                  </p>
+            {/* 3D UZAMSAL KOORDİNAT İĞNELERİ (DİNAMİK VE KRİSTAL NETLİKTE) */}
+            {specimenHotspots.map((spot) => (
+              <div
+                key={spot.id}
+                style={{ top: spot.position.top, left: spot.position.left, bottom: spot.position.bottom, right: spot.position.right }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveHotspot(activeHotspot === spot.id ? null : spot.id);
+                }}
+                className="absolute z-40 cursor-pointer group/pin"
+                title={`${spot.tag}: Tıklayarak inceleyin`}
+              >
+                <div className="relative flex items-center justify-center">
+                  <span className="animate-ping absolute inline-flex h-7 w-7 rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-300 border-2 border-black shadow-[0_0_12px_#f59e0b]"></span>
                 </div>
-              )}
-            </div>
 
-            {/* 3D UZAMSAL KOORDİNAT İĞNESİ 2: OKSİT PATİNASI */}
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveHotspot(activeHotspot === 2 ? null : 2);
-              }}
-              className="absolute bottom-[30%] right-[22%] z-40 cursor-pointer group/pin"
-            >
-              <div className="relative flex items-center justify-center">
-                <span className="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-white opacity-50"></span>
-                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-white border border-black shadow-[0_0_10px_#ffffff]"></span>
+                {/* Yüksek Çözünürlüklü Kristal Netliğinde Bilgi Kartı */}
+                {activeHotspot === spot.id && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute left-6 top-0 w-64 sm:w-72 bg-neutral-950 text-white border-2 border-amber-400 p-4 shadow-[0_20px_60px_rgba(0,0,0,1)] z-50 animate-in fade-in zoom-in-95 font-mono"
+                  >
+                    <div className="flex items-center justify-between border-b border-neutral-800 pb-2 mb-2">
+                      <span className="text-amber-400 text-xs font-bold tracking-widest uppercase">
+                        [+] {spot.code}
+                      </span>
+                      <button
+                        onClick={() => setActiveHotspot(null)}
+                        className="text-neutral-400 hover:text-white text-xs px-1 font-bold"
+                        aria-label="Kapat"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <h4 className="font-serif text-sm text-white uppercase tracking-tight mb-1.5 font-normal">
+                      {spot.title}
+                    </h4>
+
+                    <p className="font-sans text-xs text-neutral-300 leading-relaxed font-light">
+                      {spot.description}
+                    </p>
+
+                    <div className="mt-3 pt-2 border-t border-neutral-800 flex justify-between items-center text-[10px] text-neutral-400 uppercase tracking-widest">
+                      <span>DOKU KODU: OKUNDU</span>
+                      <span className="text-amber-400 font-bold">100% NET ÇÖZÜNÜRLÜK</span>
+                    </div>
+                  </div>
+                )}
               </div>
-              {activeHotspot === 2 && (
-                <div className="absolute right-6 bottom-0 w-44 bg-black/90 backdrop-blur-md border border-white/50 p-2.5 text-[10px] font-mono text-white shadow-2xl z-50 animate-in fade-in zoom-in-95">
-                  <span className="text-white font-bold block mb-1">[+] 925 SOM GÜMÜŞ</span>
-                  <p className="text-neutral-300 leading-tight">
-                    Ateş ve kükürt patinasıyla koyulaştırılmış, tenle temas ettikçe parlayan yüzey.
-                  </p>
-                </div>
-              )}
-            </div>
+            ))}
 
             <button
               onClick={(e) => {
@@ -393,11 +463,11 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 setIsZoomOpen(true);
               }}
               aria-label="Büyüt"
-              className="absolute bottom-3 right-3 p-2 bg-black/70 hover:bg-white hover:text-black text-white rounded-full border border-white/20 transition-all opacity-0 group-hover:opacity-100"
+              className="absolute bottom-3 right-3 p-2.5 bg-black/90 hover:bg-white hover:text-black text-white rounded-full border border-white/30 transition-all opacity-0 group-hover:opacity-100"
             >
-              <Maximize2 className="w-3.5 h-3.5" />
+              <Maximize2 className="w-4 h-4" />
             </button>
-            <div className="absolute bottom-3 left-3 text-[10px] font-mono text-white/70 uppercase tracking-widest">
+            <div className="absolute bottom-3 left-3 text-xs font-mono font-semibold text-white bg-black/90 px-2.5 py-1 border border-white/30 uppercase tracking-widest">
               Ana Form • 01 [Z: 0mm]
             </div>
           </motion.div>
@@ -426,7 +496,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
-            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
+            <div className="absolute bottom-2 left-2 bg-black text-white px-2.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider border border-white/30">
               Mikro Doku • 02 [Z: +80mm]
             </div>
           </motion.div>
@@ -455,7 +525,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
-            <div className="absolute bottom-2 left-2 bg-black/80 px-2 py-0.5 text-[9px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
+            <div className="absolute bottom-2 left-2 bg-black text-white px-2.5 py-1 text-xs font-mono font-semibold uppercase tracking-wider border border-white/30">
               Işık Kırılımı • 03 [Z: -60mm]
             </div>
           </motion.div>

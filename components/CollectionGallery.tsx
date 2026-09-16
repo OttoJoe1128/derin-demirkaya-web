@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import { LayoutGrid, List, ArrowUpRight } from 'lucide-react';
+import { LayoutGrid, List, ArrowUpRight, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { ArtworkDetail } from '@/lib/artworks-data';
 
 interface CollectionGalleryProps {
@@ -13,7 +13,10 @@ interface CollectionGalleryProps {
 
 export default function CollectionGallery({ artworks }: CollectionGalleryProps) {
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
-  const [displayMode, setDisplayMode] = useState<'grid' | 'table'>('grid');
+  const [displayMode, setDisplayMode] = useState<'slide' | 'grid' | 'table'>('slide');
+  const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef<boolean>(false);
 
   const categories = [
     { id: 'ALL', label: 'TÜM ENVANTER', count: artworks.length, code: 'NV-ALL' },
@@ -27,13 +30,71 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
       ? artworks
       : artworks.filter((a) => a.collectionName.toUpperCase().includes(activeCategory));
 
+  const handleCategorySelect = (catId: string) => {
+    setActiveCategory(catId);
+    setCurrentSlideIndex(0);
+    if (sliderRef.current) {
+      sliderRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Belirli bir slide'a kaydırma
+  const scrollToSlide = useCallback((index: number) => {
+    if (!sliderRef.current) return;
+    const container = sliderRef.current;
+    const cards = container.children;
+    if (cards[index]) {
+      const targetCard = cards[index] as HTMLElement;
+      isScrollingRef.current = true;
+      container.scrollTo({
+        left: targetCard.offsetLeft - container.offsetLeft,
+        behavior: 'smooth',
+      });
+      setCurrentSlideIndex(index);
+      setTimeout(() => {
+        isScrollingRef.current = false;
+      }, 450);
+    }
+  }, []);
+
+  const handleNextSlide = () => {
+    if (filteredArtworks.length === 0) return;
+    const next = (currentSlideIndex + 1) % filteredArtworks.length;
+    scrollToSlide(next);
+  };
+
+  const handlePrevSlide = () => {
+    if (filteredArtworks.length === 0) return;
+    const prev = (currentSlideIndex - 1 + filteredArtworks.length) % filteredArtworks.length;
+    scrollToSlide(prev);
+  };
+
+  // Scroll listener for synchronizing active indicator
+  useEffect(() => {
+    const container = sliderRef.current;
+    if (!container || displayMode !== 'slide') return;
+
+    const handleScroll = () => {
+      if (isScrollingRef.current) return;
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = container.clientWidth * 0.7;
+      const newIdx = Math.round(scrollLeft / cardWidth);
+      if (newIdx >= 0 && newIdx < filteredArtworks.length && newIdx !== currentSlideIndex) {
+        setCurrentSlideIndex(newIdx);
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [currentSlideIndex, displayMode, filteredArtworks.length]);
+
   return (
     <div className="w-full font-sans text-neutral-950">
       
       {/* ========================================================================= */}
       {/* 📋 EDİTORYAL BRUTALİZM KONTROL VE ENVANTER ŞERİDİ */}
       {/* ========================================================================= */}
-      <div className="border border-neutral-950 bg-white p-4 sm:p-6 mb-12 shadow-[4px_4px_0px_#000]">
+      <div className="border border-neutral-950 bg-white p-4 sm:p-6 mb-10 shadow-[4px_4px_0px_#000]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           
           {/* Aks Filtreleme Butonları (Brutalist Chips) */}
@@ -46,7 +107,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
               return (
                 <button
                   key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
+                  onClick={() => handleCategorySelect(cat.id)}
                   className={`px-4 py-2 border transition-all flex items-center gap-2 ${
                     isActive
                       ? 'bg-neutral-950 text-white border-neutral-950 shadow-[2px_2px_0px_#888]'
@@ -68,11 +129,22 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
               GÖSTERİLEN: {filteredArtworks.length} / {artworks.length} ESER
             </span>
 
+            {/* 3 Görünüm Formatı: Slide (Kayar), Izgara (Grid), Tablo (Table) */}
             <div className="flex items-center border border-neutral-950 bg-neutral-100 p-0.5">
+              <button
+                onClick={() => setDisplayMode('slide')}
+                className={`px-3 py-1 text-xs font-mono uppercase flex items-center gap-1.5 transition-colors ${
+                  displayMode === 'slide' ? 'bg-neutral-950 text-white font-bold' : 'text-neutral-600 hover:text-black'
+                }`}
+                title="Slide (Kayar) Sergi Görünümü"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Slide</span>
+              </button>
               <button
                 onClick={() => setDisplayMode('grid')}
                 className={`p-1.5 transition-colors ${
-                  displayMode === 'grid' ? 'bg-neutral-950 text-white' : 'text-neutral-600 hover:text-black'
+                  displayMode === 'grid' ? 'bg-neutral-950 text-white font-bold' : 'text-neutral-600 hover:text-black'
                 }`}
                 title="Editoryal Izgara Görünümü"
               >
@@ -81,7 +153,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
               <button
                 onClick={() => setDisplayMode('table')}
                 className={`p-1.5 transition-colors ${
-                  displayMode === 'table' ? 'bg-neutral-950 text-white' : 'text-neutral-600 hover:text-black'
+                  displayMode === 'table' ? 'bg-neutral-950 text-white font-bold' : 'text-neutral-600 hover:text-black'
                 }`}
                 title="Teknik Envanter Tablosu"
               >
@@ -100,14 +172,177 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
             {activeCategory === 'SPACE' && 'SPACE: Takının bedenden mekana taştığı mekansal heykeller ve enstalasyonlar'}
             {activeCategory === 'LINE' && 'LINE: Kağıt, ateş ve malzeme karşılaşmalarına ait eskiz ve süreç izleri'}
           </span>
-          <span className="text-neutral-400 text-right uppercase">
-            MİMARİ: EDİTORYAL BRUTALİZM
+          <span className="text-neutral-500 text-right uppercase">
+            AKTİF DÜZEN: {displayMode === 'slide' ? 'SLİDE (KAYAR)' : displayMode === 'grid' ? 'IZGARA' : 'TABLO'}
           </span>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 🖼️ GÖRÜNÜM A: EDİTORYAL BRUTALİST IZGARA (CONTACT SHEET DOSSIER) */}
+      {/* 🎞️ GÖRÜNÜM 1: PROFESYONEL STANDARTTA SLİDE KAYAR SERGİ (PRIMARY SLIDER) */}
+      {/* ========================================================================= */}
+      {displayMode === 'slide' && (
+        <div className="w-full">
+          
+          {/* Slide Gezinme & İlerleme Başlığı */}
+          <div className="flex items-center justify-between border-b-2 border-neutral-950 pb-3 mb-6 font-mono text-xs">
+            <div className="flex items-center gap-3">
+              <span className="bg-neutral-950 text-white px-2 py-0.5 font-bold">
+                SLİDE {String(currentSlideIndex + 1).padStart(2, '0')} / {String(filteredArtworks.length).padStart(2, '0')}
+              </span>
+              <span className="text-neutral-700 hidden sm:inline">
+                [{filteredArtworks[currentSlideIndex]?.title || ''}]
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrevSlide}
+                aria-label="Önceki Eser"
+                className="border border-neutral-950 bg-white hover:bg-neutral-950 hover:text-white px-3 py-1.5 transition-colors shadow-[2px_2px_0px_#000] flex items-center gap-1"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Önceki</span>
+              </button>
+              <button
+                onClick={handleNextSlide}
+                aria-label="Sonraki Eser"
+                className="border border-neutral-950 bg-white hover:bg-neutral-950 hover:text-white px-3 py-1.5 transition-colors shadow-[2px_2px_0px_#000] flex items-center gap-1"
+              >
+                <span className="hidden sm:inline">Sonraki</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Slide Kartları Kayar Parkuru (Horizontal Reel) */}
+          <div
+            ref={sliderRef}
+            className="w-full overflow-x-auto scrollbar-none snap-x snap-mandatory flex gap-6 sm:gap-8 pb-8 pt-2 scroll-smooth cursor-grab active:cursor-grabbing"
+          >
+            {filteredArtworks.map((item, idx) => {
+              const isActive = currentSlideIndex === idx;
+
+              return (
+                <motion.article
+                  key={item.id}
+                  className={`w-[85vw] sm:w-[65vw] md:w-[48vw] lg:w-[40vw] max-w-[560px] shrink-0 snap-center bg-white border-2 border-neutral-950 p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 ${
+                    isActive
+                      ? 'shadow-[8px_8px_0px_#000] border-neutral-950'
+                      : 'shadow-[4px_4px_0px_#777] opacity-90 hover:opacity-100'
+                  }`}
+                >
+                  {/* Kart Başlık Şeridi */}
+                  <div className="flex items-center justify-between border-b border-neutral-950 pb-2.5 mb-3 text-xs font-mono uppercase tracking-widest">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-neutral-950">[+]</span>
+                      <span className="font-bold">NV-24-{String(idx + 1).padStart(2, '0')}</span>
+                    </div>
+                    <div>
+                      {item.isUniquePiece ? (
+                        <span className="bg-neutral-950 text-amber-300 px-2 py-0.5 text-[9px] font-bold">
+                          1/1 EŞSİZ
+                        </span>
+                      ) : (
+                        <span className="border border-neutral-400 px-1.5 py-0.5 text-[9px] text-neutral-700">
+                          EDİSYON
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Fotoğraf Alanı */}
+                  <Link
+                    href={`/koleksiyon/${item.id}`}
+                    className="block relative aspect-[4/3] w-full bg-neutral-100 overflow-hidden border border-neutral-950 group cursor-pointer"
+                  >
+                    <Image
+                      src={item.images[0]}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 768px) 85vw, 500px"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter contrast-[1.03]"
+                      priority={idx < 2}
+                    />
+
+                    <div className="absolute bottom-0 right-0 bg-neutral-950 text-white px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-transform duration-300 translate-y-full group-hover:translate-y-0 flex items-center gap-1.5">
+                      <span>3D Parallax</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </div>
+                  </Link>
+
+                  {/* Eser Bilgileri */}
+                  <div className="mt-4 flex-grow flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-baseline justify-between gap-2 text-xs font-mono uppercase tracking-widest text-neutral-500 mb-1">
+                        <span>{item.category} • {item.year}</span>
+                        <span className="font-serif text-base font-bold text-neutral-950">{item.price}</span>
+                      </div>
+
+                      <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tight text-neutral-950 hover:underline">
+                        <Link href={`/koleksiyon/${item.id}`}>
+                          {item.title}
+                        </Link>
+                      </h3>
+
+                      <p className="mt-2 text-xs font-sans text-neutral-700 line-clamp-2 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+
+                    {/* Teknik Matris */}
+                    <div className="mt-4 pt-3 border-t border-neutral-950 grid grid-cols-2 gap-2 text-[11px] font-mono uppercase">
+                      <div>
+                        <span className="text-neutral-400 block text-[8px]">MATERYAL</span>
+                        <span className="text-neutral-950 font-semibold truncate block">{item.material}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-neutral-400 block text-[8px]">TEKNİK // AĞIRLIK</span>
+                        <span className="text-neutral-950 font-semibold truncate block">{item.weight}</span>
+                      </div>
+                    </div>
+
+                    {/* Detay Butonu */}
+                    <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-neutral-500 uppercase">
+                        {item.collectionName}
+                      </span>
+                      <Link
+                        href={`/koleksiyon/${item.id}`}
+                        className="inline-flex items-center gap-1.5 bg-neutral-950 hover:bg-neutral-800 text-white px-4 py-2 font-mono text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_#666]"
+                      >
+                        <span>Parallax İncele</span>
+                        <span>→</span>
+                      </Link>
+                    </div>
+
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+
+          {/* Alt Hızlı İndikatör Şeridi */}
+          <div className="flex items-center justify-center gap-2 mt-4">
+            {filteredArtworks.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => scrollToSlide(idx)}
+                className={`h-2 transition-all ${
+                  currentSlideIndex === idx
+                    ? 'w-8 bg-neutral-950'
+                    : 'w-2 bg-neutral-300 hover:bg-neutral-600'
+                }`}
+                title={`Slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 🖼️ GÖRÜNÜM 2: EDİTORYAL BRUTALİST IZGARA (CONTACT SHEET DOSSIER) */}
       {/* ========================================================================= */}
       {displayMode === 'grid' && (
         <motion.div
@@ -225,7 +460,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
       )}
 
       {/* ========================================================================= */}
-      {/* 📊 GÖRÜNÜM B: BRUTALİST TEKNİK ENVANTER TABLOSU (ARCHIVAL TABLE) */}
+      {/* 📊 GÖRÜNÜM 3: BRUTALİST TEKNİK ENVANTER TABLOSU (ARCHIVAL TABLE) */}
       {/* ========================================================================= */}
       {displayMode === 'table' && (
         <div className="w-full overflow-x-auto border border-neutral-950 bg-white shadow-[6px_6px_0px_#000]">
@@ -251,7 +486,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                     NV-24-{String(idx + 1).padStart(2, '0')}
                   </td>
                   <td className="py-2 px-4 border-r border-neutral-200 w-16">
-                    <div className="relative w-12 h-12 bg-neutral-200 border border-neutral-950 overflow-hidden">
+                    <div className="relative w-12 h-12 bg-neutral-200 border border-neutral-950">
                       <Image
                         src={item.images[0]}
                         alt={item.title}
@@ -260,37 +495,39 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                       />
                     </div>
                   </td>
-                  <td className="py-3 px-4 font-serif text-base uppercase border-r border-neutral-200">
-                    <Link href={`/koleksiyon/${item.id}`} className="hover:underline font-normal text-neutral-950">
+                  <td className="py-3 px-4 font-serif text-base border-r border-neutral-200 font-bold uppercase">
+                    <Link href={`/koleksiyon/${item.id}`} className="hover:underline">
                       {item.title}
                     </Link>
                   </td>
-                  <td className="py-3 px-4 uppercase text-neutral-600 border-r border-neutral-200">
-                    {item.category}
+                  <td className="py-3 px-4 border-r border-neutral-200 text-neutral-600">
+                    {item.collectionName.replace('nonvalue — ', '').toUpperCase()}
                   </td>
-                  <td className="py-3 px-4 text-neutral-700 border-r border-neutral-200 max-w-xs truncate">
+                  <td className="py-3 px-4 border-r border-neutral-200 max-w-[180px] truncate text-neutral-800">
                     {item.material}
                   </td>
-                  <td className="py-3 px-4 text-neutral-600 border-r border-neutral-200 max-w-xs truncate">
+                  <td className="py-3 px-4 border-r border-neutral-200 max-w-[150px] truncate text-neutral-600">
                     {item.technique}
                   </td>
-                  <td className="py-3 px-4 border-r border-neutral-200">{item.year}</td>
+                  <td className="py-3 px-4 border-r border-neutral-200 text-neutral-600">
+                    {item.year}
+                  </td>
                   <td className="py-3 px-4 border-r border-neutral-200">
                     {item.isUniquePiece ? (
                       <span className="bg-neutral-950 text-white px-2 py-0.5 text-[9px] font-bold">
-                        1/1 UNIQUE
+                        1/1
                       </span>
                     ) : (
-                      <span className="text-neutral-500">LİMİTLİ</span>
+                      <span className="text-neutral-500">LTD</span>
                     )}
                   </td>
-                  <td className="py-3 px-4 font-bold text-neutral-950 border-r border-neutral-200">
+                  <td className="py-3 px-4 font-bold border-r border-neutral-200 text-neutral-950">
                     {item.price}
                   </td>
                   <td className="py-3 px-4 text-center">
                     <Link
                       href={`/koleksiyon/${item.id}`}
-                      className="inline-block bg-neutral-950 hover:bg-neutral-800 text-white px-3 py-1 text-[10px] uppercase tracking-widest font-semibold transition-colors"
+                      className="inline-block bg-neutral-950 hover:bg-neutral-800 text-white px-3 py-1.5 text-[10px] uppercase tracking-wider"
                     >
                       3D Parallax →
                     </Link>
