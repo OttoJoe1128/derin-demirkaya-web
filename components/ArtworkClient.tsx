@@ -1,9 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useSpring,
+} from 'framer-motion';
 import {
   ArrowLeft,
   Check,
@@ -15,6 +21,8 @@ import {
   Mail,
   ChevronRight,
   Send,
+  Compass,
+  ArrowDown,
 } from 'lucide-react';
 import type { ArtworkDetail } from '@/lib/artworks-data';
 
@@ -23,6 +31,9 @@ interface ArtworkClientProps {
 }
 
 export default function ArtworkClient({ artwork }: ArtworkClientProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -39,6 +50,48 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
     note: '',
   });
 
+  // Global Page Scroll & Parallax
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  // Hero Scroller Parallax
+  const { scrollYProgress: heroScrollProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Smooth springs for high-end organic kinetic feel
+  const smoothHeroProgress = useSpring(heroScrollProgress, {
+    stiffness: 120,
+    damping: 24,
+    mass: 0.3,
+  });
+
+  // 3D Spatial Parallax transforms for Hero Section
+  // Background slow drift
+  const bgY = useTransform(smoothHeroProgress, [0, 1], ['0%', '28%']);
+  const bgScale = useTransform(smoothHeroProgress, [0, 1], [1, 1.15]);
+  const bgOpacity = useTransform(smoothHeroProgress, [0, 0.85], [1, 0.25]);
+
+  // Massive Typography moves TOWARDS the camera (Z-axis scale up & forward drift)
+  const typographyScale = useTransform(smoothHeroProgress, [0, 0.9], [1, 1.85]);
+  const typographyY = useTransform(smoothHeroProgress, [0, 1], ['0%', '-35%']);
+  const typographyOpacity = useTransform(smoothHeroProgress, [0, 0.7, 1], [0.95, 0.4, 0]);
+  const typographyZ = useTransform(smoothHeroProgress, [0, 1], [0, 150]);
+
+  // Central Hero Artwork floating sculpture layer
+  const artworkScale = useTransform(smoothHeroProgress, [0, 1], [1, 0.88]);
+  const artworkY = useTransform(smoothHeroProgress, [0, 1], ['0%', '16%']);
+  const artworkRotate = useTransform(smoothHeroProgress, [0, 1], [0, -4]);
+
+  // Floating ambient badge
+  const badgeY = useTransform(smoothHeroProgress, [0, 1], ['0%', '-80%']);
+
+  // Narrative Progress Bar
+  const progressBar = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -48,7 +101,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           url: window.location.href,
         });
       } catch {
-        // kullanıcı iptal etti
+        // Kullanıcı iptal etti
       }
     } else {
       await navigator.clipboard.writeText(window.location.href);
@@ -60,7 +113,6 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   const handleOrderSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simüle edilen güvenli atölye sipariş talebi akışı
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -68,30 +120,42 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 selection:bg-neutral-900 selection:text-white">
-      {/* Üst Navigasyon Çubuğu */}
-      <div className="border-b border-neutral-200/80 bg-white/80 backdrop-blur-md sticky top-20 z-30">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div
+      ref={containerRef}
+      className="relative min-h-screen bg-[#0d0d0d] text-neutral-100 selection:bg-white selection:text-black overflow-x-clip"
+    >
+      {/* İnce Akış Göstergesi (Spatial Progress Spine) */}
+      <div className="fixed top-0 left-0 right-0 h-[2px] bg-white/10 z-50">
+        <motion.div
+          style={{ width: progressBar }}
+          className="h-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]"
+        />
+      </div>
+
+      {/* Üst Zarif Navigasyon */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-md border-b border-white/5 py-4 px-6 md:px-12 transition-all">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link
             href="/koleksiyon"
-            className="group inline-flex items-center gap-2 text-xs uppercase tracking-widest font-sans text-neutral-500 hover:text-neutral-900 transition-colors"
+            className="group inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] font-sans text-neutral-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
-            <span>Koleksiyona Dön</span>
+            <span>Koleksiyon Arşivi</span>
           </Link>
 
-          <div className="flex items-center gap-4">
-            <span className="hidden sm:inline-block text-xs font-sans uppercase tracking-widest text-neutral-400">
-              {artwork.collectionName}
+          <div className="flex items-center gap-6">
+            <span className="hidden sm:inline-block text-[11px] font-mono tracking-widest uppercase text-neutral-400">
+              {artwork.collectionName} — {artwork.year}
             </span>
+
             <button
               onClick={handleShare}
-              className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-neutral-600 hover:text-neutral-950 px-3 py-1.5 rounded-full border border-neutral-200 hover:border-neutral-400 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-neutral-300 hover:text-white px-3 py-1.5 rounded-full border border-white/15 hover:border-white/40 transition-colors"
             >
               {isCopied ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
-                  <span className="text-emerald-700">Kopyalandı</span>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-emerald-300">Kopyalandı</span>
                 </>
               ) : (
                 <>
@@ -102,167 +166,326 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 md:py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+      {/* ========================================================================= */}
+      {/* 🌌 BÖLÜM 1: UZAMSAL PARALLAX HERO (SPATIAL CINEMATIC STAGE) */}
+      {/* ========================================================================= */}
+      <section
+        ref={heroRef}
+        className="relative h-[130vh] sm:h-[145vh] w-full flex items-center justify-center overflow-hidden [perspective:1200px]"
+      >
+        {/* Katman A: Derin Arka Plan (Deep Spatial Atmosphere) */}
+        <motion.div
+          style={{ y: bgY, scale: bgScale, opacity: bgOpacity }}
+          className="absolute inset-0 z-0 will-change-transform"
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-transparent to-[#0d0d0d] z-10" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_0%,transparent_70%)] z-10" />
           
-          {/* SOL: GALERİ BÖLÜMÜ (7 Kolon) */}
-          <div className="lg:col-span-7 flex flex-col gap-6">
-            {/* Ana Büyük Görsel */}
-            <div className="relative w-full aspect-[4/5] bg-neutral-100 overflow-hidden border border-neutral-200/60 group">
-              <Image
-                src={artwork.images[activeImageIndex] || artwork.images[0]}
-                alt={artwork.title}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 55vw"
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-              />
+          <Image
+            src={artwork.images[activeImageIndex] || artwork.images[0]}
+            alt={`${artwork.title} Atmosferik Doku`}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-25 filter blur-[32px] scale-125"
+          />
+        </motion.div>
 
-              {/* Büyütme Butonu */}
-              <button
-                onClick={() => setIsZoomOpen(true)}
-                aria-label="Görseli büyüt"
-                className="absolute bottom-4 right-4 p-3 bg-white/90 backdrop-blur-md rounded-full text-neutral-900 shadow-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
-              >
-                <Maximize2 className="w-4 h-4" />
-              </button>
+        {/* Katman B: Devasa Tipografi (Kameraya Doğru Yaklaşan Dev Başlık) */}
+        <motion.div
+          style={{
+            scale: typographyScale,
+            y: typographyY,
+            opacity: typographyOpacity,
+            translateZ: typographyZ,
+          }}
+          className="absolute inset-x-0 top-[26%] sm:top-[22%] z-10 pointer-events-none text-center px-4 will-change-transform select-none"
+        >
+          <span className="block font-sans text-xs sm:text-sm uppercase tracking-[0.4em] text-neutral-400 mb-3">
+            {artwork.category} • {artwork.year}
+          </span>
+          <h1 className="font-serif text-6xl sm:text-8xl md:text-[10rem] lg:text-[12rem] font-light tracking-tighter text-white/90 uppercase leading-none drop-shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+            {artwork.title}
+          </h1>
+        </motion.div>
 
-              {artwork.isUniquePiece && (
-                <div className="absolute top-4 left-4 px-3 py-1 bg-neutral-900/90 text-white text-[10px] uppercase font-sans tracking-widest backdrop-blur-sm">
-                  1/1 Eşsiz Eser (Unique)
-                </div>
-              )}
-            </div>
+        {/* Katman C: Merkezde Havada Duran Heykelsi Eser Görseli */}
+        <motion.div
+          style={{
+            scale: artworkScale,
+            y: artworkY,
+            rotateZ: artworkRotate,
+          }}
+          className="relative z-20 w-[84vw] sm:w-[55vw] md:w-[42vw] max-w-[540px] aspect-[4/5] will-change-transform shadow-[0_30px_100px_rgba(0,0,0,0.95)] border border-white/10 group cursor-pointer"
+          onClick={() => setIsZoomOpen(true)}
+        >
+          <Image
+            src={artwork.images[activeImageIndex] || artwork.images[0]}
+            alt={artwork.title}
+            fill
+            priority
+            sizes="(max-width: 768px) 85vw, 45vw"
+            className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+          />
 
-            {/* Küçük Önizleme Thumbnail'leri */}
-            {artwork.images.length > 1 && (
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                {artwork.images.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImageIndex(idx)}
-                    className={`relative aspect-square overflow-hidden border transition-all ${
-                      activeImageIndex === idx
-                        ? 'border-neutral-950 ring-2 ring-neutral-950/20'
-                        : 'border-neutral-200 opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <Image
-                      src={img}
-                      alt={`${artwork.title} görünüm ${idx + 1}`}
-                      fill
-                      sizes="150px"
-                      className="object-cover"
-                    />
-                  </button>
-                ))}
-              </div>
+          {/* Eser Detay Etiketi */}
+          <div className="absolute top-4 left-4 z-30">
+            {artwork.isUniquePiece ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-[10px] uppercase tracking-widest text-amber-200">
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                1/1 Eşsiz Eser (Unique)
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-black/80 backdrop-blur-md border border-white/20 text-[10px] uppercase tracking-widest text-neutral-300">
+                Limitli Atölye Üretimi
+              </span>
             )}
-
-            {/* Malzeme & Dokusal Editoryal Not */}
-            <div className="p-6 md:p-8 bg-white border border-neutral-200/70 rounded-none mt-4">
-              <div className="flex items-center gap-2 mb-3 text-neutral-400">
-                <Sparkles className="w-4 h-4 text-neutral-900" />
-                <span className="text-xs uppercase tracking-widest font-sans text-neutral-900 font-medium">
-                  Atölye ve Malzeme Notu
-                </span>
-              </div>
-              <p className="font-sans text-sm text-neutral-600 leading-relaxed">
-                {artwork.editorialNote}
-              </p>
-            </div>
           </div>
 
-          {/* SAĞ: BAŞLIK, FİYAT, DETAYLAR & SATIN ALMA TALEBİ (5 Kolon) */}
-          <div className="lg:col-span-5 flex flex-col gap-8 lg:sticky lg:top-36">
-            <div>
-              <span className="text-xs font-sans uppercase tracking-widest text-neutral-500 block mb-2">
-                {artwork.category} — {artwork.year}
-              </span>
-              <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl text-neutral-950 leading-tight mb-4">
-                {artwork.title}
-              </h1>
-              <div className="flex items-baseline gap-4">
-                <span className="font-sans text-2xl md:text-3xl text-neutral-900 font-light">
-                  {artwork.price}
-                </span>
-                <span className="text-xs font-sans text-emerald-700 bg-emerald-50 px-2.5 py-1 border border-emerald-200 uppercase tracking-widest">
-                  {artwork.stock > 0 ? `Atölyede Mevcut (${artwork.stock} Adet)` : 'Siparişe Göre Üretilir'}
-                </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsZoomOpen(true);
+            }}
+            aria-label="Tam Ekran İncele"
+            className="absolute bottom-4 right-4 p-3 bg-black/70 hover:bg-white hover:text-black text-white backdrop-blur-md rounded-full border border-white/20 transition-all opacity-0 group-hover:opacity-100"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        </motion.div>
+
+        {/* Katman D: Uzamsal Fiyat & Satın Alma Rozeti (Bağımsız Hızla Süzülen) */}
+        <motion.div
+          style={{ y: badgeY }}
+          className="absolute bottom-[14%] sm:bottom-[16%] z-30 flex flex-col items-center gap-3 will-change-transform"
+        >
+          <div className="flex items-center gap-4 bg-black/60 backdrop-blur-xl border border-white/15 px-6 py-3 rounded-full shadow-2xl">
+            <span className="font-serif text-2xl sm:text-3xl text-white font-light">
+              {artwork.price}
+            </span>
+            <div className="h-4 w-[1px] bg-white/20" />
+            <button
+              onClick={() => setIsOrderModalOpen(true)}
+              className="bg-white text-black hover:bg-neutral-200 px-5 py-2 rounded-full font-sans text-xs uppercase tracking-widest font-medium transition-all active:scale-95 flex items-center gap-1.5"
+            >
+              <span>Satın Al / Rezerve Et</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 text-neutral-400 text-xs font-sans tracking-widest uppercase mt-2 animate-pulse">
+            <span>Aşağı Kaydırın ve Keşfedin</span>
+            <ArrowDown className="w-3.5 h-3.5" />
+          </div>
+        </motion.div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 📐 BÖLÜM 2: MİMARİ AÇILAR & ÇOKLU PERSPEKTİF GALERİSİ */}
+      {/* ========================================================================= */}
+      <section className="relative z-30 max-w-7xl mx-auto px-6 py-24 border-t border-white/10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <span className="text-xs font-mono uppercase tracking-[0.3em] text-neutral-400 block mb-2">
+              Perspektif & Dokusal Yansımalar
+            </span>
+            <h2 className="font-serif text-3xl sm:text-5xl text-white tracking-tight">
+              Eserin Görsel Anatomisi
+            </h2>
+          </div>
+          <p className="font-sans text-sm text-neutral-400 max-w-md">
+            Işığın ve el çekicinin yüzeyde bıraktığı rastlantısal mikro çatlaklar, her açıda bambaşka bir gölge oyunu meydana getirir.
+          </p>
+        </div>
+
+        {/* Çoklu Görsel Karuseli / Izgarası */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {artwork.images.map((img, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-10%' }}
+              transition={{ duration: 0.8, delay: idx * 0.15 }}
+              onClick={() => {
+                setActiveImageIndex(idx);
+                setIsZoomOpen(true);
+              }}
+              className="group cursor-pointer flex flex-col gap-3"
+            >
+              <div className="relative aspect-[4/5] bg-neutral-900 overflow-hidden border border-white/10 group-hover:border-white/40 transition-colors">
+                <Image
+                  src={img}
+                  alt={`${artwork.title} Açı ${idx + 1}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                <div className="absolute bottom-3 left-3 bg-black/80 px-2.5 py-1 text-[10px] font-mono uppercase text-neutral-300 backdrop-blur-sm border border-white/10">
+                  Görünüm 0{idx + 1}
+                </div>
               </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 🗿 BÖLÜM 3: ZANAAT & DERİNLEMESİNE MATERYAL ANATOMİSİ */}
+      {/* ========================================================================= */}
+      <section className="relative z-30 bg-[#121212] py-28 border-y border-white/10">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+          
+          {/* Sol: Felsefe & Editoryal Anlatım */}
+          <div className="lg:col-span-6 space-y-8">
+            <div className="space-y-3">
+              <span className="text-xs font-mono uppercase tracking-[0.3em] text-amber-300 flex items-center gap-2">
+                <Compass className="w-3.5 h-3.5" />
+                <span>Malzemenin Belleği & Felsefe</span>
+              </span>
+              <h3 className="font-serif text-3xl sm:text-4xl text-white">
+                Kusurluluktaki Ebedi Uyum
+              </h3>
             </div>
 
-            {/* Açıklama */}
-            <p className="font-sans text-sm md:text-base text-neutral-700 leading-relaxed border-t border-b border-neutral-200/80 py-6">
+            <p className="font-sans text-base text-neutral-300 leading-relaxed">
               {artwork.description}
             </p>
 
-            {/* Eser Detay Özellikleri */}
-            <div className="space-y-3 font-sans text-xs uppercase tracking-wider">
-              {artwork.specs.map((spec, i) => (
-                <div key={i} className="flex justify-between items-center py-2 border-b border-neutral-200/50">
-                  <span className="text-neutral-500">{spec.label}</span>
-                  <span className="text-neutral-900 font-medium text-right max-w-[60%] normal-case font-mono">
-                    {spec.value}
-                  </span>
-                </div>
-              ))}
+            <blockquote className="border-l-2 border-white/40 pl-6 py-2 italic font-serif text-lg text-neutral-300 bg-white/[0.02]">
+              &ldquo;{artwork.editorialNote}&rdquo;
+            </blockquote>
+
+            <div className="grid grid-cols-2 gap-6 pt-4">
+              <div className="border border-white/10 p-5 bg-black/40">
+                <span className="text-[11px] font-mono uppercase text-neutral-400 block mb-1">
+                  Maden / Çamur
+                </span>
+                <p className="font-sans text-sm text-white font-medium">
+                  {artwork.material}
+                </p>
+              </div>
+
+              <div className="border border-white/10 p-5 bg-black/40">
+                <span className="text-[11px] font-mono uppercase text-neutral-400 block mb-1">
+                  İşleme Tekniği
+                </span>
+                <p className="font-sans text-sm text-white font-medium">
+                  {artwork.technique}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sağ: Teknik Şartname & Satın Alma Terminali */}
+          <div className="lg:col-span-6 bg-black/60 border border-white/15 p-8 sm:p-10 shadow-2xl relative">
+            <div className="flex items-center justify-between pb-6 border-b border-white/10">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400">
+                  Resmi Eser Kaydı
+                </span>
+                <h4 className="font-serif text-2xl text-white mt-0.5">
+                  {artwork.title}
+                </h4>
+              </div>
+              <span className="font-serif text-2xl text-amber-200">
+                {artwork.price}
+              </span>
             </div>
 
-            {/* Eylem Butonları */}
-            <div className="flex flex-col gap-3 pt-2">
+            {/* Özellikler Tablosu */}
+            <div className="divide-y divide-white/10 font-sans text-xs py-4">
+              {artwork.specs.map((item, i) => (
+                <div key={i} className="py-3 flex justify-between items-center gap-4">
+                  <span className="text-neutral-400 uppercase tracking-wider">{item.label}</span>
+                  <span className="text-white text-right font-mono font-medium">{item.value}</span>
+                </div>
+              ))}
+              <div className="py-3 flex justify-between items-center gap-4">
+                <span className="text-neutral-400 uppercase tracking-wider">Boyut & Ölçü</span>
+                <span className="text-white text-right font-mono font-medium">{artwork.dimensions}</span>
+              </div>
+              <div className="py-3 flex justify-between items-center gap-4">
+                <span className="text-neutral-400 uppercase tracking-wider">Ağırlık</span>
+                <span className="text-white text-right font-mono font-medium">{artwork.weight}</span>
+              </div>
+              <div className="py-3 flex justify-between items-center gap-4">
+                <span className="text-neutral-400 uppercase tracking-wider">Durum</span>
+                <span className="text-emerald-400 uppercase font-mono tracking-wider">
+                  {artwork.stock > 0 ? `Atölyede Mevcut (${artwork.stock} Adet)` : 'Özel Sipariş'}
+                </span>
+              </div>
+            </div>
+
+            {/* Satın Alma Butonu */}
+            <div className="pt-6 space-y-3">
               <button
                 onClick={() => setIsOrderModalOpen(true)}
-                className="w-full py-4 px-6 bg-neutral-950 hover:bg-neutral-800 text-white font-sans text-xs uppercase tracking-widest transition-all shadow-md active:scale-[0.99] flex items-center justify-center gap-2"
+                className="w-full py-4 px-6 bg-white hover:bg-neutral-200 text-black font-sans text-xs uppercase tracking-[0.2em] font-semibold transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] active:scale-[0.99] flex items-center justify-center gap-2"
               >
-                <span>Satın Al / Rezervasyon Talebi Oluştur</span>
+                <span>Satın Al / Rezervasyon Talebi</span>
                 <ChevronRight className="w-4 h-4" />
               </button>
 
               <a
-                href="mailto:sircaedebiyat@gmail.com?subject=Eser%20Hakk%C4%B1nda%20Bilgi%3A%20${encodeURIComponent(artwork.title)}"
-                className="w-full py-3.5 px-6 border border-neutral-300 hover:border-neutral-950 text-neutral-900 font-sans text-xs uppercase tracking-widest transition-all text-center flex items-center justify-center gap-2"
+                href={`mailto:sircaedebiyat@gmail.com?subject=Eser%20Talebi%3A%20${encodeURIComponent(artwork.title)}`}
+                className="w-full py-3.5 px-6 border border-white/20 hover:border-white text-white font-sans text-xs uppercase tracking-[0.2em] transition-all text-center flex items-center justify-center gap-2"
               >
                 <Mail className="w-3.5 h-3.5" />
-                <span>Sanatçıya Özel Soru Sor</span>
+                <span>Sanatçıya Doğrudan Soru Sor</span>
               </a>
             </div>
 
-            {/* Güven ve Teslimat Güvenceleri */}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-neutral-200">
-              <div className="flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-neutral-800 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-sans text-xs uppercase font-medium text-neutral-900">
-                    Orijinallik Belgesi
-                  </h4>
-                  <p className="text-[11px] text-neutral-500 mt-0.5">
-                    Sanatçı imzalı sertifika ve özel kutu ile sunulur.
-                  </p>
-                </div>
+            {/* Orijinallik ve Sigorta İkonları */}
+            <div className="grid grid-cols-2 gap-4 pt-6 mt-6 border-t border-white/10 text-xs">
+              <div className="flex items-start gap-2 text-neutral-300">
+                <ShieldCheck className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
+                <span>Sanatçı imzalı orijinallik sertifikası dahildir.</span>
               </div>
-
-              <div className="flex items-start gap-2.5">
-                <Truck className="w-4 h-4 text-neutral-800 shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-sans text-xs uppercase font-medium text-neutral-900">
-                    Sigortalı Kargo
-                  </h4>
-                  <p className="text-[11px] text-neutral-500 mt-0.5">
-                    Tüm eserler kırılmaya karşı sigortalı ulaştırılır.
-                  </p>
-                </div>
+              <div className="flex items-start gap-2 text-neutral-300">
+                <Truck className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
+                <span>Özel korunaklı sandık ile sigortalı teslimat.</span>
               </div>
             </div>
-
           </div>
 
         </div>
-      </div>
+      </section>
 
-      {/* FULLSCREEN GÖRSEL BÜYÜTME MODALI */}
+      {/* ========================================================================= */}
+      {/* 🚀 BÖLÜM 4: ALT SİNEMATİK ÇAĞRI (ATÖLYE & DİĞER ESERLER) */}
+      {/* ========================================================================= */}
+      <section className="relative py-24 text-center border-b border-white/10">
+        <div className="max-w-3xl mx-auto px-6 space-y-6">
+          <span className="text-xs font-mono uppercase tracking-[0.3em] text-neutral-500">
+            Koleksiyon Keşfi
+          </span>
+          <h3 className="font-serif text-3xl sm:text-5xl text-white">
+            Diğer Heykel ve Formları İnceleyin
+          </h3>
+          <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/koleksiyon"
+              className="px-8 py-3.5 bg-neutral-900 border border-white/20 hover:border-white text-white font-sans text-xs uppercase tracking-widest transition-colors"
+            >
+              Tüm Koleksiyon Arşivi
+            </Link>
+            <Link
+              href="/atolye"
+              className="px-8 py-3.5 bg-white text-black hover:bg-neutral-200 font-sans text-xs uppercase tracking-widest transition-colors font-medium"
+            >
+              Atölye Takvimini İncele
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* 🔍 FULLSCREEN GÖRSEL BÜYÜTME MODALI */}
+      {/* ========================================================================= */}
       <AnimatePresence>
         {isZoomOpen && (
           <motion.div
@@ -270,7 +493,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsZoomOpen(false)}
-            className="fixed inset-0 z-[99999] bg-neutral-950/95 flex items-center justify-center p-4 cursor-zoom-out"
+            className="fixed inset-0 z-[99999] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 cursor-zoom-out"
           >
             <div className="relative w-full max-w-5xl aspect-[4/5] sm:aspect-square max-h-[90vh]">
               <Image
@@ -283,7 +506,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             </div>
             <button
               onClick={() => setIsZoomOpen(false)}
-              className="absolute top-6 right-6 text-white/70 hover:text-white uppercase font-sans text-xs tracking-widest px-4 py-2 border border-white/20"
+              className="absolute top-6 right-6 text-white/80 hover:text-white uppercase font-sans text-xs tracking-widest px-4 py-2 border border-white/20 rounded-full"
             >
               Kapat ✕
             </button>
@@ -291,68 +514,70 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
         )}
       </AnimatePresence>
 
-      {/* SATIN ALMA / REZERVASYON MODALI */}
+      {/* ========================================================================= */}
+      {/* 💳 SATIN ALMA & REZERVASYON MODALI */}
+      {/* ========================================================================= */}
       <AnimatePresence>
         {isOrderModalOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[9999] bg-neutral-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
+            className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto"
           >
             <motion.div
-              initial={{ scale: 0.95, y: 15 }}
+              initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.95, y: 15 }}
-              className="bg-white w-full max-w-lg border border-neutral-300 p-8 shadow-2xl relative"
+              exit={{ scale: 0.95, y: 20 }}
+              className="bg-[#141414] text-neutral-100 w-full max-w-lg border border-white/20 p-8 shadow-2xl relative"
             >
               <button
                 onClick={() => {
                   setIsOrderModalOpen(false);
                   setIsSuccess(false);
                 }}
-                className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-900 text-xs font-sans uppercase tracking-widest"
+                className="absolute top-6 right-6 text-neutral-400 hover:text-white text-xs font-sans uppercase tracking-widest"
               >
                 ✕ Kapat
               </button>
 
               {isSuccess ? (
                 <div className="text-center py-8 space-y-4">
-                  <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
-                    <Check className="w-6 h-6" />
+                  <div className="w-14 h-14 bg-white/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+                    <Check className="w-7 h-7" />
                   </div>
-                  <h3 className="font-serif text-2xl text-neutral-900">
-                    Talebiniz Alındı
+                  <h3 className="font-serif text-2xl text-white">
+                    Rezervasyon Talebiniz Alındı
                   </h3>
-                  <p className="font-sans text-sm text-neutral-600 leading-relaxed max-w-sm mx-auto">
-                    <strong>{artwork.title}</strong> eseri için rezervasyon talebiniz atölyemize ulaştı. 
-                    Detaylar ve güvenli ödeme/teslimat adımları için 24 saat içinde <strong>{formData.email}</strong> adresine dönüş yapılacaktır.
+                  <p className="font-sans text-sm text-neutral-300 leading-relaxed max-w-sm mx-auto">
+                    <strong>{artwork.title}</strong> eseri için talebiniz atölyemize ulaştı. 
+                    Detaylar ve güvenli ödeme/teslimat planı için 24 saat içinde <strong>{formData.email}</strong> adresine dönüş yapılacaktır.
                   </p>
                   <button
                     onClick={() => {
                       setIsOrderModalOpen(false);
                       setIsSuccess(false);
                     }}
-                    className="mt-6 px-6 py-3 bg-neutral-950 text-white text-xs uppercase tracking-widest hover:bg-neutral-800"
+                    className="mt-6 px-6 py-3 bg-white text-black text-xs uppercase tracking-widest hover:bg-neutral-200 font-medium"
                   >
                     Kapat
                   </button>
                 </div>
               ) : (
                 <div>
-                  <span className="text-[11px] font-sans uppercase tracking-widest text-neutral-400 block mb-1">
-                    Eser Rezervasyonu & Sipariş
+                  <span className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 block mb-1">
+                    Eser Rezervasyonu & Satın Alma
                   </span>
-                  <h2 className="font-serif text-2xl text-neutral-950 mb-1">
+                  <h2 className="font-serif text-2xl text-white mb-1">
                     {artwork.title}
                   </h2>
-                  <p className="font-sans text-sm text-neutral-700 mb-6">
-                    Tutar: <span className="font-semibold">{artwork.price}</span> (KDV ve sigortalı kargo dahil)
+                  <p className="font-sans text-sm text-neutral-300 mb-6">
+                    Tutar: <span className="font-semibold text-white">{artwork.price}</span> (Sigortalı kargo ve sertifika dahil)
                   </p>
 
                   <form onSubmit={handleOrderSubmit} className="space-y-4 font-sans text-xs">
                     <div>
-                      <label className="block text-neutral-600 uppercase tracking-wider mb-1">
+                      <label className="block text-neutral-300 uppercase tracking-wider mb-1">
                         Adınız Soyadınız *
                       </label>
                       <input
@@ -361,13 +586,13 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                         placeholder="Örn: Selin Yılmaz"
-                        className="w-full px-3 py-2.5 border border-neutral-300 focus:border-neutral-900 focus:outline-none rounded-none text-sm"
+                        className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-neutral-600 uppercase tracking-wider mb-1">
+                        <label className="block text-neutral-300 uppercase tracking-wider mb-1">
                           E-posta *
                         </label>
                         <input
@@ -376,11 +601,11 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder="ornek@alanadi.com"
-                          className="w-full px-3 py-2.5 border border-neutral-300 focus:border-neutral-900 focus:outline-none rounded-none text-sm"
+                          className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white"
                         />
                       </div>
                       <div>
-                        <label className="block text-neutral-600 uppercase tracking-wider mb-1">
+                        <label className="block text-neutral-300 uppercase tracking-wider mb-1">
                           Telefon *
                         </label>
                         <input
@@ -389,53 +614,53 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           placeholder="+90 5XX XXX XX XX"
-                          className="w-full px-3 py-2.5 border border-neutral-300 focus:border-neutral-900 focus:outline-none rounded-none text-sm"
+                          className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-neutral-600 uppercase tracking-wider mb-1">
+                      <label className="block text-neutral-300 uppercase tracking-wider mb-1">
                         Teslimat Şehri
                       </label>
                       <input
                         type="text"
                         value={formData.city}
                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        placeholder="Örn: İstanbul / Beşiktaş"
-                        className="w-full px-3 py-2.5 border border-neutral-300 focus:border-neutral-900 focus:outline-none rounded-none text-sm"
+                        placeholder="Örn: İstanbul / Kadıköy"
+                        className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-neutral-600 uppercase tracking-wider mb-1">
-                        Sanatçıya Not veya Özel Ölçü İsteği
+                      <label className="block text-neutral-300 uppercase tracking-wider mb-1">
+                        Özel Not veya Ölçü Talebi (Opsiyonel)
                       </label>
                       <textarea
                         rows={3}
                         value={formData.note}
                         onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-                        placeholder="Varsa yüzük ölçünüz veya teslimat notunuz..."
-                        className="w-full px-3 py-2.5 border border-neutral-300 focus:border-neutral-900 focus:outline-none rounded-none text-sm resize-none"
+                        placeholder="Varsa parmak ölçünüz veya teslimat notunuz..."
+                        className="w-full px-3 py-2.5 bg-black/60 border border-white/20 focus:border-white focus:outline-none rounded-none text-sm text-white resize-none"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-4 bg-neutral-950 text-white font-sans text-xs uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
+                      className="w-full py-4 bg-white hover:bg-neutral-200 text-black font-sans text-xs uppercase tracking-widest font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2 mt-4 shadow-lg"
                     >
                       {isSubmitting ? (
                         <span>İletiliyor...</span>
                       ) : (
                         <>
                           <Send className="w-3.5 h-3.5" />
-                          <span>Talebi Tamamla ({artwork.price})</span>
+                          <span>Talebi İlet ({artwork.price})</span>
                         </>
                       )}
                     </button>
                     <p className="text-[11px] text-neutral-400 text-center mt-2">
-                      Bu işlem kartınızdan anında çekim yapmaz. Atölye yetkilisi onay ve ödeme bağlantısı ile sizinle iletişime geçer.
+                      Bu işlem kartınızdan çekim yapmaz. Atölye sizinle iletişime geçer.
                     </p>
                   </form>
                 </div>

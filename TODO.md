@@ -15,11 +15,13 @@
 - [x] **Atölye Yönetimi & Takvim**:
   - [x] `/api/workshops` ve `/api/workshops/[id]` endpoint'leri.
   - [x] `/atolye` sayfası: İnteraktif ay/hafta takvimi, kontenjan durumu, filtreler ve rezervasyon akışı.
-- [x] **Faz 1: Koleksiyon & Eser Detay Mimarisi**:
-  - [x] Dinamik Eser Detay Sayfası (`/koleksiyon/[id]`): Yüksek çözünürlüklü galeri, zoom modalı, malzeme & teknik özellikleri, 1/1 edisyon etiketi.
-  - [x] Koleksiyon API Rotaları (`/api/artworks`, `/api/artworks/[id]`).
-  - [x] "Satın Al / Rezervasyon Talebi" akışı ve doğrudan sanatçıya özel soru sorma bağlantısı.
-  - [x] Koleksiyon listesi (`/koleksiyon`) ve Ana Sayfa Seçili Eserler (`FeaturedCollection`) gerçek görseller ve linklerle bağlandı.
+- [x] **Faz 1: Uzamsal Parallax (Spatial Parallax) Eser Detay Mimarisi**:
+  - [x] 3D Uzamsal Sahne (`[perspective:1200px]`, `translateZ`, `scale`, `useScroll` + `useSpring`).
+  - [x] Devasa tipografi kameraya doğru yaklaşırken arka planın bağımsız hızda derinliğe süzülmesi.
+  - [x] Merkezde heykelsi süzülen ana eser tablosu, ışık ve doku derinliği.
+  - [x] Perspektif & Görsel Anatomi çoklu açı galerisi, tam ekran zoom modalı.
+  - [x] Zanaat Felsefesi & Resmi Eser Kaydı teknik şartnamesi.
+  - [x] Doğrudan Satın Alma / Rezervasyon Talebi akışı (Mevcut sipariş amacı ve form yapısı korundu).
 
 ---
 
