@@ -25,19 +25,41 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.soundOn': 'SES: AÇIK',
     'nav.soundOff': 'SES: KAPALI',
 
-    // Hero & Koleksiyon
-    'hero.badge': 'DÖKÜM & HEYKELSİ FORM // 2018–2025',
-    'hero.title': 'Materyalin Ham Haliyle Karşılaşma',
-    'hero.sub': 'Geleneksel kuyumculuk kalıplarını kıran, döküm izlerini ve tesadüfi kusurları yücelten heykelsi takı tasarımı.',
-    'collection.title': 'Koleksiyon Arşivi',
+    // Hero Section (Professional Gallery Framing)
+    'hero.brand': 'NONVALUE JEWEL',
+    'hero.designer': 'DERİN BUSE DEMİRKAYA',
+    'hero.brandSubtitle': 'Çağdaş Takı & Uzamsal Nesne Pratiği // 2018–2025',
+    'hero.manifestoTag': 'Ateşin dönüştürücü kuvveti, malzeme karşılaşmaları ve yaşayan yüzeyler.',
+    'hero.explore': 'Koleksiyonu Keşfet',
+    'hero.archive': 'Sinematik Arşiv',
+    'hero.workshops': 'Atölye Takvimi →',
+    'hero.artworkLabel': 'ÖNE ÇIKAN HEYKELSİ ESER // SELFLOVE (1/1)',
+    'hero.specimenArchive': 'SERGİ VE ATÖLYE KAYDI',
+
+    // Koleksiyon & Slider
+    'collection.title': 'Koleksiyon',
+    'collection.archive': 'Arşivi',
     'collection.subtitle': 'Editoryal Brutalizm Slide Sergi',
     'collection.all': 'TÜM ENVANTER',
     'collection.unique': '1/1 Eşsiz Parça',
     'collection.edition': 'Limitli Seri',
+    'collection.activeSpecimen': 'AKTİF ESER // REF',
+    'collection.prev': 'ÖNCEKİ',
+    'collection.next': 'SONRAKİ',
+    'collection.dragHint': '← SÜRÜKLEYİN VEYA OK TUŞLARIYLA KAYDIRIN →',
+    'collection.view3d': '3D PARALLAX İNCELE',
+    'collection.goToCollection': 'Koleksiyona Git',
     'collection.details': '3D Uzamsal Parallax Detay',
     'collection.viewMode.slide': 'Slide (Kayar)',
     'collection.viewMode.grid': 'Izgara',
     'collection.viewMode.table': 'Teknik Tablo',
+
+    // Sinematik Portal
+    'portal.liveSpace': 'SİNEMATİK TUVAL • CANLI SERGİ UZAYI',
+    'portal.title': 'Sonsuz Arşiv Tuvali',
+    'portal.desc': 'Karanlık oda atmosferinde, analog ses rezonansı, 2.39:1 Cinemascope çerçevesi ve serbest süzülme fiziği ile tüm üretim sürecini uzamsal olarak deneyimleyin.',
+    'portal.enter': 'SİNEMATİK TUVALE GİRİŞ YAP',
+    'portal.coordinates': 'KOORDİNATLAR: 38.4192° N, 27.1287° E • İZMİR / İSTANBUL',
 
     // Atölye
     'workshop.title': 'Atölye & Zanaat Takvimi',
@@ -79,6 +101,9 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.saveChanges': 'Bilgileri Güncelle',
     'profile.emptyReservations': 'Henüz kayıtlı bir atölye rezervasyonunuz bulunmuyor.',
     'profile.browseWorkshops': 'Atölye Takvimini İncele',
+
+    // Footer
+    'footer.rights': 'Tüm hakları saklıdır.',
   },
   EN: {
     // Navigation
@@ -93,19 +118,41 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.soundOn': 'AUDIO: ON',
     'nav.soundOff': 'AUDIO: OFF',
 
-    // Hero & Collection
-    'hero.badge': 'CASTING & SCULPTURAL FORM // 2018–2025',
-    'hero.title': 'Encountering The Raw Material',
-    'hero.sub': 'Sculptural jewelry breaking traditional conventions, elevating raw cast traces and deliberate organic imperfections.',
-    'collection.title': 'Collection Archive',
+    // Hero Section (Professional Gallery Framing)
+    'hero.brand': 'NONVALUE JEWEL',
+    'hero.designer': 'DERİN BUSE DEMİRKAYA',
+    'hero.brandSubtitle': 'Contemporary Jewelry & Spatial Objects // 2018–2025',
+    'hero.manifestoTag': 'Transformative force of fire, material encounters, and living sculptural surfaces.',
+    'hero.explore': 'Explore Collection',
+    'hero.archive': 'Cinematic Archive',
+    'hero.workshops': 'Workshops & Calendar →',
+    'hero.artworkLabel': 'FEATURED SCULPTURAL SPECIMEN // SELFLOVE (1/1)',
+    'hero.specimenArchive': 'EXHIBITION & STUDIO ARCHIVE',
+
+    // Collection & Slider
+    'collection.title': 'Collection',
+    'collection.archive': 'Archive',
     'collection.subtitle': 'Editorial Brutalism Slide Exhibition',
     'collection.all': 'FULL ARCHIVE',
     'collection.unique': '1/1 Unique Piece',
     'collection.edition': 'Limited Edition',
+    'collection.activeSpecimen': 'ACTIVE SPECIMEN // REF',
+    'collection.prev': 'PREV',
+    'collection.next': 'NEXT',
+    'collection.dragHint': '← DRAG HORIZONTALLY OR USE ARROW KEYS →',
+    'collection.view3d': '3D PARALLAX VIEW',
+    'collection.goToCollection': 'View Collection',
     'collection.details': '3D Spatial Parallax Detail',
     'collection.viewMode.slide': 'Slide Reel',
     'collection.viewMode.grid': 'Grid',
     'collection.viewMode.table': 'Technical Table',
+
+    // Cinematic Portal
+    'portal.liveSpace': 'CINEMATIC CANVAS • LIVE EXHIBITION SPACE',
+    'portal.title': 'Infinite Archive Canvas',
+    'portal.desc': 'Experience the entire body of work spatially in a darkroom atmosphere with analog drone resonance, 2.39:1 Cinemascope framing, and free-floating physics.',
+    'portal.enter': 'ENTER CINEMATIC CANVAS',
+    'portal.coordinates': 'COORDINATES: 38.4192° N, 27.1287° E • IZMIR / ISTANBUL',
 
     // Workshops
     'workshop.title': 'Workshop & Craft Calendar',
@@ -147,6 +194,9 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.saveChanges': 'Save Changes',
     'profile.emptyReservations': 'You currently have no active workshop bookings.',
     'profile.browseWorkshops': 'Browse Workshop Calendar',
+
+    // Footer
+    'footer.rights': 'All rights reserved.',
   },
 };
 

@@ -66,18 +66,34 @@ export default function Header() {
         {/* Sağ Araçlar: Dil Switcher, Ses FX & Profil / Giriş */}
         <div className="hidden sm:flex items-center gap-3 shrink-0">
           {/* TR / EN Dil Düğmesi */}
-          <button
-            type="button"
-            onClick={() => {
-              soundFx.playClick();
-              toggleLanguage();
-            }}
-            onMouseEnter={() => soundFx.playHover()}
-            title={language === 'TR' ? 'Switch to English' : 'Türkçe\'ye Geç'}
-            className="border border-neutral-950 px-2.5 py-1 text-[11px] font-mono font-bold tracking-wider hover:bg-neutral-950 hover:text-white transition-colors"
-          >
-            {language === 'TR' ? 'EN' : 'TR'}
-          </button>
+          <div className="flex border border-neutral-950 overflow-hidden text-[11px] font-mono font-bold">
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playClick();
+                if (language !== 'TR') toggleLanguage();
+              }}
+              onMouseEnter={() => soundFx.playHover()}
+              className={`px-2.5 py-1 transition-colors ${
+                language === 'TR' ? 'bg-neutral-950 text-white' : 'text-neutral-600 hover:text-neutral-950 bg-white'
+              }`}
+            >
+              TR
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playClick();
+                if (language !== 'EN') toggleLanguage();
+              }}
+              onMouseEnter={() => soundFx.playHover()}
+              className={`px-2.5 py-1 transition-colors ${
+                language === 'EN' ? 'bg-neutral-950 text-white' : 'text-neutral-600 hover:text-neutral-950 bg-white'
+              }`}
+            >
+              EN
+            </button>
+          </div>
 
           {/* Ses FX Aç/Kapa Düğmesi */}
           <button
@@ -117,13 +133,32 @@ export default function Header() {
 
         {/* Mobil Menü Butonu & Araçları */}
         <div className="flex sm:hidden items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleLanguage}
-            className="border border-neutral-950 px-2 py-0.5 text-[10px] font-mono font-bold"
-          >
-            {language}
-          </button>
+          <div className="flex border border-neutral-950 overflow-hidden text-[10px] font-mono font-bold">
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playClick();
+                if (language !== 'TR') toggleLanguage();
+              }}
+              className={`px-1.5 py-0.5 transition-colors ${
+                language === 'TR' ? 'bg-neutral-950 text-white' : 'text-neutral-600 bg-white'
+              }`}
+            >
+              TR
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundFx.playClick();
+                if (language !== 'EN') toggleLanguage();
+              }}
+              className={`px-1.5 py-0.5 transition-colors ${
+                language === 'EN' ? 'bg-neutral-950 text-white' : 'text-neutral-600 bg-white'
+              }`}
+            >
+              EN
+            </button>
+          </div>
 
           <button
             className="text-neutral-950 p-2 focus:outline-none"

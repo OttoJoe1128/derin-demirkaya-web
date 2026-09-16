@@ -19,11 +19,11 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Derin Demirkaya | Portfolyo ve Atölye",
-  description: "Modern sanat, takı tasarımı ve profesyonel atölye çalışmaları.",
+  title: "Derin Demirkaya — nonvalue jewel",
+  description: "nonvalue • contemporary jewelry, spatial objects and archive by Derin Buse Demirkaya.",
   openGraph: {
-    title: "Derin Demirkaya | Portfolyo ve Atölye",
-    description: "Modern sanat, takı tasarımı ve profesyonel atölye çalışmaları.",
+    title: "Derin Demirkaya — nonvalue jewel",
+    description: "nonvalue • contemporary jewelry, spatial objects and archive by Derin Buse Demirkaya.",
   },
 };
 

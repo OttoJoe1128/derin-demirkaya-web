@@ -6,11 +6,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, ArrowUpRight, Film, Sparkles } from 'lucide-react';
 import { ARTWORKS_DATA } from '@/lib/artworks-data';
+import { useLanguage } from '@/lib/language-context';
+import { soundFx } from '@/lib/sound-fx';
 
 export default function FeaturedCollection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
   const isUserScrollingRef = useRef(false);
+  const { t, language } = useLanguage();
 
   // 10 Eserin Tamamı (All 10 Artworks in Editorial Brutalism Format)
   const specimens = ARTWORKS_DATA.map((art, idx) => ({
@@ -89,11 +92,13 @@ export default function FeaturedCollection() {
   }, []);
 
   const handleNext = () => {
+    soundFx.playClick();
     const nextIndex = (currentIndex + 1) % specimens.length;
     scrollToSlide(nextIndex);
   };
 
   const handlePrev = () => {
+    soundFx.playClick();
     const prevIndex = (currentIndex - 1 + specimens.length) % specimens.length;
     scrollToSlide(prevIndex);
   };
@@ -141,16 +146,16 @@ export default function FeaturedCollection() {
           <div>
             <div className="flex items-center gap-3 text-[11px] font-mono tracking-[0.3em] uppercase text-neutral-600 mb-3">
               <span className="bg-neutral-950 text-white px-2.5 py-0.5 font-bold">
-                EDİTORYAL BRUTALİZM
+                {language === 'TR' ? 'EDİTORYAL BRUTALİZM' : 'EDITORIAL BRUTALISM'}
               </span>
               <span>{'//'}</span>
-              <span>SLİDE KAYAR SERGİ</span>
+              <span>{language === 'TR' ? 'SLİDE SERGİ' : 'SLIDE EXHIBITION'}</span>
               <span>{'//'}</span>
-              <span>10 ESER</span>
+              <span>{specimens.length} {language === 'TR' ? 'ESER' : 'PIECES'}</span>
             </div>
             <h2 className="font-serif text-5xl sm:text-7xl md:text-8xl uppercase tracking-tighter leading-[0.9] text-neutral-950">
-              Koleksiyon <br />
-              <span className="italic font-light text-neutral-700 ml-4 sm:ml-12">Arşivi</span>
+              {t('collection.title')} <br />
+              <span className="italic font-light text-neutral-700 ml-4 sm:ml-12">{t('collection.archive')}</span>
             </h2>
           </div>
 
@@ -160,7 +165,7 @@ export default function FeaturedCollection() {
             {/* Canlı İndeks Sayacı */}
             <div className="border border-neutral-950 bg-white px-5 py-3 font-mono text-xs shadow-[3px_3px_0px_#000]">
               <span className="text-neutral-400 block text-[9px] uppercase tracking-widest">
-                AKTİF ESER // REF
+                {t('collection.activeSpecimen')}
               </span>
               <div className="flex items-baseline gap-2">
                 <span className="font-serif text-2xl font-bold text-neutral-950">
@@ -183,14 +188,14 @@ export default function FeaturedCollection() {
                 className="flex-1 sm:flex-none border-2 border-neutral-950 bg-white hover:bg-neutral-950 hover:text-white p-4 transition-colors shadow-[4px_4px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center gap-1 font-mono text-xs uppercase"
               >
                 <ChevronLeft className="w-5 h-5" />
-                <span className="sm:hidden">ÖNCEKİ</span>
+                <span className="sm:hidden">{t('collection.prev')}</span>
               </button>
               <button
                 onClick={handleNext}
                 aria-label="Sonraki Eser Slide"
                 className="flex-1 sm:flex-none border-2 border-neutral-950 bg-white hover:bg-neutral-950 hover:text-white p-4 transition-colors shadow-[4px_4px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none flex items-center justify-center gap-1 font-mono text-xs uppercase"
               >
-                <span className="sm:hidden">SONRAKİ</span>
+                <span className="sm:hidden">{t('collection.next')}</span>
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
@@ -215,7 +220,7 @@ export default function FeaturedCollection() {
             ))}
           </div>
           <span className="text-[10px] font-mono uppercase text-neutral-500 shrink-0 hidden sm:inline">
-            ← SÜRÜKLEYİN VEYA OK TUŞLARIYLA KAYDIRIN →
+            {t('collection.dragHint')}
           </span>
         </div>
 
@@ -324,19 +329,25 @@ export default function FeaturedCollection() {
                 {/* Brutalist Teknik Veri Matrisi (Maden, Teknik, Ağırlık) */}
                 <div className="mt-6 pt-4 border-t-2 border-neutral-950 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs font-mono uppercase">
                   <div>
-                    <span className="text-neutral-400 block text-[9px]">MATERYAL & MADEN</span>
+                    <span className="text-neutral-400 block text-[9px]">
+                      {language === 'TR' ? 'MATERYAL & MADEN' : 'MATERIAL & METALS'}
+                    </span>
                     <span className="text-neutral-950 font-semibold truncate block">
                       {art.material}
                     </span>
                   </div>
                   <div>
-                    <span className="text-neutral-400 block text-[9px]">ZANAAT TEKNİĞİ</span>
+                    <span className="text-neutral-400 block text-[9px]">
+                      {language === 'TR' ? 'ZANAAT TEKNİĞİ' : 'TECHNIQUE'}
+                    </span>
                     <span className="text-neutral-950 font-semibold truncate block">
                       {art.technique}
                     </span>
                   </div>
                   <div className="col-span-2 sm:col-span-1 text-left sm:text-right">
-                    <span className="text-neutral-400 block text-[9px]">GRAMAJ</span>
+                    <span className="text-neutral-400 block text-[9px]">
+                      {language === 'TR' ? 'GRAMAJ' : 'WEIGHT'}
+                    </span>
                     <span className="text-neutral-950 font-bold block">
                       {art.weight}
                     </span>
@@ -354,7 +365,7 @@ export default function FeaturedCollection() {
                     onClick={handleCardClick}
                     className="inline-flex items-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-white px-5 py-2.5 font-mono text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_#666]"
                   >
-                    <span>3D Parallax Detay</span>
+                    <span>{language === 'TR' ? '3D Parallax Detay' : '3D Parallax Detail'}</span>
                     <span>→</span>
                   </Link>
                 </div>
@@ -374,10 +385,12 @@ export default function FeaturedCollection() {
           <div>
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-500 mb-1">
               <Film className="w-3.5 h-3.5 text-neutral-950" />
-              <span>DİĞER DENEYİM FORMATLARI</span>
+              <span>{language === 'TR' ? 'DİĞER DENEYİM FORMATLARI' : 'ALTERNATIVE FORMATS'}</span>
             </div>
             <h4 className="font-serif text-2xl sm:text-3xl uppercase tracking-tight text-neutral-950">
-              Koleksiyonu Farklı Perspektiflerle Keşfedin
+              {language === 'TR'
+                ? 'Koleksiyonu Farklı Perspektiflerle Keşfedin'
+                : 'Explore Collection Through Multiple Perspectives'}
             </h4>
           </div>
 
@@ -386,13 +399,13 @@ export default function FeaturedCollection() {
               href="/koleksiyon"
               className="bg-neutral-950 text-white px-6 py-3.5 hover:bg-neutral-800 transition-colors shadow-[3px_3px_0px_#666]"
             >
-              Tam Envanter Kataloğu (10 Eser)
+              {language === 'TR' ? 'Tam Envanter Kataloğu (10 Eser)' : 'Full Specimen Catalog (10 Pieces)'}
             </Link>
             <Link
               href="/arsiv"
               className="border-2 border-neutral-950 bg-white text-neutral-950 px-6 py-3.5 hover:bg-neutral-100 transition-colors shadow-[3px_3px_0px_#000]"
             >
-              Sinematik Tuval ↗
+              {language === 'TR' ? 'Sinematik Tuval ↗' : 'Cinematic Canvas ↗'}
             </Link>
           </div>
         </div>

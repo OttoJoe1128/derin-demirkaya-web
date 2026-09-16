@@ -1,9 +1,15 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Film } from 'lucide-react';
 import { ARTWORKS_DATA } from '@/lib/artworks-data';
+import { useLanguage } from '@/lib/language-context';
+import { soundFx } from '@/lib/sound-fx';
 
 export default function CinematicCanvasPortal() {
+  const { t, language } = useLanguage();
+
   return (
     <section className="w-full bg-[#07080a] text-white py-24 px-6 border-t border-b border-neutral-800 relative overflow-hidden font-sans">
       {/* İnce Film Arka Planı */}
@@ -22,15 +28,15 @@ export default function CinematicCanvasPortal() {
           <div>
             <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-amber-400 mb-3">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span>SİNEMATİK TUVAL • CANLI SERGİ UZAYI</span>
+              <span>{t('portal.liveSpace')}</span>
             </div>
             <h2 className="font-serif text-4xl sm:text-6xl uppercase tracking-tighter text-white">
-              Sonsuz Arşiv Tuvali
+              {t('portal.title')}
             </h2>
           </div>
 
           <p className="font-sans text-xs font-light text-neutral-400 max-w-md leading-relaxed">
-            Karanlık oda atmosferinde, analog ses rezonansı, 2.39:1 Cinemascope çerçevesi ve serbest süzülme fiziği ile tüm üretim sürecini uzamsal olarak deneyimleyin.
+            {t('portal.desc')}
           </p>
         </div>
 
@@ -43,6 +49,7 @@ export default function CinematicCanvasPortal() {
                 src={ARTWORKS_DATA[0].images[0]}
                 alt="Selflove"
                 fill
+                sizes="(max-width: 768px) 30vw, 300px"
                 className="object-cover border border-white/20"
               />
             </div>
@@ -51,6 +58,7 @@ export default function CinematicCanvasPortal() {
                 src={ARTWORKS_DATA[1].images[0]}
                 alt="It's not a set"
                 fill
+                sizes="(max-width: 768px) 35vw, 350px"
                 className="object-cover border border-white/30 shadow-2xl"
               />
             </div>
@@ -59,6 +67,7 @@ export default function CinematicCanvasPortal() {
                 src={ARTWORKS_DATA[3].images[0]}
                 alt="Farewellkiss"
                 fill
+                sizes="(max-width: 768px) 30vw, 300px"
                 className="object-cover border border-white/20"
               />
             </div>
@@ -83,10 +92,12 @@ export default function CinematicCanvasPortal() {
           <div className="absolute inset-0 flex items-center justify-center z-20">
             <Link
               href="/arsiv"
+              onClick={() => soundFx.playClick()}
+              onMouseEnter={() => soundFx.playHover()}
               className="bg-white hover:bg-neutral-200 text-black px-8 sm:px-10 py-4 font-mono text-xs uppercase tracking-[0.25em] font-semibold transition-all shadow-[0_0_35px_rgba(255,255,255,0.4)] flex items-center gap-3 group-hover:scale-105"
             >
               <Film className="w-4 h-4 text-black" />
-              <span>Sinematik Tuvali Başlat</span>
+              <span>{t('portal.enter')}</span>
               <span className="text-neutral-500">↗</span>
             </Link>
           </div>
@@ -95,21 +106,33 @@ export default function CinematicCanvasPortal() {
         {/* 3 Tasarım Aksı Bilgi Şeridi */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/10 text-xs font-mono">
           <div className="p-4 border border-white/10 bg-white/5">
-            <span className="text-amber-400 font-bold block mb-1">01 // SİNEMATİK TUVAL</span>
+            <span className="text-amber-400 font-bold block mb-1">
+              01 // {language === 'TR' ? 'SİNEMATİK TUVAL' : 'CINEMATIC CANVAS'}
+            </span>
             <p className="text-neutral-400 text-[11px] leading-relaxed font-sans font-light">
-              Arşiv alanı; analog ses, dinamik spot ışığı ve sürükleme fiziğiyle çalışan karanlık oda sahnesidir.
+              {language === 'TR'
+                ? 'Arşiv alanı; analog ses, dinamik spot ışığı ve donanım hızlandırmalı sürükleme fiziğiyle çalışan serbest uzaydır.'
+                : 'The archive space: darkroom atmosphere with analog drone resonance, dynamic spotlight, and GPU-accelerated navigation.'}
             </p>
           </div>
           <div className="p-4 border border-white/10 bg-white/5">
-            <span className="text-white font-bold block mb-1">02 // UZAMSAL PARALLAX</span>
+            <span className="text-white font-bold block mb-1">
+              02 // {language === 'TR' ? 'UZAMSAL PARALLAX' : 'SPATIAL PARALLAX'}
+            </span>
             <p className="text-neutral-400 text-[11px] leading-relaxed font-sans font-light">
-              Ürün detayları; 3D fare/jiroskop yörüngesi, katmanlı uzay ve maden koordinat iğneleriyle derinlik kazanır.
+              {language === 'TR'
+                ? 'Ürün detayları; 3D fare/jiroskop yörüngesi, katmanlı uzay ve maden koordinat iğneleriyle derinlik kazanır.'
+                : 'Artwork specimens gain spatial depth with 3D mouse/gyro tracking, layered depths, and metallurgic coordinate pins.'}
             </p>
           </div>
           <div className="p-4 border border-white/10 bg-white/5">
-            <span className="text-neutral-300 font-bold block mb-1">03 // EDİTORYAL BRUTALİZM</span>
+            <span className="text-neutral-300 font-bold block mb-1">
+              03 // {language === 'TR' ? 'EDİTORYAL BRUTALİZM' : 'EDITORIAL BRUTALISM'}
+            </span>
             <p className="text-neutral-400 text-[11px] leading-relaxed font-sans font-light">
-              Tüm ürün görselleri; keskin 1px bordürler, çapraz hedef işaretleri ve envanter kartlarıyla arşivlenir.
+              {language === 'TR'
+                ? 'Tüm eser görselleri; keskin 1px bordürler, monospaced hedef işaretleri ve envanter kartlarıyla arşivlenir.'
+                : 'Every piece is documented with sharp 1px borders, monospaced target markers, and technical exhibition spec sheets.'}
             </p>
           </div>
         </div>

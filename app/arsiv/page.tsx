@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -13,56 +13,59 @@ import {
   Eye,
   Film,
   X,
+  ArrowLeft,
 } from 'lucide-react';
 import { ARTWORKS_DATA, ArtworkDetail } from '@/lib/artworks-data';
+import { useLanguage } from '@/lib/language-context';
 
 export default function ArchiveCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const { language } = useLanguage();
+
   const [isDragging, setIsDragging] = useState(false);
-  
+
   // Kamera & Tuval Durumu
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [viewMode, setViewMode] = useState<'constellation' | 'timeline' | 'axis'>('constellation');
   const [filterCategory, setFilterCategory] = useState<string>('ALL');
-  
+
   // Sinematik Efektler
   const [isCinemascope, setIsCinemascope] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [hoveredArtwork, setHoveredArtwork] = useState<ArtworkDetail | null>(null);
   const [projectedArtwork, setProjectedArtwork] = useState<ArtworkDetail | null>(null);
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
-  const [panPos, setPanPos] = useState({ x: 0, y: 0 });
 
   // Web Audio Minimalist Analog Ambient Drone Synthesizer
   const audioContextRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
 
   const toggleSound = () => {
     if (isMuted) {
       try {
         if (!audioContextRef.current) {
-          const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+          const AudioContextClass =
+            window.AudioContext ||
+            (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
           const ctx = new AudioContextClass();
           audioContextRef.current = ctx;
 
-          // Temel 65Hz Analog Sinüs Tonu (Warm Museum Sub-drone)
+          // 65Hz Analog Sinüs Tonu
           const osc1 = ctx.createOscillator();
           osc1.type = 'sine';
-          osc1.frequency.setValueAtTime(65.41, ctx.currentTime); // C2
+          osc1.frequency.setValueAtTime(65.41, ctx.currentTime);
 
-          // İkincil 130.8Hz Harmonik Ton
+          // 130.8Hz Harmonik Ton
           const osc2 = ctx.createOscillator();
           osc2.type = 'sine';
-          osc2.frequency.setValueAtTime(130.81, ctx.currentTime); // C3
+          osc2.frequency.setValueAtTime(130.81, ctx.currentTime);
 
-          // Düşük Geçirgen Filtre (Analog Bant Filtresi)
           const filter = ctx.createBiquadFilter();
           filter.type = 'lowpass';
           filter.frequency.setValueAtTime(180, ctx.currentTime);
 
           const gain = ctx.createGain();
-          gain.gain.setValueAtTime(0.06, ctx.currentTime); // Nazik, rahatsız etmeyen arka plan rezonansı
-          gainNodeRef.current = gain;
+          gain.gain.setValueAtTime(0.05, ctx.currentTime);
 
           osc1.connect(filter);
           osc2.connect(filter);
@@ -86,54 +89,60 @@ export default function ArchiveCanvas() {
     }
   };
 
+  // YÜKSEK PERFORMANSLI FARE TAKİBİ:
+  // React State GÜNCELLEMESİ YOK! Doğrudan requestAnimationFrame ile DOM transformu
+  const onMouseMove = useCallback((e: MouseEvent) => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      if (spotlightRef.current) {
+        spotlightRef.current.style.transform = `translate3d(${e.clientX - 400}px, ${e.clientY - 400}px, 0)`;
+      }
+    });
+  }, []);
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({
-        x: e.clientX / window.innerWidth,
-        y: e.clientY / window.innerHeight,
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
     return () => {
       document.body.style.overflow = 'auto';
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousemove', onMouseMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
     };
-  }, []);
+  }, [onMouseMove]);
 
   // Tuval üzerindeki eser konumlandırma haritaları
   const placedItems = useMemo(() => {
     return ARTWORKS_DATA.map((art, idx) => {
       // 1. Constellation (Serbest uzamsal dağılım)
       const constellationPos = [
-        { x: '8vw', y: '10vh', w: '320px', h: '420px' },    // selflove
-        { x: '45vw', y: '28vh', w: '380px', h: '300px' },   // it's not a set
-        { x: '80vw', y: '12vh', w: '300px', h: '400px' },   // non control
-        { x: '22vw', y: '65vh', w: '340px', h: '440px' },   // farewellkiss
-        { x: '62vw', y: '60vh', w: '310px', h: '420px' },   // tension
-        { x: '98vw', y: '50vh', w: '340px', h: '340px' },   // uncut
-        { x: '135vw', y: '18vh', w: '440px', h: '320px' },  // not a jewelry
-        { x: '140vw', y: '65vh', w: '360px', h: '440px' },  // zin
-        { x: '175vw', y: '35vh', w: '330px', h: '420px' },  // plastque
-        { x: '40vw', y: '115vh', w: '420px', h: '300px' },  // line traces
-      ][idx] || { x: `${(idx * 25) % 160}vw`, y: `${30 + (idx * 20) % 90}vh`, w: '320px', h: '400px' };
+        { x: '6vw', y: '10vh', w: '320px', h: '420px' },
+        { x: '42vw', y: '26vh', w: '380px', h: '300px' },
+        { x: '78vw', y: '12vh', w: '300px', h: '400px' },
+        { x: '18vw', y: '62vh', w: '340px', h: '440px' },
+        { x: '58vw', y: '58vh', w: '310px', h: '420px' },
+        { x: '94vw', y: '48vh', w: '340px', h: '340px' },
+        { x: '130vw', y: '18vh', w: '420px', h: '320px' },
+        { x: '135vw', y: '62vh', w: '360px', h: '440px' },
+        { x: '170vw', y: '32vh', w: '330px', h: '420px' },
+        { x: '38vw', y: '110vh', w: '400px', h: '300px' },
+      ][idx] || { x: `${(idx * 25) % 150}vw`, y: `${30 + (idx * 20) % 80}vh`, w: '320px', h: '400px' };
 
-      // 2. Timeline (Yıllara göre kronolojik sinematik sekans)
+      // 2. Timeline (Kronolojik sekans)
       const timelinePos = {
-        x: `${12 + idx * 32}vw`,
+        x: `${10 + idx * 30}vw`,
         y: `${idx % 2 === 0 ? '22vh' : '52vh'}`,
         w: '340px',
         h: '420px',
       };
 
-      // 3. Axis (Object - Space - Line matrisi)
+      // 3. Axis (Matris düzeni)
       const isSpace = art.collectionName.includes('space');
       const isLine = art.collectionName.includes('line');
       const axisY = isSpace ? '65vh' : isLine ? '105vh' : '20vh';
-      const axisX = `${10 + (idx % 4) * 38}vw`;
+      const axisX = `${10 + (idx % 4) * 36}vw`;
       const axisPos = { x: axisX, y: axisY, w: '330px', h: '410px' };
 
       const activePos =
@@ -152,130 +161,127 @@ export default function ArchiveCanvas() {
   }, [viewMode]);
 
   // Filtreleme
-  const filteredItems = placedItems.filter((item) => {
-    if (filterCategory === 'ALL') return true;
-    return item.collectionName.toUpperCase().includes(filterCategory);
-  });
+  const filteredItems = useMemo(() => {
+    return placedItems.filter((item) => {
+      if (filterCategory === 'ALL') return true;
+      return item.collectionName.toUpperCase().includes(filterCategory);
+    });
+  }, [placedItems, filterCategory]);
 
   return (
     <div
       ref={containerRef}
-      className="relative w-screen h-screen bg-[#060709] text-neutral-100 overflow-hidden select-none font-sans"
+      className="relative w-screen h-screen bg-[#050608] text-neutral-100 overflow-hidden select-none font-sans"
     >
-      {/* 1. SİNEMATİK AMBİYANS: SPOTLIGHT & DİNAMİK VİGNETTE */}
+      {/* 1. SİNEMATİK DONANIM HIZLANDIRMALI SPOTLIGHT (React re-render tetiklemez, 120 FPS) */}
       <div
-        className="pointer-events-none absolute inset-0 z-10 transition-opacity duration-1000"
+        ref={spotlightRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 w-[800px] h-[800px] rounded-full opacity-60 mix-blend-screen will-change-transform"
         style={{
-          background: `radial-gradient(circle 800px at ${mousePos.x * 100}% ${mousePos.y * 100}%, rgba(255,255,255,0.04) 0%, rgba(6,7,9,0.7) 60%, rgba(6,7,9,0.98) 100%)`,
+          background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(20,25,35,0.02) 45%, transparent 70%)',
+          transform: 'translate3d(20vw, 20vh, 0)',
         }}
       />
 
-      {/* 2. SİNEMATİK FİLM NOISE / GRAIN KATMANI */}
+      {/* 2. STATİK ANAMORFİK CINEMASCOPE 2.39:1 SİYAH ÇERÇEVELER */}
       <div
-        className="pointer-events-none absolute inset-0 z-10 opacity-[0.035] mix-blend-screen"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
+        className={`absolute top-0 left-0 right-0 bg-black z-40 border-b border-white/10 pointer-events-none transition-all duration-500 ease-out ${
+          isCinemascope ? 'h-[8vh]' : 'h-0'
+        }`}
+      />
+      <div
+        className={`absolute bottom-0 left-0 right-0 bg-black z-40 border-t border-white/10 pointer-events-none transition-all duration-500 ease-out ${
+          isCinemascope ? 'h-[8vh]' : 'h-0'
+        }`}
       />
 
-      {/* 3. ANAMORFİK CINEMASCOPE 2.39:1 SİYAH ÇERÇEVELER (TOGGLEABLE) */}
-      <motion.div
-        initial={false}
-        animate={{ height: isCinemascope ? '8vh' : '0vh' }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute top-0 left-0 right-0 bg-black z-40 border-b border-white/5 pointer-events-none"
-      />
-      <motion.div
-        initial={false}
-        animate={{ height: isCinemascope ? '8vh' : '0vh' }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute bottom-0 left-0 right-0 bg-black z-40 border-t border-white/5 pointer-events-none"
-      />
-
-      {/* 4. SİNEMATİK VİEWFİNDER KÖŞE ÇAPRAZ ÇİZGİLERİ [ + ] */}
-      <div className="pointer-events-none absolute inset-6 md:inset-10 z-30 border border-white/5 flex flex-col justify-between">
+      {/* 3. SİNEMATİK VİEWFİNDER KÖŞE ÇİZGİLERİ [ + ] */}
+      <div className="pointer-events-none absolute inset-6 md:inset-8 z-30 border border-white/5 flex flex-col justify-between">
         <div className="flex justify-between p-2 text-[10px] font-mono text-neutral-500 tracking-widest">
-          <span>[ + ] CAM A // MASTER RECORD</span>
+          <span>[ + ] CAM A // MASTER ARCHIVE</span>
           <span>TC 00:04:18:12 • 24.00 FPS</span>
-          <span>[ + ] 2.39:1 CINEMATIC ARCHIVE</span>
+          <span>[ + ] 2.39:1 CINEMATIC</span>
         </div>
         <div className="flex justify-between p-2 text-[10px] font-mono text-neutral-500 tracking-widest">
           <span>LAT 38.4192° N, 27.1287° E • IZMIR/ISTANBUL</span>
-          <span>PAN: X={Math.round(panPos.x)} Y={Math.round(panPos.y)} • ZOOM: {zoomLevel.toFixed(1)}x</span>
+          <span>ZOOM: {zoomLevel.toFixed(1)}x</span>
           <span>ISO 400 • 50mm T1.3</span>
         </div>
       </div>
 
-      {/* 5. ÜST HUD: BAŞLIK & REEL METADATA */}
-      <header className="absolute top-10 left-10 md:left-14 z-30 pointer-events-auto flex flex-col gap-1">
+      {/* 4. ÜST HUD: BAŞLIK & REEL METADATA */}
+      <header className="absolute top-8 left-8 md:left-12 z-30 pointer-events-auto flex flex-col gap-1">
         <div className="inline-flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-neutral-400">
-            CINEMATIC CANVAS • DERİN BUSE DEMİRKAYA
+          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-neutral-400">
+            CINEMATIC ARCHIVE • DERİN BUSE DEMİRKAYA
           </span>
         </div>
-        <h1 className="font-serif text-4xl md:text-6xl text-white uppercase tracking-tighter drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)]">
-          Sinematik Tuval
+        <h1 className="font-serif text-3xl md:text-5xl text-white uppercase tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+          {language === 'TR' ? 'Sinematik Arşiv' : 'Cinematic Archive'}
         </h1>
-        <p className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest max-w-md">
-          Ateşin dönüştürücü gücüyle şekillenen uzamsal nesne ve çağdaş takı arşivi (2018–2025).
+        <p className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest max-w-sm">
+          {language === 'TR'
+            ? 'Ateşin dönüştürücü gücüyle şekillenen uzamsal nesne ve heykelsi takı arşivi.'
+            : 'Sculptural jewelry and spatial object archive formed by the transformative force of fire.'}
         </p>
       </header>
 
-      {/* 6. SAĞ ÜST: KAMERA KONTROL & AMBİYANS SES PANELİ */}
-      <div className="absolute top-10 right-10 md:right-14 z-30 pointer-events-auto flex items-center gap-3">
+      {/* 5. SAĞ ÜST KONTROLLER */}
+      <div className="absolute top-8 right-8 md:right-12 z-30 pointer-events-auto flex items-center gap-2 sm:gap-3">
         {/* Ses Butonu */}
         <button
           onClick={toggleSound}
-          className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono uppercase tracking-widest border transition-all duration-300 ${
+          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-mono uppercase tracking-widest border transition-colors ${
             !isMuted
-              ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.3)]'
-              : 'bg-black/60 backdrop-blur-md text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
+              ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
+              : 'bg-[#0d0f12]/90 text-neutral-400 border-white/15 hover:text-white'
           }`}
-          title="Analog Arka Plan Sesi"
+          title={language === 'TR' ? 'Analog Arka Plan Sesi' : 'Ambient Tone'}
         >
           {!isMuted ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
-          <span>{!isMuted ? 'SOUND: ON (65Hz)' : 'SOUND: OFF'}</span>
+          <span className="hidden sm:inline">{!isMuted ? 'SOUND: ON' : 'SOUND: OFF'}</span>
         </button>
 
-        {/* Cinemascope Modu Butonu */}
+        {/* Cinemascope Modu */}
         <button
           onClick={() => setIsCinemascope(!isCinemascope)}
-          className={`flex items-center gap-1.5 px-3 py-2 text-xs font-mono uppercase tracking-widest border transition-all ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest border transition-colors ${
             isCinemascope
               ? 'bg-white text-black border-white'
-              : 'bg-black/60 backdrop-blur-md text-neutral-400 border-white/10 hover:border-white/30 hover:text-white'
+              : 'bg-[#0d0f12]/90 text-neutral-400 border-white/15 hover:text-white'
           }`}
-          title="Anamorfik Sinema Çerçevesi"
+          title="2.39:1 Cinemascope"
         >
           <Film className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">2.39:1</span>
         </button>
 
-        {/* Navigasyon Linkleri */}
         <Link
           href="/koleksiyon"
-          className="px-3.5 py-2 text-xs font-mono uppercase tracking-widest bg-black/60 backdrop-blur-md text-neutral-300 border border-white/10 hover:border-white/40 hover:text-white transition-colors"
+          className="px-3 py-1.5 text-xs font-mono uppercase tracking-widest bg-[#0d0f12]/90 text-neutral-300 border border-white/15 hover:border-white/40 hover:text-white transition-colors"
         >
-          Katalog
+          {language === 'TR' ? 'Katalog' : 'Catalog'}
         </Link>
         <Link
           href="/"
-          className="px-3.5 py-2 text-xs font-mono uppercase tracking-widest bg-white text-black border border-white hover:bg-neutral-200 transition-colors"
+          className="px-3 py-1.5 text-xs font-mono uppercase tracking-widest bg-white text-black border border-white hover:bg-neutral-200 transition-colors flex items-center gap-1"
         >
-          Vitrine Dön
+          <ArrowLeft className="w-3 h-3" />
+          <span>{language === 'TR' ? 'Vitrin' : 'Home'}</span>
         </Link>
       </div>
 
-      {/* 7. ALT KONTROL ÇUBUĞU: GÖRÜNÜM MODLARI & ZOOM KONTROLLERİ */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex flex-wrap items-center justify-center gap-3 max-w-full px-4">
+      {/* 6. ALT KONTROL ÇUBUĞU: GÖRÜNÜM MODLARI & ZOOM KONTROLLERİ */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex flex-wrap items-center justify-center gap-2.5 max-w-full px-4">
         {/* Görünüm Modları */}
-        <div className="flex items-center bg-black/80 backdrop-blur-md border border-white/15 p-1">
+        <div className="flex items-center bg-[#0d0f12]/95 border border-white/15 p-1 shadow-lg">
           <button
             onClick={() => setViewMode('constellation')}
-            className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-all ${
+            className={`px-3 py-1 text-[10px] font-mono uppercase tracking-widest transition-colors ${
               viewMode === 'constellation'
-                ? 'bg-white/20 text-white font-semibold'
+                ? 'bg-white/25 text-white font-bold'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -283,9 +289,9 @@ export default function ArchiveCanvas() {
           </button>
           <button
             onClick={() => setViewMode('timeline')}
-            className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-all ${
+            className={`px-3 py-1 text-[10px] font-mono uppercase tracking-widest transition-colors ${
               viewMode === 'timeline'
-                ? 'bg-white/20 text-white font-semibold'
+                ? 'bg-white/25 text-white font-bold'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
@@ -293,25 +299,25 @@ export default function ArchiveCanvas() {
           </button>
           <button
             onClick={() => setViewMode('axis')}
-            className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest transition-all ${
+            className={`px-3 py-1 text-[10px] font-mono uppercase tracking-widest transition-colors ${
               viewMode === 'axis'
-                ? 'bg-white/20 text-white font-semibold'
+                ? 'bg-white/25 text-white font-bold'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
-            Axis Matrices
+            Axis
           </button>
         </div>
 
         {/* Kategori Filtresi */}
-        <div className="hidden sm:flex items-center bg-black/80 backdrop-blur-md border border-white/15 p-1">
+        <div className="hidden sm:flex items-center bg-[#0d0f12]/95 border border-white/15 p-1 shadow-lg">
           {['ALL', 'OBJECT', 'SPACE', 'LINE'].map((cat) => (
             <button
               key={cat}
               onClick={() => setFilterCategory(cat)}
-              className={`px-2.5 py-1.5 text-[10px] font-mono uppercase tracking-widest transition-all ${
+              className={`px-2.5 py-1 text-[10px] font-mono uppercase tracking-widest transition-colors ${
                 filterCategory === cat
-                  ? 'bg-neutral-100 text-black font-semibold'
+                  ? 'bg-neutral-100 text-black font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
@@ -320,63 +326,59 @@ export default function ArchiveCanvas() {
           ))}
         </div>
 
-        {/* Zoom & Reset Kontrolleri */}
-        <div className="flex items-center gap-1 bg-black/80 backdrop-blur-md border border-white/15 p-1">
+        {/* Zoom & Reset */}
+        <div className="flex items-center gap-1 bg-[#0d0f12]/95 border border-white/15 p-1 shadow-lg">
           <button
-            onClick={() => setZoomLevel((z) => Math.max(0.6, z - 0.15))}
-            className="p-1.5 text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
-            title="Uzaklaş"
+            onClick={() => setZoomLevel((z) => Math.max(0.65, z - 0.15))}
+            className="p-1 text-neutral-400 hover:text-white transition-colors"
+            title={language === 'TR' ? 'Uzaklaş' : 'Zoom Out'}
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
-          <span className="px-2 font-mono text-[10px] text-neutral-300">
+          <span className="px-1.5 font-mono text-[10px] text-neutral-300">
             {Math.round(zoomLevel * 100)}%
           </span>
           <button
-            onClick={() => setZoomLevel((z) => Math.min(1.8, z + 0.15))}
-            className="p-1.5 text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
-            title="Yakınlaş"
+            onClick={() => setZoomLevel((z) => Math.min(1.6, z + 0.15))}
+            className="p-1 text-neutral-400 hover:text-white transition-colors"
+            title={language === 'TR' ? 'Yakınlaş' : 'Zoom In'}
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
           <button
-            onClick={() => {
-              setZoomLevel(1);
-              setPanPos({ x: 0, y: 0 });
-            }}
-            className="p-1.5 text-neutral-400 hover:text-white hover:bg-white/10 transition-colors border-l border-white/10 ml-1"
-            title="Kamerayı Sıfırla"
+            onClick={() => setZoomLevel(1)}
+            className="p-1 text-neutral-400 hover:text-white transition-colors border-l border-white/10 ml-0.5"
+            title={language === 'TR' ? 'Sıfırla' : 'Reset'}
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* 8. SİNEMATİK ETKİLEŞİMLİ TUVAL (DRAGGABLE CINEMATIC CANVAS) */}
+      {/* 7. SİNEMATİK ETKİLEŞİMLİ TUVAL (DRAGGABLE CINEMATIC CANVAS) */}
       <motion.div
         drag
-        dragElastic={0.08}
-        dragMomentum={true}
+        dragElastic={0.05}
+        dragMomentum={false}
         onDragStart={() => setIsDragging(true)}
-        onDragEnd={(_, info) => {
-          setTimeout(() => setIsDragging(false), 100);
-          setPanPos((prev) => ({
-            x: prev.x + info.offset.x,
-            y: prev.y + info.offset.y,
-          }));
+        onDragEnd={() => {
+          setTimeout(() => setIsDragging(false), 50);
         }}
-        animate={{ scale: zoomLevel }}
-        transition={{ type: 'spring', damping: 25, stiffness: 120 }}
-        className={`absolute top-0 left-0 w-[260vw] h-[220vh] origin-top-left ${
+        style={{
+          scale: zoomLevel,
+          willChange: 'transform',
+          transform: 'translate3d(0, 0, 0)',
+        }}
+        className={`absolute top-0 left-0 w-[240vw] h-[200vh] origin-top-left ${
           isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       >
         {/* İnce Uzamsal Izgara Çizgileri */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-10"
+          className="absolute inset-0 pointer-events-none opacity-5"
           style={{
-            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)`,
-            backgroundSize: '80px 80px',
+            backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)`,
+            backgroundSize: '100px 100px',
           }}
         />
 
@@ -385,31 +387,28 @@ export default function ArchiveCanvas() {
           const isHovered = hoveredArtwork?.id === item.id;
 
           return (
-            <motion.div
+            <div
               key={item.id}
               style={{
                 left: item.layout.x,
                 top: item.layout.y,
                 width: item.layout.w,
                 height: item.layout.h,
+                zIndex: isHovered ? 35 : 10,
               }}
-              className="absolute group transition-all duration-700 ease-out"
-              animate={{
-                scale: isHovered ? 1.05 : 1,
-                zIndex: isHovered ? 40 : 20,
-              }}
+              className="absolute group transition-transform duration-300 ease-out"
               onMouseEnter={() => setHoveredArtwork(item)}
               onMouseLeave={() => setHoveredArtwork(null)}
             >
               {/* Sinematik Çerçeve */}
-              <div className="relative w-full h-full bg-[#0d0f12] border border-neutral-800/80 group-hover:border-amber-400/80 transition-colors duration-500 overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+              <div className="relative w-full h-full bg-[#0d0f12] border border-neutral-800 group-hover:border-amber-400/80 transition-colors duration-300 overflow-hidden shadow-2xl">
                 {/* Sol Üst Reel / Çekim İndeksi */}
                 <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-                  <span className="bg-black/80 backdrop-blur-md px-2 py-0.5 text-[9px] font-mono text-white/80 uppercase tracking-widest border border-white/10">
+                  <span className="bg-black/90 px-2 py-0.5 text-[9px] font-mono text-white/80 uppercase tracking-widest border border-white/10">
                     {item.reelCode}
                   </span>
                   {item.isUniquePiece && (
-                    <span className="bg-amber-500/90 text-black px-1.5 py-0.5 text-[8px] font-mono font-bold tracking-widest uppercase">
+                    <span className="bg-amber-500 text-black px-1.5 py-0.5 text-[8px] font-mono font-bold tracking-widest uppercase">
                       1/1 UNIQUE
                     </span>
                   )}
@@ -421,8 +420,8 @@ export default function ArchiveCanvas() {
                     e.stopPropagation();
                     if (!isDragging) setProjectedArtwork(item);
                   }}
-                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/70 backdrop-blur-md border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100"
-                  title="Sinematik Projeksiyon Modu"
+                  className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/80 border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all opacity-0 group-hover:opacity-100"
+                  title={language === 'TR' ? 'Sinematik İnceleme' : 'Cinematic View'}
                 >
                   <Eye className="w-3.5 h-3.5" />
                 </button>
@@ -439,72 +438,59 @@ export default function ArchiveCanvas() {
                     src={item.images[0]}
                     alt={item.title}
                     fill
-                    sizes="440px"
-                    className="object-cover opacity-85 group-hover:opacity-100 group-hover:scale-108 transition-all duration-700 ease-out"
+                    sizes="400px"
+                    className="object-cover opacity-85 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 group-hover:opacity-75 transition-opacity" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent opacity-90 group-hover:opacity-75 transition-opacity" />
 
                   {/* Alt Bilgi Kartı */}
                   <div className="absolute bottom-0 left-0 right-0 p-4 font-sans z-10">
-                    <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 mb-1">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 mb-1">
                       <span>{item.category}</span>
-                      <span className="text-white font-medium">{item.price}</span>
+                      <span className="text-amber-400 font-bold">{item.price}</span>
                     </div>
-
-                    <h3 className="font-serif text-2xl text-white uppercase tracking-tight group-hover:text-amber-200 transition-colors">
+                    <h3 className="font-serif text-2xl uppercase tracking-tight text-white group-hover:underline">
                       {item.title}
                     </h3>
-
-                    <p className="text-[11px] font-sans text-neutral-400 line-clamp-1 mt-1 font-light">
-                      {item.material}
-                    </p>
-
-                    {/* Detay Çağrısı */}
-                    <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/10 text-[10px] font-mono uppercase tracking-widest text-neutral-300">
-                      <span>Uzamsal Detay →</span>
-                      <span className="text-neutral-500">[{item.year}]</span>
+                    <div className="flex items-center justify-between text-[9px] font-mono text-neutral-400 uppercase tracking-widest mt-2 pt-2 border-t border-white/10">
+                      <span>{item.material.split('/')[0]}</span>
+                      <span>{item.year}</span>
                     </div>
                   </div>
                 </Link>
               </div>
-            </motion.div>
+            </div>
           );
         })}
       </motion.div>
 
-      {/* 9. SİNEMATİK PROJEKSİYON LIGHTBOX / TAM EKRAN İNCELEME MODALI */}
+      {/* 8. SİNEMATİK BÜYÜK EKRAN PROJEKTÖR MODALI */}
       <AnimatePresence>
         {projectedArtwork && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-between p-6 md:p-12 overflow-y-auto"
+            className="fixed inset-0 z-50 bg-[#050608]/95 p-6 sm:p-12 flex flex-col justify-between overflow-y-auto"
           >
-            {/* Üst Kapatma & Başlık */}
-            <div className="flex items-center justify-between border-b border-white/15 pb-6">
-              <div className="flex items-center gap-4">
-                <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-                <div>
-                  <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block">
-                    CINEMATIC PROJECTION • FULL APERTURE
-                  </span>
-                  <h2 className="font-serif text-3xl md:text-5xl text-white uppercase tracking-tight">
-                    {projectedArtwork.title}
-                  </h2>
-                </div>
+            {/* Modal Üst Şerit */}
+            <div className="flex items-center justify-between border-b border-white/15 pb-4">
+              <div className="flex items-center gap-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+                <span className="font-mono text-xs uppercase tracking-[0.25em] text-neutral-300">
+                  {projectedArtwork.title} • {projectedArtwork.year}
+                </span>
               </div>
-
               <button
                 onClick={() => setProjectedArtwork(null)}
-                className="p-3 rounded-full border border-white/20 text-neutral-300 hover:text-white hover:border-white transition-colors"
+                className="p-2 border border-white/20 text-neutral-300 hover:text-white hover:border-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Orta Görsel & Eser Odak Alanı */}
-            <div className="my-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto w-full">
+            <div className="my-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center max-w-7xl mx-auto w-full">
               {/* Sinematik Geniş Görsel */}
               <div className="lg:col-span-8 relative aspect-[16/10] bg-neutral-900 border border-white/15 overflow-hidden shadow-2xl">
                 <Image
@@ -523,43 +509,43 @@ export default function ArchiveCanvas() {
               <div className="lg:col-span-4 flex flex-col justify-between space-y-6 text-neutral-300">
                 <div className="space-y-4">
                   <span className="text-xs font-mono uppercase tracking-[0.25em] text-neutral-400">
-                    Eser Künyesi & Metin
+                    {language === 'TR' ? 'Eser Künyesi' : 'Specimen Details'}
                   </span>
                   <p className="text-sm font-sans font-light leading-relaxed text-neutral-200">
                     {projectedArtwork.description}
                   </p>
-                  <div className="p-4 bg-neutral-900/80 border border-white/10 text-xs font-mono space-y-2">
+                  <div className="p-4 bg-neutral-900/90 border border-white/10 text-xs font-mono space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-neutral-500">Maden / Taş:</span>
+                      <span className="text-neutral-500">{language === 'TR' ? 'Maden / Taş:' : 'Material:'}</span>
                       <span className="text-white text-right">{projectedArtwork.material}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-neutral-500">Teknik:</span>
+                      <span className="text-neutral-500">{language === 'TR' ? 'Teknik:' : 'Technique:'}</span>
                       <span className="text-white text-right">{projectedArtwork.technique}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-neutral-500">Ağırlık:</span>
+                      <span className="text-neutral-500">{language === 'TR' ? 'Ağırlık:' : 'Weight:'}</span>
                       <span className="text-white">{projectedArtwork.weight}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-neutral-500">Fiyat:</span>
+                      <span className="text-neutral-500">{language === 'TR' ? 'Fiyat:' : 'Price:'}</span>
                       <span className="text-amber-300 font-bold">{projectedArtwork.price}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 flex flex-col gap-3">
+                <div className="pt-2 flex flex-col gap-3">
                   <Link
                     href={`/koleksiyon/${projectedArtwork.id}`}
-                    className="w-full py-4 bg-white text-black text-center font-mono text-xs uppercase tracking-[0.2em] font-semibold hover:bg-neutral-200 transition-colors"
+                    className="w-full py-3.5 bg-white text-black text-center font-mono text-xs uppercase tracking-[0.2em] font-bold hover:bg-neutral-200 transition-colors shadow-lg"
                   >
-                    3D Uzamsal Parallax Moduna Geç →
+                    {language === 'TR' ? '3D Parallax İncele →' : '3D Spatial View →'}
                   </Link>
                   <button
                     onClick={() => setProjectedArtwork(null)}
-                    className="w-full py-3 border border-white/20 text-neutral-400 text-center font-mono text-xs uppercase tracking-[0.2em] hover:text-white hover:border-white transition-colors"
+                    className="w-full py-2.5 border border-white/20 text-neutral-400 text-center font-mono text-xs uppercase tracking-[0.2em] hover:text-white hover:border-white transition-colors"
                   >
-                    Tuvala Geri Dön
+                    {language === 'TR' ? 'Tuvala Geri Dön' : 'Return to Canvas'}
                   </button>
                 </div>
               </div>
