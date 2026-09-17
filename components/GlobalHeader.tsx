@@ -27,8 +27,7 @@ export default function GlobalHeader() {
   const { user, isAuthenticated } = useAuth();
   const [isMuted, setIsMuted] = useState(() => soundFx.getMuted());
 
-  // KURAL 2 & 4: Sayfa her yenilendiğinde (F5) istisnasız baştan çalışması için animasyon anahtarı ve durum
-  const [animKey] = useState(() => (typeof window !== 'undefined' ? Math.random() : 0));
+  // KURAL 4: Animasyonun bitiş durumu (tıklamaların açılması için)
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
 
   // Global Cmd+K / Ctrl+K klavye kısayolu
@@ -68,9 +67,31 @@ export default function GlobalHeader() {
 
   return (
     <>
+      {/* 
+        KURAL 1: Siyah Perde (Overlay) Katmanı (z-[100])
+        - Tüm ekranı kaplayan, arkadaki siteyi %100 gizleyen simsiyah arka plan
+        - 5 saniye boyunca eriyerek (opacity: 1 -> 0) arkadaki aydınlık sayfayı açığa çıkarır
+        - Animasyon bitince DOM'da tıklamaları engellememesi için pointer-events-none olur
+      */}
+      <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        transition={{
+          duration: 5,
+          ease: [0.16, 1, 0.3, 1], // Kusursuz sürtünme (friction)
+        }}
+        onAnimationComplete={() => {
+          setIsAnimationFinished(true);
+        }}
+        className={`fixed inset-0 bg-black z-[100] ${
+          isAnimationFinished ? 'pointer-events-none' : 'pointer-events-auto'
+        }`}
+      />
+
+      {/* Ana Header Çubuğu (z-[105] - Perde ve Logonun üst kapsayıcısı) */}
       <header
         id="global-header"
-        className={`sticky top-0 z-50 w-full transition-colors duration-300 font-sans ${
+        className={`sticky top-0 z-[105] w-full transition-colors duration-300 font-sans ${
           isScrolled
             ? 'bg-neutral-50/98 backdrop-blur-md border-b border-neutral-300/90 shadow-sm'
             : 'bg-neutral-50/90 backdrop-blur-sm border-b border-neutral-200'
@@ -115,44 +136,71 @@ export default function GlobalHeader() {
           </div>
 
           {/* 
-            KURAL 1, 2, 3, 4:
-            - 1: Süre EN AZ 5 Saniye (duration: 5.2s), çok yumuşak yavaşlama eğrisi (ease: [0.16, 1, 0.3, 1])
-            - 2: Her F5 yenilemesinde key={animKey} ile yeniden render
-            - 3: Perde/karanlık fon YOK; arkadaki sayfa normal ve aydınlık. scale: 5, y: "40vh" -> scale: 1, y: "0vh"
-            - 4: Başlangıçta pointer-events-none, 5.2 saniye bitince pointer-events-auto
+            KURAL 2 & 3: Merkeze Vurgulu ve Renk Değiştiren Logo (Z-[101])
+            - Başlangıçta siyah perdenin tam ortasında devasa boyutta (scale: 5, y: "40vh") ve BEYAZ
+            - 5 saniye içinde yavaşça süzülerek ekranın üst-orta kısmına (scale: 1, y: "0vh") yerleşir
+            - Rengi BEYAZDAN SİYAHA döner (siyah perdeden aydınlık siteye kusursuz geçiş)
+            - Kusursuz senkronizasyon ve sürtünme: duration: 5, ease: [0.16, 1, 0.3, 1]
           */}
           <div
-            className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center ${
+            className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[101] flex items-center justify-center ${
               isAnimationFinished ? 'pointer-events-auto' : 'pointer-events-none'
             }`}
           >
             <motion.div
-              key={animKey}
               initial={{ y: '40vh', scale: 5 }}
               animate={{ y: '0vh', scale: 1 }}
               transition={{
-                duration: 5.2,
-                ease: [0.16, 1, 0.3, 1], // Çok yumuşak ve akıcı süzülme eğrisi
+                duration: 5,
+                ease: [0.16, 1, 0.3, 1], // Çok yumuşak ve akıcı sürtünme eğrisi
               }}
-              onAnimationComplete={() => {
-                setIsAnimationFinished(true);
-              }}
-              className="origin-center flex items-center justify-center select-none"
+              className="origin-center relative flex items-center justify-center select-none"
             >
               <Link
                 href="/"
                 onClick={() => soundFx.playClick()}
-                className="block select-none"
+                className="relative block select-none group"
                 title="nonvalue — Ana Sayfa"
               >
-                <Image
-                  src="/nonvalue-logo.png"
-                  alt="nonvalue"
-                  width={180}
-                  height={34}
-                  priority
-                  className="h-7 sm:h-8 md:h-9 w-auto object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform hover:scale-105"
-                />
+                {/* Beyaz Logo Katmanı: Siyah sahnede başlar, 5 saniyede yavaşça erir */}
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 0 }}
+                  transition={{
+                    duration: 5,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="relative z-10 filter invert brightness-200 drop-shadow-[0_0_24px_rgba(255,255,255,0.7)]"
+                >
+                  <Image
+                    src="/nonvalue-logo.png"
+                    alt="nonvalue logo"
+                    width={180}
+                    height={34}
+                    priority
+                    className="h-6 sm:h-8 md:h-9 w-auto object-contain"
+                  />
+                </motion.div>
+
+                {/* Siyah Logo Katmanı: Aydınlık site ortaya çıktıkça 5 saniyede belirir ve tepeye yerleşir */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    duration: 5,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="absolute inset-0 z-20 flex items-center justify-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)] group-hover:scale-105 transition-transform"
+                >
+                  <Image
+                    src="/nonvalue-logo.png"
+                    alt="nonvalue logo"
+                    width={180}
+                    height={34}
+                    priority
+                    className="h-6 sm:h-8 md:h-9 w-auto object-contain"
+                  />
+                </motion.div>
               </Link>
             </motion.div>
           </div>
