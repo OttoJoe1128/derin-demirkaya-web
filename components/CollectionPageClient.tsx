@@ -10,7 +10,7 @@ export default function CollectionPageClient() {
   const isEn = language === 'EN';
 
   return (
-    <div className="min-h-screen bg-neutral-50 py-8 sm:py-16 md:py-24">
+    <div className="min-h-screen bg-neutral-50 pt-4 pb-12 sm:pt-6 sm:pb-20 md:pb-24">
       <div className="max-w-7xl mx-auto px-3.5 sm:px-6">
         {/* Üst Başlık & Editoryal Giriş */}
         <div className="mb-8 sm:mb-14 md:mb-18">
