@@ -197,14 +197,14 @@ export default function EditorialMagazinePage() {
 
             {/* Sağ: Hero Specimen Heykel Kartı */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative group h-[46vh] sm:h-[54vh] max-h-[480px] w-auto aspect-[3/4] border border-neutral-800 bg-neutral-900/60 p-3 sm:p-4 backdrop-blur-sm shadow-[0_20px_50px_rgba(0,0,0,0.8)] shrink-0">
+              <div className="relative group w-full max-w-sm h-[54vh] sm:h-[60vh] border border-neutral-800 bg-neutral-900/60 p-3 sm:p-4 backdrop-blur-sm shadow-[0_20px_50px_rgba(0,0,0,0.8)] shrink-0">
                 <div className="relative w-full h-full overflow-hidden bg-neutral-950">
                   <Image
-                    src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
-                    alt="Derin Demirkaya — Girdap Yüzük"
+                    src="/artworks/4107f9b51db8c3dbac92156e1eebba6e.jpg"
+                    alt="Girdap Form Heykel Yüzük — 925 Ayar Som Gümüş Derin Buse Demirkaya"
                     fill
                     priority
-                    sizes="(max-width: 768px) 100vw, 420px"
+                    sizes="(max-width: 768px) 100vw, 460px"
                     className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out filter contrast-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-transparent to-transparent pointer-events-none" />
@@ -263,10 +263,10 @@ export default function EditorialMagazinePage() {
             <div className="group border border-neutral-800 bg-neutral-950 p-3 sm:p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors h-[48vh] sm:h-[55vh] max-h-[460px]">
               <div className="relative h-[62%] w-full aspect-[3/4] mx-auto overflow-hidden bg-neutral-900 mb-2">
                 <Image
-                  src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
-                  alt="Girdap Yüzük"
+                  src="/artworks/d579cd77efd0e2e64a2057ab336012b3.jpg"
+                  alt="Girdap Organik Form — 925 Ayar Som Gümüş Yüzük"
                   fill
-                  sizes="(max-width: 768px) 100vw, 320px"
+                  sizes="(max-width: 768px) 100vw, 360px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -291,10 +291,10 @@ export default function EditorialMagazinePage() {
             <div className="group border border-neutral-800 bg-neutral-950 p-3 sm:p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors h-[48vh] sm:h-[55vh] max-h-[460px]">
               <div className="relative h-[62%] w-full aspect-[3/4] mx-auto overflow-hidden bg-neutral-900 mb-2">
                 <Image
-                  src="/artworks/e259e89d1469e0ee99ee51082531c3bf.jpg"
-                  alt="Likit Krater Bileklik"
+                  src="/artworks/5f01a919e1659e62d8e4f6367d419720.jpg"
+                  alt="Likit Krater Kelepçe — 925 Ayar Som Gümüş Bileklik"
                   fill
-                  sizes="(max-width: 768px) 100vw, 320px"
+                  sizes="(max-width: 768px) 100vw, 360px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -320,9 +320,9 @@ export default function EditorialMagazinePage() {
               <div className="relative h-[62%] w-full aspect-[3/4] mx-auto overflow-hidden bg-neutral-900 mb-2">
                 <Image
                   src="/artworks/744a7950cff34beaff3f06e308a540a0.jpg"
-                  alt="Mekansal Sarkıt Kolye"
+                  alt="Mekansal Sarkıt Kolye — 925 Ayar Som Gümüş Heykel Kolye"
                   fill
-                  sizes="(max-width: 768px) 100vw, 320px"
+                  sizes="(max-width: 768px) 100vw, 360px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -470,11 +470,11 @@ export default function EditorialMagazinePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto max-w-6xl mx-auto w-full">
             {/* Sol: Portre veya Eskiz */}
             <div className="lg:col-span-4 flex justify-center">
-              <div className="relative h-[44vh] sm:h-[52vh] max-h-[460px] aspect-[3/4] border border-neutral-700 bg-neutral-950 p-2 shadow-xl shrink-0">
-                <div className="relative w-full h-full overflow-hidden bg-neutral-900">
+              <div className="relative w-full max-w-[280px] h-[46vh] sm:h-[52vh] max-h-[460px] aspect-[3/4] border border-neutral-700 bg-neutral-950 p-2 shadow-xl shrink-0">
+                <div className="relative w-full h-[88%] overflow-hidden bg-neutral-900">
                   <Image
-                    src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
-                    alt="Sanatçı Portresi ve Dokusu"
+                    src="/artworks/3fbff7e749e7081a72a2b949196c7ab1.jpg"
+                    alt="Derin Buse Demirkaya — Sanatçı Portresi ve Atölye"
                     fill
                     sizes="(max-width: 768px) 100vw, 340px"
                     className="object-cover filter grayscale contrast-125"
