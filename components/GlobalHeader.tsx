@@ -68,18 +68,21 @@ export default function GlobalHeader() {
   return (
     <>
       {/* 
-        KURAL 1: Siyah Perde (Overlay) Katmanı (z-[100])
-        - Tüm ekranı kaplayan, arkadaki siteyi %100 gizleyen simsiyah arka plan
-        - 5 saniye boyunca eriyerek (opacity: 1 -> 0) arkadaki aydınlık sayfayı açığa çıkarır
-        - Animasyon bitince DOM'da tıklamaları engellememesi için pointer-events-none olur
+        KURAL 1 & 3: Siyah Perde (Overlay) Katmanı (z-[100])
+        - Ekrana gelir gelmez 3 SANİYE boyunca tamamen hareketsiz ve simsiyah kalır (delay: 3).
+        - 3 saniye sonra TAM 6 SANİYE boyunca su gibi eriyerek (opacity: 1 -> 0) arkadaki siteyi açığa çıkarır (duration: 6).
+        - GPU hızlandırmalı: style={{ willChange: "opacity" }}, ease: [0.45, 0, 0.15, 1].
+        - Animasyon bitince DOM'da hiçbir şeye engel olmaması için pointer-events-none olur.
       */}
       <motion.div
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
         transition={{
-          duration: 5,
-          ease: [0.16, 1, 0.3, 1], // Kusursuz sürtünme (friction)
+          delay: 3,
+          duration: 6,
+          ease: [0.45, 0, 0.15, 1],
         }}
+        style={{ willChange: 'opacity' }}
         onAnimationComplete={() => {
           setIsAnimationFinished(true);
         }}
@@ -136,11 +139,13 @@ export default function GlobalHeader() {
           </div>
 
           {/* 
-            KURAL 2 & 3: Merkeze Vurgulu ve Renk Değiştiren Logo (Z-[101])
-            - Başlangıçta siyah perdenin tam ortasında devasa boyutta (scale: 5, y: "40vh") ve BEYAZ
-            - 5 saniye içinde yavaşça süzülerek ekranın üst-orta kısmına (scale: 1, y: "0vh") yerleşir
-            - Rengi BEYAZDAN SİYAHA döner (siyah perdeden aydınlık siteye kusursuz geçiş)
-            - Kusursuz senkronizasyon ve sürtünme: duration: 5, ease: [0.16, 1, 0.3, 1]
+            KURAL 1, 2, 3: Merkeze Vurgulu ve Renk Değiştiren Logo (Z-[101])
+            - 3 saniye boyunca devasa boyutta ve tam ortada (scale: 4, y: "40vh") hareketsiz bekler (delay: 3).
+            - 3 saniye sonra TAM 6 SANİYE içinde yavaşça süzülerek scale: 1, y: "0vh" konumuna yerleşir (duration: 6).
+            - GPU hızlandırma: Sadece scale, y, opacity kullanır; layout tetikleyici property yoktur.
+            - style={{ willChange: "transform, opacity" }} ile pürüzsüz GPU render.
+            - Easing: [0.45, 0, 0.15, 1].
+            - Beyazdan siyaha renk dönüşümü overlay ile kusursuz senkronize.
           */}
           <div
             className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-[101] flex items-center justify-center ${
@@ -148,12 +153,14 @@ export default function GlobalHeader() {
             }`}
           >
             <motion.div
-              initial={{ y: '40vh', scale: 5 }}
+              initial={{ y: '40vh', scale: 4 }}
               animate={{ y: '0vh', scale: 1 }}
               transition={{
-                duration: 5,
-                ease: [0.16, 1, 0.3, 1], // Çok yumuşak ve akıcı sürtünme eğrisi
+                delay: 3,
+                duration: 6,
+                ease: [0.45, 0, 0.15, 1], // Su gibi pürüzsüz akış eğrisi
               }}
+              style={{ willChange: 'transform, opacity' }}
               className="origin-center relative flex items-center justify-center select-none"
             >
               <Link
@@ -162,14 +169,16 @@ export default function GlobalHeader() {
                 className="relative block select-none group"
                 title="nonvalue — Ana Sayfa"
               >
-                {/* Beyaz Logo Katmanı: Siyah sahnede başlar, 5 saniyede yavaşça erir */}
+                {/* Beyaz Logo Katmanı: 3 saniye parıldar, ardından 6 saniye içinde beyazdan şeffafa erir */}
                 <motion.div
                   initial={{ opacity: 1 }}
                   animate={{ opacity: 0 }}
                   transition={{
-                    duration: 5,
-                    ease: [0.16, 1, 0.3, 1],
+                    delay: 3,
+                    duration: 6,
+                    ease: [0.45, 0, 0.15, 1],
                   }}
+                  style={{ willChange: 'opacity' }}
                   className="relative z-10 filter invert brightness-200 drop-shadow-[0_0_24px_rgba(255,255,255,0.7)]"
                 >
                   <Image
@@ -182,14 +191,16 @@ export default function GlobalHeader() {
                   />
                 </motion.div>
 
-                {/* Siyah Logo Katmanı: Aydınlık site ortaya çıktıkça 5 saniyede belirir ve tepeye yerleşir */}
+                {/* Siyah Logo Katmanı: 3 saniye gizli kalır, 6 saniyede belirip header'daki yuvasına oturur */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{
-                    duration: 5,
-                    ease: [0.16, 1, 0.3, 1],
+                    delay: 3,
+                    duration: 6,
+                    ease: [0.45, 0, 0.15, 1],
                   }}
+                  style={{ willChange: 'opacity' }}
                   className="absolute inset-0 z-20 flex items-center justify-center drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)] group-hover:scale-105 transition-transform"
                 >
                   <Image
