@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "collection": "Koleksiyon",
+    "archive": "Sinematik Arşiv",
+    "workshops": "Atölye Takvimi",
+    "studio": "Stüdyo",
+    "about": "Hakkında",
+    "contact": "İletişim",
+    "login": "Giriş / Kayıt",
+    "profile": "Koleksiyoner Paneli",
+    "logout": "Çıkış",
+    "soundOn": "SES: AÇIK",
+    "soundOff": "SES: KAPALI",
+    "search": "Arama (⌘K)",
+    "home": "Ana Sayfa",
+    "admin": "Sanatçı Stüdyosu",
+    "switchLang": "Dili Değiştir (TR / EN)",
+    "cart": "Alışveriş Sepeti",
+    "catalog": "Katalog"
+  },
+  "intro": {
+    "title": "nonvalue",
+    "alt": "Derin Buse Demirkaya — nonvalue jewel"
+  },
+  "magazine": {
+    "spreads": [
+      { "id": "spread-1", "num": "01", "title": "Kapak & Manifesto", "category": "Prologue" },
+      { "id": "spread-2", "num": "02", "title": "Heykelsi Seçki", "category": "Specimens" },
+      { "id": "spread-3", "num": "03", "title": "Ocak & Atölye", "category": "The Forge" },
+      { "id": "spread-4", "num": "04", "title": "Sanatçı Monoloğu", "category": "Monologue" },
+      { "id": "spread-5", "num": "05", "title": "Kolofon & Arşiv", "category": "Colophon" }
+    ],
+    "controls": {
+      "prev": "Önceki Sayfa (Sol Ok)",
+      "next": "Sonraki Sayfa (Sağ Ok)",
+      "pageLabel": "Önceki Dergi Sayfası",
+      "nextLabel": "Sonraki Dergi Sayfası"
+    },
+    "spread1": {
+      "vol": "VOL. 08 // 2026",
+      "edition": "EDITORIAL MAGAZINE EDITION",
+      "location": "KARAKÖY • İSTANBUL // LAT 41.025° N",
+      "subtitle": "KAYIP MUM (CIRE-PERDUE) DÖKÜM ARŞİVİ",
+      "headlinePart1": "Formun Ötesinde,",
+      "headlinePart2": "Ateşin İzinde.",
+      "description": "Kusursuzluğun seri üretim tekdüzeliğine karşı; 1000°C ocak alevinde eriyen 925K ham gümüşün kontrolsüz organik heykeltıraşlığı.",
+      "turnPage": "Sayfayı Çevir",
+      "openArchive": "Tüm Arşivi Aç",
+      "specimenTag": "SPECIMEN 01 // 925K",
+      "specimenTitle": "Girdap Form Heykel Yüzük",
+      "specimenWeight": "18.4 gr",
+      "pageFooter": "SAYFA 01 // 05 — PROLOGUE",
+      "scrollHint": "KAYDIRIN VEYA TEKERLEĞİ ÇEVİRİN →"
+    },
+    "spread2": {
+      "subtitle": "02 // CURATED SPECIMENS — HAM FORM KOLEKSİYONU",
+      "viewAll": "Tümünü Gör (18 Eser)",
+      "card1": {
+        "num": "01",
+        "title": "Girdap Form Heykel Yüzük",
+        "desc": "Ateşin rastlantısal erittiği ham gümüş kabuk. Her açıdan farklı bir gölge oyunu sunan heykelsi yüzey.",
+        "purity": "925 Som Gümüş",
+        "weight": "18.40 gr"
+      },
+      "card2": {
+        "num": "02",
+        "title": "Likit Krater Kelepçe",
+        "desc": "Bileği bir zırh gibi saran, krater dokulu akışkan form. 1000°C döküm anının donmuş heykeli.",
+        "purity": "925 Som Gümüş",
+        "weight": "42.15 gr"
+      },
+      "card3": {
+        "num": "03",
+        "title": "Erozyon Dokulu Yüzük",
+        "desc": "Metalin mikro dokularla nefes aldığı, parmakta ağırlığını hissettiren tekil tasarım.",
+        "purity": "925 Ayar",
+        "weight": "28.70 gr"
+      },
+      "pageFooter": "SAYFA 02 // 05 — HEYKELSİ SEÇKİ",
+      "nextAction": "Atölye Sayfasına Geç"
+    },
+    "spread3": {
+      "subtitle": "03 // METALLURGICAL ATELIER — 1000°C DÖKÜM OCAĞI",
+      "tag": "SES & VİDEO ARŞİVİ",
+      "category": "ZANAAT VE DEĞİŞİM",
+      "headlinePart1": "Ateş, Balmumu",
+      "headlinePart2": "& Çekiç İzleri.",
+      "description": "Her parça, Karaköy atölyesinde tek tek elle oyulan mum kalıpların ocakta eritilip yerine 925 ayar akkor gümüş akıtılmasıyla doğar. İki parçanın birbirinin aynı olması imkansızdır.",
+      "workshopBtn": "Atölye Seansları & Randevu",
+      "videosBtn": "Süreç Videoları",
+      "caption": "Karaköy Stüdyo Potası // 1000°C Akış",
+      "liveBadge": "CANLI ARŞİV",
+      "pageFooter": "SAYFA 03 // 05 — OCAK VE ATÖLYE",
+      "nextAction": "Sanatçı Monoloğuna Geç"
+    },
+    "spread4": {
+      "subtitle": "04 // ARTIST MONOLOGUE — DERİN BUSE DEMİRKAYA",
+      "tag": "İZMİR DOKUZ EYLÜL GSF // 2018–2025",
+      "artistName": "DERİN BUSE DEMİRKAYA",
+      "quote": "“Takı bir süs nesnesi değildir; tenin kıvrımlarına yerleşen, sahibinin hareketiyle soluk alıp veren taşınabilir bir ",
+      "quoteHighlight": "mekansal heykeldir",
+      "quoteEnd": ".”",
+      "manifesto": "nonvalue ismi, değerin piyasa fiyatında veya kusursuz cilada değil; ateşin bıraktığı organik korozyonda, metalin ağırlığında ve zamanın ten üzerinde bıraktığı patinada gizli olduğuna duyulan inançtan doğmuştur.",
+      "readBio": "Biyografiyi Oku",
+      "visitStudio": "Atölyede Ziyaret Et",
+      "pageFooter": "SAYFA 04 // 05 — SANATÇI MONOLOĞU",
+      "nextAction": "Kolofona Geç"
+    },
+    "spread5": {
+      "subtitle": "05 // COLOPHON & ARCHIVE INDEX — BASKI VE ERİŞİM",
+      "copyright": "COPYRIGHT © 2018–2026",
+      "col1Title": "[ 01 // TİPOGRAFİ & MİMARİ ]",
+      "col1Items": {
+        "headings": "Başlıklar:",
+        "headingsVal": "Playfair Display Editorial",
+        "body": "Gövde:",
+        "bodyVal": "Inter Display",
+        "catalog": "Katalog:",
+        "catalogVal": "JetBrains Mono",
+        "layout": "Düzen:",
+        "layoutVal": "Yatay Dijital Dergi"
+      },
+      "col2Title": "[ 02 // ATÖLYE & TEMAS ]",
+      "col2Text": "Karaköy Studio // Kemankeş Mah. Beyoğlu, İstanbul.\nKişiye özel döküm ve koleksiyon randevuları için:",
+      "col2Btn": "Randevu Talep Formu",
+      "col3Title": "[ 03 // DİJİTAL ARŞİV ]",
+      "col3Items": {
+        "collection": "Tüm Koleksiyon",
+        "collectionCount": "18 Eser →",
+        "archive": "Döküm Video Arşivi",
+        "archiveCount": "12 Kayıt →",
+        "studio": "Sanatçı Stüdyosu (CMS)",
+        "studioAction": "Giriş →"
+      },
+      "pageFooter": "SAYFA 05 // 05 — SON",
+      "backToStart": "En Başa Dön (Kapak)"
+    }
+  },
+  "collection": {
+    "backHome": "← Ana Sayfa",
+    "brandSub": "Derin Buse Demirkaya / nonvalue jewel",
+    "title": "Arşiv & Koleksiyon",
+    "manifesto": "burada sunulan eserler, hareket, malzeme karşılaşmaları ve durumsal üretimle biçimlenen süreç odaklı üretimden doğar. her parça sabit bir sonuçtan ziyade bir anı, mekanı veya koşulu yansıtır.",
+    "stats": {
+      "archive": "Arşiv",
+      "pieces": "Eser",
+      "period": "Dönem",
+      "periodVal": "2018–25",
+      "axes": "Akslar",
+      "axesVal": "Object/Space"
+    },
+    "footer": {
+      "craft": "Zanaat & Atölye",
+      "craftDesc": "Marmara Üniversitesi Takı Tasarımı ve Grand Bazaar geleneksel çıraklık eğitimiyle harmanlanan deneysel metal ve gümüş çalışmaları.",
+      "cert": "Kondisyon & Sertifika",
+      "certDesc": "Her eser sanatçı imzalı orijinallik belgesiyle özel korumalı ahşap kutusunda teslim edilir. 1/1 parçalar tekil olarak numaralandırılmıştır.",
+      "contact": "İletişim & Özel Eser",
+      "contactDesc": "Özel sergi, galeri veya sipariş talepleri için doğrudan sanatçı ile temas kurabilirsiniz:"
+    }
+  },
+  "archive": {
+    "title": "Sinematik Arşiv",
+    "subtitle": "Ateşin dönüştürücü gücüyle şekillenen uzamsal nesne ve heykelsi takı arşivi.",
+    "ambientSound": "Analog Arka Plan Sesi",
+    "soundOn": "SES: AÇIK",
+    "soundOff": "SES: KAPALI",
+    "catalog": "Katalog",
+    "home": "Vitrin",
+    "details": "Eser Künyesi",
+    "material": "Maden / Taş:",
+    "technique": "Teknik:",
+    "weight": "Ağırlık:",
+    "price": "Fiyat:",
+    "view3d": "3D Parallax İncele →",
+    "returnToCanvas": "Tuvala Geri Dön",
+    "zoomIn": "Yakınlaş",
+    "zoomOut": "Uzaklaş",
+    "reset": "Sıfırla"
+  }
+}

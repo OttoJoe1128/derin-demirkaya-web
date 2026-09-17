@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "collection": "Collection",
+    "archive": "Cinematic Archive",
+    "workshops": "Workshops",
+    "studio": "Studio",
+    "about": "About",
+    "contact": "Contact",
+    "login": "Sign In / Register",
+    "profile": "Collector Portal",
+    "logout": "Sign Out",
+    "soundOn": "AUDIO: ON",
+    "soundOff": "AUDIO: OFF",
+    "search": "Search (⌘K)",
+    "home": "Home",
+    "admin": "Artist Studio",
+    "switchLang": "Change Language (EN / TR)",
+    "cart": "Shopping Bag",
+    "catalog": "Catalog"
+  },
+  "intro": {
+    "title": "nonvalue",
+    "alt": "Derin Buse Demirkaya — nonvalue jewel"
+  },
+  "magazine": {
+    "spreads": [
+      { "id": "spread-1", "num": "01", "title": "Cover & Manifesto", "category": "Prologue" },
+      { "id": "spread-2", "num": "02", "title": "Curated Specimens", "category": "Specimens" },
+      { "id": "spread-3", "num": "03", "title": "The Forge & Studio", "category": "The Forge" },
+      { "id": "spread-4", "num": "04", "title": "Artist Monologue", "category": "Monologue" },
+      { "id": "spread-5", "num": "05", "title": "Colophon & Archive", "category": "Colophon" }
+    ],
+    "controls": {
+      "prev": "Previous Page (Left Arrow)",
+      "next": "Next Page (Right Arrow)",
+      "pageLabel": "Previous Magazine Spread",
+      "nextLabel": "Next Magazine Spread"
+    },
+    "spread1": {
+      "vol": "VOL. 08 // 2026",
+      "edition": "EDITORIAL MAGAZINE EDITION",
+      "location": "KARAKÖY • ISTANBUL // LAT 41.025° N",
+      "subtitle": "LOST-WAX (CIRE-PERDUE) CASTING ARCHIVE",
+      "headlinePart1": "Beyond Form,",
+      "headlinePart2": "In Trace of Fire.",
+      "description": "Against the mass-produced monotony of perfection; uncontrolled organic sculpting of 925 sterling silver melting in 1000°C furnace flames.",
+      "turnPage": "Turn Page",
+      "openArchive": "Open Full Archive",
+      "specimenTag": "SPECIMEN 01 // 925K",
+      "specimenTitle": "Vortex Form Sculptural Ring",
+      "specimenWeight": "18.4 gr",
+      "pageFooter": "SPREAD 01 // 05 — PROLOGUE",
+      "scrollHint": "SWIPE HORIZONTALLY OR TURN WHEEL →"
+    },
+    "spread2": {
+      "subtitle": "02 // CURATED SPECIMENS — RAW SCULPTURAL BODY",
+      "viewAll": "View All (18 Pieces)",
+      "card1": {
+        "num": "01",
+        "title": "Vortex Form Sculptural Ring",
+        "desc": "A raw silver shell unpredictably melted by direct fire. A sculptural surface offering shifting shadow interactions from every angle.",
+        "purity": "925 Sterling Silver",
+        "weight": "18.40 gr"
+      },
+      "card2": {
+        "num": "02",
+        "title": "Liquid Crater Cuff",
+        "desc": "A crater-textured fluid silhouette wrapping the wrist like armor. A sculpture frozen at the moment of 1000°C casting.",
+        "purity": "925 Sterling Silver",
+        "weight": "42.15 gr"
+      },
+      "card3": {
+        "num": "03",
+        "title": "Erosion Textured Band",
+        "desc": "A singular piece where metal breathes through micro-textures, asserting tactile weight on the hand.",
+        "purity": "925 Sterling Silver",
+        "weight": "28.70 gr"
+      },
+      "pageFooter": "SPREAD 02 // 05 — SPECIMENS",
+      "nextAction": "Proceed to Atelier"
+    },
+    "spread3": {
+      "subtitle": "03 // METALLURGICAL ATELIER — 1000°C FORGE HEARTH",
+      "tag": "AUDIO & VIDEO ARCHIVE",
+      "category": "CRAFT & TRANSFORMATION",
+      "headlinePart1": "Fire, Beeswax",
+      "headlinePart2": "& Hammer Impressions.",
+      "description": "Each piece originates in the Karaköy atelier, carved by hand in wax, melted away in the furnace, and poured with glowing 925 silver. It is impossible for two pieces to ever be identical.",
+      "workshopBtn": "Workshop Sessions & Booking",
+      "videosBtn": "Process Archive",
+      "caption": "Karaköy Studio Crucible // 1000°C Molten Pour",
+      "liveBadge": "LIVE ARCHIVE",
+      "pageFooter": "SPREAD 03 // 05 — FORGE & ATELIER",
+      "nextAction": "Proceed to Monologue"
+    },
+    "spread4": {
+      "subtitle": "04 // ARTIST MONOLOGUE — DERİN BUSE DEMİRKAYA",
+      "tag": "IZMIR DOKUZ EYLÜL FINE ARTS // 2018–2025",
+      "artistName": "DERİN BUSE DEMİRKAYA",
+      "quote": "“Jewelry is never a decorative adornment; it is a wearable ",
+      "quoteHighlight": "spatial sculpture",
+      "quoteEnd": " that settles into the contours of skin, breathing with the movements of its owner.”",
+      "manifesto": "The name nonvalue originates from the conviction that true value is never found in market price or flawless mirror-polish; it resides in the organic corrosion left by fire, the raw weight of molten silver, and the living patina sculpted by skin across time.",
+      "readBio": "Read Biography",
+      "visitStudio": "Visit Atelier",
+      "pageFooter": "SPREAD 04 // 05 — ARTIST MONOLOGUE",
+      "nextAction": "Proceed to Colophon"
+    },
+    "spread5": {
+      "subtitle": "05 // COLOPHON & ARCHIVE INDEX — EDITION & ACCESS",
+      "copyright": "COPYRIGHT © 2018–2026",
+      "col1Title": "[ 01 // TYPOGRAPHY & ARCHITECTURE ]",
+      "col1Items": {
+        "headings": "Display:",
+        "headingsVal": "Playfair Display Editorial",
+        "body": "Body:",
+        "bodyVal": "Inter Display",
+        "catalog": "Catalog:",
+        "catalogVal": "JetBrains Mono",
+        "layout": "Grid:",
+        "layoutVal": "Horizontal Digital Magazine"
+      },
+      "col2Title": "[ 02 // ATELIER & CONTACT ]",
+      "col2Text": "Karaköy Studio // Kemankeş Mah. Beyoğlu, Istanbul.\nFor private casting sessions and bespoke acquisitions:",
+      "col2Btn": "Appointment Request Form",
+      "col3Title": "[ 03 // DIGITAL ARCHIVE ]",
+      "col3Items": {
+        "collection": "Full Collection",
+        "collectionCount": "18 Pieces →",
+        "archive": "Forging Video Archive",
+        "archiveCount": "12 Records →",
+        "studio": "Artist Studio (CMS)",
+        "studioAction": "Access →"
+      },
+      "pageFooter": "SPREAD 05 // 05 — END",
+      "backToStart": "Return to Cover"
+    }
+  },
+  "collection": {
+    "backHome": "← Home",
+    "brandSub": "Derin Buse Demirkaya / nonvalue jewel",
+    "title": "Archive & Collection",
+    "manifesto": "the works presented here emerge from process-based making, shaped by movement, material encounters and situational production. each piece reflects a moment, a place or a condition rather than a fixed outcome.",
+    "stats": {
+      "archive": "Archive",
+      "pieces": "Pcs",
+      "period": "Period",
+      "periodVal": "2018–25",
+      "axes": "Axes",
+      "axesVal": "Object/Space"
+    },
+    "footer": {
+      "craft": "Craft & Atelier",
+      "craftDesc": "Experimental metal and silver studies blending academic jewelry design education at Marmara University with traditional Grand Bazaar apprenticeship.",
+      "cert": "Condition & Certificate",
+      "certDesc": "Each piece is delivered in an archival wooden box with an artist-signed certificate of authenticity. 1/1 pieces are individually numbered.",
+      "contact": "Contact & Bespoke Commissions",
+      "contactDesc": "For solo exhibitions, gallery partnerships, or bespoke design commissions, reach out directly:"
+    }
+  },
+  "archive": {
+    "title": "Cinematic Archive",
+    "subtitle": "Sculptural jewelry and spatial object archive formed by the transformative force of fire.",
+    "ambientSound": "Ambient Drone Audio",
+    "soundOn": "AUDIO: ON",
+    "soundOff": "AUDIO: OFF",
+    "catalog": "Catalog",
+    "home": "Home",
+    "details": "Specimen Details",
+    "material": "Material / Alloy:",
+    "technique": "Technique:",
+    "weight": "Weight:",
+    "price": "Price:",
+    "view3d": "3D Spatial View →",
+    "returnToCanvas": "Return to Canvas",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "reset": "Reset"
+  }
+}

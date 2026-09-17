@@ -3,7 +3,6 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import CustomCursor from "../components/CustomCursor";
 import Providers from "../components/Providers";
-import AppLayoutShell from "../components/AppLayoutShell";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -128,10 +127,9 @@ export default function RootLayout({
       >
         <Providers>
           <CustomCursor />
-          <AppLayoutShell>{children}</AppLayoutShell>
+          {children}
         </Providers>
       </body>
     </html>
   );
 }
-

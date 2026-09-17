@@ -20,9 +20,13 @@ import { soundFx } from '@/lib/sound-fx';
  */
 export default function CinematicLogoIntro() {
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
+  const isHomePage = pathname === '/' || pathname === '/tr' || pathname === '/en';
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
   const [imgError, setImgError] = useState(false);
+
+  // Mevcut dile göre ana sayfa rotasını belirle (/tr veya /en)
+  const currentLang = pathname?.startsWith('/en') ? 'en' : 'tr';
+  const homeHref = `/${currentLang}`;
 
   return (
     <>
@@ -77,10 +81,10 @@ export default function CinematicLogoIntro() {
           className="origin-center relative flex items-center justify-center"
         >
           <Link
-            href="/"
+            href={homeHref}
             onClick={() => soundFx.playClick()}
             className="relative flex items-center justify-center group focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400/50"
-            title="nonvalue — Ana Sayfa"
+            title={currentLang === 'en' ? "nonvalue — Home" : "nonvalue — Ana Sayfa"}
           >
             <div className="relative flex items-center justify-center px-4 py-2">
               {/* Garanti Bembeyaz Tipografik Karşılık (Görsel gecikse veya hata verse dahi siyah ekranda asla kaybolmaz) */}
