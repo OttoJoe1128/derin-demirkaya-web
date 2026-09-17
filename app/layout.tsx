@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import GlobalHeader from "../components/GlobalHeader";
-import CinematicIntro from "../components/CinematicIntro";
 import Footer from "../components/Footer";
 import CustomCursor from "../components/CustomCursor";
 import Providers from "../components/Providers";
@@ -129,7 +128,6 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Providers>
-          <CinematicIntro />
           <CustomCursor />
           <GlobalHeader />
           <main className="flex-grow w-full">{children}</main>

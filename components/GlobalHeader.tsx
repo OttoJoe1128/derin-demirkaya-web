@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import {
   Menu,
   X,
@@ -26,7 +27,11 @@ export default function GlobalHeader() {
   const { user, isAuthenticated } = useAuth();
   const [isMuted, setIsMuted] = useState(() => soundFx.getMuted());
 
-  // Global Cmd+K / Ctrl+K keyboard shortcut
+  // KURAL 2 & 4: Sayfa her yenilendiğinde (F5) istisnasız baştan çalışması için animasyon anahtarı ve durum
+  const [animKey] = useState(() => (typeof window !== 'undefined' ? Math.random() : 0));
+  const [isAnimationFinished, setIsAnimationFinished] = useState(false);
+
+  // Global Cmd+K / Ctrl+K klavye kısayolu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -39,7 +44,7 @@ export default function GlobalHeader() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Track scroll state for subtle background enhancement
+  // Kaydırma takibi
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -65,57 +70,30 @@ export default function GlobalHeader() {
     <>
       <header
         id="global-header"
-        className={`sticky top-0 z-50 w-full transition-all duration-300 font-sans ${
+        className={`sticky top-0 z-50 w-full transition-colors duration-300 font-sans ${
           isScrolled
             ? 'bg-neutral-50/98 backdrop-blur-md border-b border-neutral-300/90 shadow-sm'
-            : 'bg-neutral-50/95 backdrop-blur-sm border-b border-neutral-200'
+            : 'bg-neutral-50/90 backdrop-blur-sm border-b border-neutral-200'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 h-18 sm:h-20 flex items-center justify-between gap-2 sm:gap-4 relative">
-          
-          {/* SOL: Mobilde logo + isim; Masaüstünde Sanatçı İmzası & Nav */}
-          <div className="flex items-center gap-4 xl:gap-7 shrink-0">
-            {/* Masaüstü Sanatçı İmzası */}
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 h-18 sm:h-20 flex items-center justify-between relative">
+          {/* SOL: Sanatçı İmzası & Masaüstü Navigasyon */}
+          <div className="flex items-center gap-4 xl:gap-8 shrink-0">
             <Link
               href="/"
               onClick={() => soundFx.playClick()}
-              className="hidden sm:flex flex-col group shrink-0"
+              className="flex flex-col group shrink-0"
               title="Derin Buse Demirkaya — nonvalue"
             >
-              <span className="font-serif text-lg sm:text-xl tracking-tight text-neutral-950 uppercase group-hover:opacity-75 transition-opacity leading-tight">
+              <span className="font-serif text-base sm:text-xl tracking-tight text-neutral-950 uppercase group-hover:opacity-75 transition-opacity leading-tight">
                 Derin Buse Demirkaya
               </span>
-              <span className="text-[9px] font-mono tracking-[0.22em] text-neutral-500 uppercase -mt-0.5">
+              <span className="text-[8px] sm:text-[9px] font-mono tracking-[0.22em] text-neutral-500 uppercase -mt-0.5">
                 Atölye & Arşiv
               </span>
             </Link>
 
-            {/* Mobil Sanatçı & nonvalue İmzası (Asla taşmaz, yer tasarruflu) */}
-            <Link
-              href="/"
-              onClick={() => soundFx.playClick()}
-              className="flex sm:hidden items-center gap-2 group shrink-0"
-              title="nonvalue — Derin Buse"
-            >
-              <Image
-                src="/nonvalue-logo.png"
-                alt="nonvalue"
-                width={48}
-                height={26}
-                priority
-                className="h-7 w-auto object-contain"
-              />
-              <div className="flex flex-col">
-                <span className="font-serif text-sm tracking-tight text-neutral-950 uppercase leading-none font-medium">
-                  Derin Buse
-                </span>
-                <span className="text-[8px] font-mono tracking-[0.16em] text-neutral-500 uppercase mt-0.5">
-                  Atölye
-                </span>
-              </div>
-            </Link>
-
-            {/* Masaüstü Navigasyon Linkleri */}
+            {/* Masaüstü Navigasyon */}
             <nav className="hidden lg:flex items-center gap-4 xl:gap-5">
               {navLinks.map((link) => (
                 <Link
@@ -136,26 +114,50 @@ export default function GlobalHeader() {
             </nav>
           </div>
 
-          {/* MERKEZ (Masaüstü): İkonik nonvalue Heykelsi Marka Logosu */}
-          <div className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 pointer-events-auto">
-            <Link
-              href="/"
-              onClick={() => soundFx.playClick()}
-              className="group flex flex-col items-center transition-transform hover:scale-105 active:scale-95"
-              title="nonvalue — Ana Sayfa"
+          {/* 
+            KURAL 1, 2, 3, 4:
+            - 1: Süre EN AZ 5 Saniye (duration: 5.2s), çok yumuşak yavaşlama eğrisi (ease: [0.16, 1, 0.3, 1])
+            - 2: Her F5 yenilemesinde key={animKey} ile yeniden render
+            - 3: Perde/karanlık fon YOK; arkadaki sayfa normal ve aydınlık. scale: 5, y: "40vh" -> scale: 1, y: "0vh"
+            - 4: Başlangıçta pointer-events-none, 5.2 saniye bitince pointer-events-auto
+          */}
+          <div
+            className={`absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-50 flex items-center justify-center ${
+              isAnimationFinished ? 'pointer-events-auto' : 'pointer-events-none'
+            }`}
+          >
+            <motion.div
+              key={animKey}
+              initial={{ y: '40vh', scale: 5 }}
+              animate={{ y: '0vh', scale: 1 }}
+              transition={{
+                duration: 5.2,
+                ease: [0.16, 1, 0.3, 1], // Çok yumuşak ve akıcı süzülme eğrisi
+              }}
+              onAnimationComplete={() => {
+                setIsAnimationFinished(true);
+              }}
+              className="origin-center flex items-center justify-center select-none"
             >
-              <Image
-                src="/nonvalue-logo.png"
-                alt="nonvalue emblem"
-                width={160}
-                height={75}
-                priority
-                className="h-10 sm:h-11 w-auto object-contain filter drop-shadow-[0_1px_3px_rgba(0,0,0,0.12)] transition-opacity"
-              />
-            </Link>
+              <Link
+                href="/"
+                onClick={() => soundFx.playClick()}
+                className="block select-none"
+                title="nonvalue — Ana Sayfa"
+              >
+                <Image
+                  src="/nonvalue-logo.png"
+                  alt="nonvalue"
+                  width={180}
+                  height={34}
+                  priority
+                  className="h-7 sm:h-8 md:h-9 w-auto object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.12)] transition-transform hover:scale-105"
+                />
+              </Link>
+            </motion.div>
           </div>
 
-          {/* SAĞ: Araçlar, Dil, Ses & Profil */}
+          {/* SAĞ: Araçlar, Arama, Dil, Ses & Profil */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Hızlı Arama Butonu (⌘K) */}
             <button
@@ -175,7 +177,7 @@ export default function GlobalHeader() {
               </kbd>
             </button>
 
-            {/* Stüdyo / CMS Butonu */}
+            {/* Stüdyo / CMS Yönetim Butonu */}
             <Link
               href="/admin"
               onClick={() => soundFx.playClick()}
