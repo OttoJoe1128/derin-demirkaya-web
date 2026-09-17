@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Menu,
@@ -20,6 +21,8 @@ import { soundFx } from '@/lib/sound-fx';
 import QuickSearchModal from './QuickSearchModal';
 
 export default function GlobalHeader() {
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -91,16 +94,18 @@ export default function GlobalHeader() {
         }`}
       />
 
-      {/* Ana Header Çubuğu (z-[105] - Perde ve Logonun üst kapsayıcısı) */}
+      {/* Ana Header Çubuğu (z-[95] - Perde ve Logonun üst kapsayıcısı) */}
       <header
         id="global-header"
-        className={`sticky top-0 z-[105] w-full transition-colors duration-300 font-sans ${
-          isScrolled
-            ? 'bg-neutral-50/98 backdrop-blur-md border-b border-neutral-300/90 shadow-sm'
-            : 'bg-neutral-50/90 backdrop-blur-sm border-b border-neutral-200'
-        }`}
+        className={`${
+          isHomePage
+            ? 'fixed top-0 left-0 right-20 sm:right-24 z-[95] h-16 sm:h-20 bg-neutral-50/95 backdrop-blur-md border-b border-neutral-200/90 shadow-xs'
+            : isScrolled
+            ? 'sticky top-0 z-[95] w-full bg-neutral-50/98 backdrop-blur-md border-b border-neutral-300/90 shadow-sm'
+            : 'sticky top-0 z-[95] w-full bg-neutral-50/90 backdrop-blur-sm border-b border-neutral-200'
+        } transition-colors duration-300 font-sans`}
       >
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 h-18 sm:h-20 flex items-center justify-between relative">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 h-full flex items-center justify-between relative">
           {/* SOL: Sanatçı İmzası & Masaüstü Navigasyon */}
           <div className="flex items-center gap-4 xl:gap-8 shrink-0">
             <Link

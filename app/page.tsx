@@ -124,7 +124,7 @@ export default function EditorialMagazinePage() {
         <section
           id="spread-1"
           aria-label="Sayfa 01: Dergi Kapağı ve Manifesto"
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between p-6 sm:p-10 lg:p-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Dokulu & Granüllü Sanatsal Arka Plan Katmanı */}
           <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-luminosity">
@@ -197,17 +197,18 @@ export default function EditorialMagazinePage() {
 
             {/* Sağ: Hero Specimen Heykel Kartı */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative group w-full max-w-sm aspect-[4/5] border border-neutral-800 bg-neutral-900/60 p-4 backdrop-blur-sm shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+              <div className="relative group h-[46vh] sm:h-[54vh] max-h-[480px] w-auto aspect-[3/4] border border-neutral-800 bg-neutral-900/60 p-3 sm:p-4 backdrop-blur-sm shadow-[0_20px_50px_rgba(0,0,0,0.8)] shrink-0">
                 <div className="relative w-full h-full overflow-hidden bg-neutral-950">
                   <Image
                     src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
                     alt="Derin Demirkaya — Girdap Yüzük"
                     fill
-                    sizes="(max-width: 768px) 100vw, 400px"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 420px"
                     className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out filter contrast-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between pointer-events-none">
                     <div>
                       <span className="font-mono text-[9px] text-amber-400 tracking-widest uppercase block">
                         SPECIMEN 01 // 925K
@@ -236,7 +237,7 @@ export default function EditorialMagazinePage() {
         <section
           id="spread-2"
           aria-label="Sayfa 02: Heykelsi Takı Seçkisi"
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between p-6 sm:p-10 lg:p-14 border-r border-neutral-800/80 bg-neutral-900/95"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -259,13 +260,13 @@ export default function EditorialMagazinePage() {
           {/* Çift Sayfa Düzeni: Eser Kartları */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 my-auto">
             {/* Eser 1 */}
-            <div className="group border border-neutral-800 bg-neutral-950 p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors">
-              <div className="relative aspect-square w-full overflow-hidden bg-neutral-900 mb-3">
+            <div className="group border border-neutral-800 bg-neutral-950 p-3 sm:p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors h-[48vh] sm:h-[55vh] max-h-[460px]">
+              <div className="relative h-[62%] w-full aspect-[3/4] mx-auto overflow-hidden bg-neutral-900 mb-2">
                 <Image
                   src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
                   alt="Girdap Yüzük"
                   fill
-                  sizes="(max-width: 768px) 100vw, 300px"
+                  sizes="(max-width: 768px) 100vw, 320px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -273,27 +274,27 @@ export default function EditorialMagazinePage() {
                 <span className="font-mono text-[9px] text-neutral-500 tracking-widest uppercase">
                   NV-2024-001 // YÜZÜK
                 </span>
-                <h3 className="font-serif text-base text-neutral-100 group-hover:text-amber-300 transition-colors">
+                <h3 className="font-serif text-sm sm:text-base text-neutral-100 group-hover:text-amber-300 transition-colors">
                   Girdap Organik Form
                 </h3>
                 <p className="text-neutral-400 text-xs line-clamp-2">
                   Kayıp mum tekniğinde serbest eriyen akışkan magma katmanları.
                 </p>
               </div>
-              <div className="pt-3 mt-3 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
+              <div className="pt-2.5 mt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
                 <span className="text-amber-400 font-bold">925 Ayar</span>
                 <span className="text-neutral-400">18.40 gr</span>
               </div>
             </div>
 
             {/* Eser 2 */}
-            <div className="group border border-neutral-800 bg-neutral-950 p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors">
-              <div className="relative aspect-square w-full overflow-hidden bg-neutral-900 mb-3">
+            <div className="group border border-neutral-800 bg-neutral-950 p-3 sm:p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors h-[48vh] sm:h-[55vh] max-h-[460px]">
+              <div className="relative h-[62%] w-full aspect-[3/4] mx-auto overflow-hidden bg-neutral-900 mb-2">
                 <Image
                   src="/artworks/e259e89d1469e0ee99ee51082531c3bf.jpg"
                   alt="Likit Krater Bileklik"
                   fill
-                  sizes="(max-width: 768px) 100vw, 300px"
+                  sizes="(max-width: 768px) 100vw, 320px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -301,27 +302,27 @@ export default function EditorialMagazinePage() {
                 <span className="font-mono text-[9px] text-neutral-500 tracking-widest uppercase">
                   NV-2024-003 // BİLEKLİK
                 </span>
-                <h3 className="font-serif text-base text-neutral-100 group-hover:text-amber-300 transition-colors">
+                <h3 className="font-serif text-sm sm:text-base text-neutral-100 group-hover:text-amber-300 transition-colors">
                   Likit Krater Kelepçe
                 </h3>
                 <p className="text-neutral-400 text-xs line-clamp-2">
                   Ateş şoku ve asit karartmasıyla oluşan derin doğal gözenekler.
                 </p>
               </div>
-              <div className="pt-3 mt-3 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
+              <div className="pt-2.5 mt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
                 <span className="text-amber-400 font-bold">925 Ayar</span>
                 <span className="text-neutral-400">42.10 gr</span>
               </div>
             </div>
 
             {/* Eser 3 */}
-            <div className="group border border-neutral-800 bg-neutral-950 p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors">
-              <div className="relative aspect-square w-full overflow-hidden bg-neutral-900 mb-3">
+            <div className="group border border-neutral-800 bg-neutral-950 p-3 sm:p-4 flex flex-col justify-between hover:border-amber-400/50 transition-colors h-[48vh] sm:h-[55vh] max-h-[460px]">
+              <div className="relative h-[62%] w-full aspect-[3/4] mx-auto overflow-hidden bg-neutral-900 mb-2">
                 <Image
                   src="/artworks/744a7950cff34beaff3f06e308a540a0.jpg"
                   alt="Mekansal Sarkıt Kolye"
                   fill
-                  sizes="(max-width: 768px) 100vw, 300px"
+                  sizes="(max-width: 768px) 100vw, 320px"
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -329,14 +330,14 @@ export default function EditorialMagazinePage() {
                 <span className="font-mono text-[9px] text-neutral-500 tracking-widest uppercase">
                   NV-2023-012 // HEYKEL-KOLYE
                 </span>
-                <h3 className="font-serif text-base text-neutral-100 group-hover:text-amber-300 transition-colors">
+                <h3 className="font-serif text-sm sm:text-base text-neutral-100 group-hover:text-amber-300 transition-colors">
                   Mekansal Sarkıt Kolye
                 </h3>
                 <p className="text-neutral-400 text-xs line-clamp-2">
                   Döküm artığı damlacıkların gövdede bilerek dondurulduğu anıt form.
                 </p>
               </div>
-              <div className="pt-3 mt-3 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
+              <div className="pt-2.5 mt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
                 <span className="text-amber-400 font-bold">925 Ayar</span>
                 <span className="text-neutral-400">28.70 gr</span>
               </div>
@@ -363,7 +364,7 @@ export default function EditorialMagazinePage() {
         <section
           id="spread-3"
           aria-label="Sayfa 03: Atölye ve Döküm Süreci"
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between p-6 sm:p-10 lg:p-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Alev Atmosferi */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full filter blur-3xl pointer-events-none" />
@@ -413,8 +414,8 @@ export default function EditorialMagazinePage() {
               </div>
             </div>
 
-            <div className="lg:col-span-7">
-              <div className="relative aspect-[16/9] w-full border border-neutral-800 bg-neutral-900 overflow-hidden shadow-2xl group">
+            <div className="lg:col-span-7 flex justify-center">
+              <div className="relative h-[38vh] sm:h-[48vh] max-h-[440px] w-full aspect-[16/10] border border-neutral-800 bg-neutral-900 overflow-hidden shadow-2xl group shrink-0">
                 <Image
                   src="/artworks/744a7950cff34beaff3f06e308a540a0.jpg"
                   alt="Atölye Döküm İşlemi"
@@ -422,8 +423,8 @@ export default function EditorialMagazinePage() {
                   sizes="(max-width: 1024px) 100vw, 700px"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-110 brightness-90"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
-                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none" />
+                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono pointer-events-none">
                   <span className="text-neutral-300">Karaköy Stüdyo Potası // 1000°C Akış</span>
                   <span className="px-2 py-0.5 bg-black/60 border border-neutral-700 text-amber-400 text-[10px]">
                     CANLI ARŞİV
@@ -453,7 +454,7 @@ export default function EditorialMagazinePage() {
         <section
           id="spread-4"
           aria-label="Sayfa 04: Sanatçı Manifestosu ve Portre"
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between p-6 sm:p-10 lg:p-14 border-r border-neutral-800/80 bg-neutral-900/90"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -469,18 +470,18 @@ export default function EditorialMagazinePage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center my-auto max-w-6xl mx-auto w-full">
             {/* Sol: Portre veya Eskiz */}
             <div className="lg:col-span-4 flex justify-center">
-              <div className="relative w-64 sm:w-72 aspect-[3/4] border border-neutral-700 bg-neutral-950 p-2 shadow-xl">
+              <div className="relative h-[44vh] sm:h-[52vh] max-h-[460px] aspect-[3/4] border border-neutral-700 bg-neutral-950 p-2 shadow-xl shrink-0">
                 <div className="relative w-full h-full overflow-hidden bg-neutral-900">
                   <Image
                     src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
                     alt="Sanatçı Portresi ve Dokusu"
                     fill
-                    sizes="300px"
+                    sizes="(max-width: 768px) 100vw, 340px"
                     className="object-cover filter grayscale contrast-125"
                   />
-                  <div className="absolute inset-0 bg-neutral-950/20" />
+                  <div className="absolute inset-0 bg-neutral-950/20 pointer-events-none" />
                 </div>
-                <div className="text-center pt-2">
+                <div className="text-center pt-2 pointer-events-none">
                   <span className="font-mono text-[10px] text-neutral-400 tracking-widest uppercase">
                     DERİN BUSE DEMİRKAYA
                   </span>
@@ -538,7 +539,7 @@ export default function EditorialMagazinePage() {
         <section
           id="spread-5"
           aria-label="Sayfa 05: Dergi Kolofonu ve İletişim"
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between p-6 sm:p-10 lg:p-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
