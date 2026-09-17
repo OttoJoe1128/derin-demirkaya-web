@@ -26,6 +26,8 @@ import {
 import type { ArtworkDetail } from '@/lib/artworks-data';
 import { getLocalizedArtwork } from '@/lib/artworks-data';
 import { useLanguage } from '@/lib/language-context';
+import { soundFx } from '@/lib/sound-fx';
+import CertificateOfAuthenticityModal from './CertificateOfAuthenticityModal';
 
 interface ArtworkClientProps {
   artwork: ArtworkDetail;
@@ -44,6 +46,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isCertModalOpen, setIsCertModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -777,10 +780,25 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
             {/* Orijinallik ve Sigorta İkonları */}
             <div className="grid grid-cols-2 gap-4 pt-6 mt-6 border-t border-white/10 text-xs">
-              <div className="flex items-start gap-2 text-neutral-300">
-                <ShieldCheck className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
-                <span>{t('artwork.cert')}</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playClick();
+                  setIsCertModalOpen(true);
+                }}
+                className="flex items-start gap-2 text-left text-neutral-300 hover:text-amber-300 transition-colors group cursor-pointer"
+                title={language === 'EN' ? 'View Official Certificate of Authenticity' : 'Resmi Orijinallik Sertifikasını İncele'}
+              >
+                <ShieldCheck className="w-4 h-4 text-amber-300 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="underline decoration-amber-400/50 underline-offset-4 font-medium block">
+                    {t('artwork.cert')}
+                  </span>
+                  <span className="text-[10px] text-neutral-400 group-hover:text-amber-300 font-mono block mt-0.5">
+                    {language === 'EN' ? 'Inspect Official COA ↗' : 'Resmi Belgeyi Gör ↗'}
+                  </span>
+                </div>
+              </button>
               <div className="flex items-start gap-2 text-neutral-300">
                 <Truck className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
                 <span>{t('artwork.crate')}</span>
@@ -1024,6 +1042,13 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 📜 ORİJİNALLİK VE MÜLKİYET SERTİFİKASI MODALI (COA) */}
+      <CertificateOfAuthenticityModal
+        artwork={artwork}
+        isOpen={isCertModalOpen}
+        onClose={() => setIsCertModalOpen(false)}
+      />
     </div>
   );
 }

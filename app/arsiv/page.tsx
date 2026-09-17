@@ -36,6 +36,19 @@ export default function ArchiveCanvas() {
   const [isMuted, setIsMuted] = useState(true);
   const [hoveredArtwork, setHoveredArtwork] = useState<ArtworkDetail | null>(null);
   const [projectedArtwork, setProjectedArtwork] = useState<ArtworkDetail | null>(null);
+  const [artworksList, setArtworksList] = useState<ArtworkDetail[]>(ARTWORKS_DATA);
+
+  // Canlı kayıtlı koordinatları ve eserleri API'den çek
+  useEffect(() => {
+    fetch('/api/artworks')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.artworks && Array.isArray(data.artworks) && data.artworks.length > 0) {
+          setArtworksList(data.artworks);
+        }
+      })
+      .catch((err) => console.warn('Could not fetch dynamic artworks in archive:', err));
+  }, []);
 
   // Web Audio Minimalist Analog Ambient Drone Synthesizer
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -115,9 +128,9 @@ export default function ArchiveCanvas() {
 
   // Tuval üzerindeki eser konumlandırma haritaları
   const placedItems = useMemo(() => {
-    return ARTWORKS_DATA.map((art, idx) => {
-      // 1. Constellation (Serbest uzamsal dağılım)
-      const constellationPos = [
+    return artworksList.map((art, idx) => {
+      // 1. Constellation (Serbest uzamsal dağılım - koordinat editöründen gelen archiveCoords varsa öncelikli olarak arayüze yansır)
+      const defaultConstellationPositions = [
         { x: '6vw', y: '10vh', w: '320px', h: '420px' },
         { x: '42vw', y: '26vh', w: '380px', h: '300px' },
         { x: '78vw', y: '12vh', w: '300px', h: '400px' },
@@ -128,7 +141,22 @@ export default function ArchiveCanvas() {
         { x: '135vw', y: '62vh', w: '360px', h: '440px' },
         { x: '170vw', y: '32vh', w: '330px', h: '420px' },
         { x: '38vw', y: '110vh', w: '400px', h: '300px' },
-      ][idx] || { x: `${(idx * 25) % 150}vw`, y: `${30 + (idx * 20) % 80}vh`, w: '320px', h: '400px' };
+      ];
+      const fallbackPos = defaultConstellationPositions[idx] || {
+        x: `${(idx * 25) % 150}vw`,
+        y: `${30 + (idx * 20) % 80}vh`,
+        w: '320px',
+        h: '400px',
+      };
+
+      const constellationPos = art.archiveCoords
+        ? {
+            x: `${Math.max(5, Math.min(180, (art.archiveCoords.x * 1.8))).toFixed(1)}vw`,
+            y: `${Math.max(8, Math.min(130, (art.archiveCoords.y * 1.2))).toFixed(1)}vh`,
+            w: '340px',
+            h: '420px',
+          }
+        : fallbackPos;
 
       // 2. Timeline (Kronolojik sekans)
       const timelinePos = {
@@ -158,7 +186,7 @@ export default function ArchiveCanvas() {
         reelCode: `REEL-NV-${art.year}-${(idx + 1).toString().padStart(2, '0')}`,
       };
     });
-  }, [viewMode]);
+  }, [viewMode, artworksList]);
 
   // Filtreleme
   const filteredItems = useMemo(() => {
@@ -211,17 +239,17 @@ export default function ArchiveCanvas() {
       </div>
 
       {/* 4. ÜST HUD: BAŞLIK & REEL METADATA */}
-      <header className="absolute top-8 left-8 md:left-12 z-30 pointer-events-auto flex flex-col gap-1">
-        <div className="inline-flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-neutral-400">
-            CINEMATIC ARCHIVE • DERİN BUSE DEMİRKAYA
+      <header className="absolute top-4 sm:top-8 left-4 sm:left-8 md:left-12 z-30 pointer-events-auto flex flex-col gap-0.5 sm:gap-1 max-w-[190px] sm:max-w-sm">
+        <div className="inline-flex items-center gap-1.5 sm:gap-2">
+          <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-[9px] sm:text-[10px] font-mono uppercase tracking-[0.2em] sm:tracking-[0.25em] text-neutral-400 truncate">
+            NONVALUE // ARCHIVE
           </span>
         </div>
-        <h1 className="font-serif text-3xl md:text-5xl text-white uppercase tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)]">
+        <h1 className="font-serif text-xl sm:text-4xl md:text-5xl text-white uppercase tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.9)] leading-tight">
           {language === 'TR' ? 'Sinematik Arşiv' : 'Cinematic Archive'}
         </h1>
-        <p className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest max-w-sm">
+        <p className="text-[10px] sm:text-[11px] font-mono text-neutral-400 uppercase tracking-widest leading-tight hidden sm:block">
           {language === 'TR'
             ? 'Ateşin dönüştürücü gücüyle şekillenen uzamsal nesne ve heykelsi takı arşivi.'
             : 'Sculptural jewelry and spatial object archive formed by the transformative force of fire.'}
@@ -229,11 +257,11 @@ export default function ArchiveCanvas() {
       </header>
 
       {/* 5. SAĞ ÜST KONTROLLER */}
-      <div className="absolute top-8 right-8 md:right-12 z-30 pointer-events-auto flex items-center gap-2 sm:gap-3">
+      <div className="absolute top-4 sm:top-8 right-4 sm:right-8 md:right-12 z-30 pointer-events-auto flex items-center gap-1.5 sm:gap-3">
         {/* Ses Butonu */}
         <button
           onClick={toggleSound}
-          className={`flex items-center gap-2 px-3 py-1.5 text-xs font-mono uppercase tracking-widest border transition-colors ${
+          className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
             !isMuted
               ? 'bg-amber-500/20 text-amber-300 border-amber-500/50'
               : 'bg-[#0d0f12]/90 text-neutral-400 border-white/15 hover:text-white'
@@ -241,13 +269,13 @@ export default function ArchiveCanvas() {
           title={language === 'TR' ? 'Analog Arka Plan Sesi' : 'Ambient Tone'}
         >
           {!isMuted ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
-          <span className="hidden sm:inline">{!isMuted ? 'SOUND: ON' : 'SOUND: OFF'}</span>
+          <span className="hidden md:inline">{!isMuted ? 'SOUND: ON' : 'SOUND: OFF'}</span>
         </button>
 
         {/* Cinemascope Modu */}
         <button
           onClick={() => setIsCinemascope(!isCinemascope)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase tracking-widest border transition-colors ${
+          className={`flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono uppercase tracking-widest border transition-colors cursor-pointer ${
             isCinemascope
               ? 'bg-white text-black border-white'
               : 'bg-[#0d0f12]/90 text-neutral-400 border-white/15 hover:text-white'
@@ -260,16 +288,16 @@ export default function ArchiveCanvas() {
 
         <Link
           href="/koleksiyon"
-          className="px-3 py-1.5 text-xs font-mono uppercase tracking-widest bg-[#0d0f12]/90 text-neutral-300 border border-white/15 hover:border-white/40 hover:text-white transition-colors"
+          className="px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono uppercase tracking-widest bg-[#0d0f12]/90 text-neutral-300 border border-white/15 hover:border-white/40 hover:text-white transition-colors"
         >
           {language === 'TR' ? 'Katalog' : 'Catalog'}
         </Link>
         <Link
           href="/"
-          className="px-3 py-1.5 text-xs font-mono uppercase tracking-widest bg-white text-black border border-white hover:bg-neutral-200 transition-colors flex items-center gap-1"
+          className="px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono uppercase tracking-widest bg-white text-black border border-white hover:bg-neutral-200 transition-colors flex items-center gap-1"
         >
           <ArrowLeft className="w-3 h-3" />
-          <span>{language === 'TR' ? 'Vitrin' : 'Home'}</span>
+          <span className="hidden sm:inline">{language === 'TR' ? 'Vitrin' : 'Home'}</span>
         </Link>
       </div>
 

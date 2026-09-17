@@ -11,7 +11,7 @@ export default function CinematicCanvasPortal() {
   const { t, language } = useLanguage();
 
   return (
-    <section className="w-full bg-[#07080a] text-white py-24 px-6 border-t border-b border-neutral-800 relative overflow-hidden font-sans">
+    <section className="w-full bg-[#07080a] text-white py-10 sm:py-16 md:py-24 px-3.5 sm:px-6 border-t border-b border-neutral-800 relative overflow-hidden font-sans">
       {/* İnce Film Arka Planı */}
       <div
         className="absolute inset-0 opacity-15 pointer-events-none"
@@ -24,24 +24,24 @@ export default function CinematicCanvasPortal() {
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Üst Başlık & Telemetri */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-white/10 pb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 sm:gap-6 mb-6 sm:mb-12 border-b border-white/10 pb-4 sm:pb-8">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-mono tracking-[0.3em] uppercase text-amber-400 mb-3">
+            <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-mono tracking-[0.2em] sm:tracking-[0.3em] uppercase text-amber-400 mb-1.5 sm:mb-3">
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
               <span>{t('portal.liveSpace')}</span>
             </div>
-            <h2 className="font-serif text-4xl sm:text-6xl uppercase tracking-tighter text-white">
+            <h2 className="font-serif text-2xl sm:text-5xl md:text-6xl uppercase tracking-tighter text-white">
               {t('portal.title')}
             </h2>
           </div>
 
-          <p className="font-sans text-xs font-light text-neutral-400 max-w-md leading-relaxed">
+          <p className="font-sans text-[11px] sm:text-xs font-light text-neutral-400 max-w-md leading-relaxed">
             {t('portal.desc')}
           </p>
         </div>
 
         {/* Sinematik Tuval Önizleme Sahnesi */}
-        <div className="relative w-full aspect-[16/8] sm:aspect-[21/9] bg-[#0c0e12] border border-neutral-700/80 overflow-hidden shadow-2xl group">
+        <div className="relative w-full aspect-[16/10] sm:aspect-[21/9] bg-[#0c0e12] border border-neutral-700/80 overflow-hidden shadow-2xl group">
           {/* Arka Plan Görselleri (Süzülen Eserler) */}
           <div className="absolute inset-0 flex items-center justify-around opacity-40 group-hover:opacity-70 transition-opacity duration-700">
             <div className="relative w-[28%] aspect-[4/5] -rotate-6 scale-95 transition-transform duration-700 group-hover:scale-105">
@@ -77,14 +77,14 @@ export default function CinematicCanvasPortal() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
           {/* Viewfinder Telemetri Katmanı */}
-          <div className="absolute inset-4 sm:inset-8 border border-white/10 flex flex-col justify-between p-3 pointer-events-none font-mono text-[9px] text-neutral-400">
+          <div className="absolute inset-2.5 sm:inset-8 border border-white/10 flex flex-col justify-between p-2 sm:p-3 pointer-events-none font-mono text-[8px] sm:text-[9px] text-neutral-400">
             <div className="flex justify-between uppercase tracking-widest">
-              <span>[ + ] 24.00 FPS // REEL_NV_2025</span>
+              <span>[ + ] 24 FPS // REEL_NV</span>
               <span>CINEMASCOPE 2.39:1</span>
             </div>
             <div className="flex justify-between uppercase tracking-widest">
-              <span>SURFACE: INTERACTIVE 2D PAN/ZOOM</span>
-              <span>[ + ] AUDIO: ANALOG SUB-SYNTH</span>
+              <span>SURFACE: INTERACTIVE 2D</span>
+              <span>[ + ] AUDIO: ANALOG</span>
             </div>
           </div>
 
@@ -94,9 +94,9 @@ export default function CinematicCanvasPortal() {
               href="/arsiv"
               onClick={() => soundFx.playClick()}
               onMouseEnter={() => soundFx.playHover()}
-              className="bg-white hover:bg-neutral-200 text-black px-8 sm:px-10 py-4 font-mono text-xs uppercase tracking-[0.25em] font-semibold transition-all shadow-[0_0_35px_rgba(255,255,255,0.4)] flex items-center gap-3 group-hover:scale-105"
+              className="bg-white hover:bg-neutral-200 text-black px-5 sm:px-10 py-3 sm:py-4 font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] font-semibold transition-all shadow-[0_0_35px_rgba(255,255,255,0.4)] flex items-center gap-2 sm:gap-3 group-hover:scale-105"
             >
-              <Film className="w-4 h-4 text-black" />
+              <Film className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-black" />
               <span>{t('portal.enter')}</span>
               <span className="text-neutral-500">↗</span>
             </Link>
@@ -104,7 +104,7 @@ export default function CinematicCanvasPortal() {
         </div>
 
         {/* 3 Tasarım Aksı Bilgi Şeridi */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/10 text-xs font-mono">
+        <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 pt-4 sm:pt-6 border-t border-white/10 text-xs font-mono">
           <div className="p-4 border border-white/10 bg-white/5">
             <span className="text-amber-400 font-bold block mb-1">
               01 // {language === 'TR' ? 'SİNEMATİK TUVAL' : 'CINEMATIC CANVAS'}

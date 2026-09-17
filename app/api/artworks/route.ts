@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ARTWORKS_DATA } from "@/lib/artworks-data";
+import { getStoredArtworks } from "@/lib/admin-store";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const category = searchParams.get("category");
   const query = searchParams.get("q");
 
-  let list = [...ARTWORKS_DATA];
+  let list = [...getStoredArtworks()];
 
   if (category && category !== "all") {
     list = list.filter((a) =>

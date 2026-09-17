@@ -29,12 +29,14 @@ import {
   X,
   Star,
   UploadCloud,
+  ShieldCheck,
 } from "lucide-react";
 import { soundFx } from "@/lib/sound-fx";
 import { useAuth } from "@/lib/auth-context";
 import type { ArtworkDetail } from "@/lib/artworks-data";
 import type { WorkshopItem } from "@/lib/workshops-data";
 import type { AdminOrder, AdminBooking } from "@/lib/admin-store";
+import CertificateOfAuthenticityModal from "@/components/CertificateOfAuthenticityModal";
 
 // Hazır Yüksek Çözünürlüklü Stüdyo Fotoğrafı Kütüphanesi (Hızlı Seçim İçin)
 const PRESET_STUDIO_IMAGES = [
@@ -94,6 +96,10 @@ export default function AdminStudioPage() {
   // Eser Ekleme / Düzenleme Modalı
   const [isArtworkModalOpen, setIsArtworkModalOpen] = useState(false);
   const [editingArtwork, setEditingArtwork] = useState<Partial<ArtworkDetail> | null>(null);
+
+  // COA Özgünlük Sertifikası Modalı
+  const [coaArtwork, setCoaArtwork] = useState<ArtworkDetail | null>(null);
+  const [isCoaOpen, setIsCoaOpen] = useState(false);
 
   // Atölye Ekleme / Düzenleme Modalı
   const [isWorkshopModalOpen, setIsWorkshopModalOpen] = useState(false);
@@ -1167,6 +1173,17 @@ export default function AdminStudioPage() {
                               <button
                                 onClick={() => {
                                   soundFx.playClick();
+                                  setCoaArtwork(a);
+                                  setIsCoaOpen(true);
+                                }}
+                                className="p-1.5 bg-neutral-900 border border-neutral-700 hover:border-amber-400 text-neutral-300 hover:text-amber-400"
+                                title="COA Özgünlük Sertifikası Oluştur/Yazdır"
+                              >
+                                <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  soundFx.playClick();
                                   setEditingArtwork({ ...a });
                                   setIsArtworkModalOpen(true);
                                 }}
@@ -2073,6 +2090,16 @@ export default function AdminStudioPage() {
           </div>
         </div>
       )}
+
+      {/* COA Özgünlük Sertifikası Yazdır/Görüntüle Modalı */}
+      <CertificateOfAuthenticityModal
+        artwork={coaArtwork}
+        isOpen={isCoaOpen}
+        onClose={() => {
+          setIsCoaOpen(false);
+          setCoaArtwork(null);
+        }}
+      />
     </div>
   );
 }

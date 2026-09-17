@@ -53,45 +53,45 @@ export default function Hero() {
       </div>
 
       {/* 2. EDİTORYAL VİTRİN VE İSİM VURGUSU */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-16 sm:py-24 w-full grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-20 md:py-24 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
         
         {/* Sol Kolon: Marka ve Sanatçı İsim Vurgusu */}
-        <div className="lg:col-span-7 flex flex-col justify-center text-left space-y-6">
+        <div className="lg:col-span-7 flex flex-col justify-center text-left space-y-4 sm:space-y-6">
           
           {/* MARKA İSMİ VURGUSU (NONVALUE JEWEL) */}
-          <div className="inline-flex items-center gap-3">
+          <div className="inline-flex items-center gap-2 sm:gap-3">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="px-3 py-1 bg-white/10 border border-white/20 text-white font-mono text-[11px] sm:text-xs uppercase tracking-[0.3em] backdrop-blur-xs">
+            <span className="px-2.5 py-1 bg-white/10 border border-white/20 text-white font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] backdrop-blur-xs">
               {t('hero.brand')}
             </span>
-            <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase hidden sm:inline">
+            <span className="text-[9px] sm:text-[10px] font-mono tracking-widest text-neutral-400 uppercase hidden sm:inline">
               {'// '}{t('hero.brandSubtitle')}
             </span>
           </div>
 
           {/* MÜŞTERİNİN / SANATÇININ KENDİ İSMİ VURGUSU (DERİN BUSE DEMİRKAYA) */}
-          <div className="space-y-2">
-            <h1 className="font-serif text-5xl sm:text-7xl lg:text-8xl tracking-tight text-white uppercase leading-[0.92]">
+          <div className="space-y-1 sm:space-y-2">
+            <h1 className="font-serif text-3xl sm:text-6xl lg:text-8xl tracking-tight text-white uppercase leading-[0.92]">
               Derin Buse <br />
               <span className="italic font-light text-neutral-300">Demirkaya</span>
             </h1>
           </div>
 
           {/* İnce Ayırıcı Çizgi */}
-          <div className="w-28 h-[2px] bg-gradient-to-r from-amber-400 via-neutral-500 to-transparent" />
+          <div className="w-20 sm:w-28 h-[2px] bg-gradient-to-r from-amber-400 via-neutral-500 to-transparent" />
 
           {/* Kısa Sanatçı İmzası / Konsept */}
-          <p className="font-sans text-sm sm:text-base text-neutral-300 font-light max-w-xl leading-relaxed tracking-wide">
+          <p className="font-sans text-xs sm:text-base text-neutral-300 font-light max-w-xl leading-relaxed tracking-wide">
             {t('hero.manifestoTag')}
           </p>
 
           {/* Eylem Butonları (Call To Action) */}
-          <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+          <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-4">
             <Link
               href="/#koleksiyon"
               onClick={() => soundFx.playClick()}
               onMouseEnter={() => soundFx.playHover()}
-              className="px-8 py-4 bg-white text-neutral-950 font-mono text-xs uppercase tracking-[0.2em] font-bold hover:bg-neutral-200 transition-all duration-300 shadow-[4px_4px_0px_#f59e0b] active:translate-x-0.5 active:translate-y-0.5 text-center flex items-center justify-center gap-2 group"
+              className="px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-neutral-950 font-mono text-xs uppercase tracking-[0.2em] font-bold hover:bg-neutral-200 transition-all duration-300 shadow-[3px_3px_0px_#f59e0b] sm:shadow-[4px_4px_0px_#f59e0b] active:translate-x-0.5 active:translate-y-0.5 text-center flex items-center justify-center gap-2 group"
             >
               <span>{t('hero.explore')}</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -101,7 +101,7 @@ export default function Hero() {
               href="/arsiv"
               onClick={() => soundFx.playClick()}
               onMouseEnter={() => soundFx.playHover()}
-              className="px-7 py-4 border-2 border-white/40 hover:border-white text-white font-mono text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-all duration-300 text-center flex items-center justify-center gap-2"
+              className="px-5 sm:px-7 py-3 sm:py-4 border-2 border-white/40 hover:border-white text-white font-mono text-xs uppercase tracking-[0.2em] hover:bg-white/10 transition-all duration-300 text-center flex items-center justify-center gap-2"
             >
               <Compass className="w-4 h-4 text-amber-400" />
               <span>{t('hero.archive')}</span>
@@ -111,27 +111,27 @@ export default function Hero() {
               href="/atolye"
               onClick={() => soundFx.playClick()}
               onMouseEnter={() => soundFx.playHover()}
-              className="px-5 py-4 text-neutral-400 hover:text-white font-mono text-xs uppercase tracking-[0.15em] transition-colors text-center"
+              className="px-4 py-2.5 sm:py-4 text-neutral-400 hover:text-white font-mono text-xs uppercase tracking-[0.15em] transition-colors text-center"
             >
               {t('hero.workshops')}
             </Link>
           </div>
 
           {/* Alt Galeri Belirteçleri */}
-          <div className="pt-6 flex items-center gap-6 text-[10px] font-mono uppercase tracking-widest text-neutral-500 border-t border-white/10">
+          <div className="pt-4 sm:pt-6 flex flex-wrap items-center gap-3 sm:gap-6 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-neutral-500 border-t border-white/10">
             <span className="flex items-center gap-1.5">
               <Sparkles className="w-3 h-3 text-amber-400" />
               {language === 'TR' ? 'El Dökümü 925 Gümüş & Bronz' : 'Hand-Cast 925 Silver & Bronze'}
             </span>
-            <span>•</span>
-            <span>{language === 'TR' ? '1/1 Eşsiz & Limitli Seriler' : '1/1 Unique & Limited Editions'}</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline">{language === 'TR' ? '1/1 Eşsiz & Limitli Seriler' : '1/1 Unique & Limited Editions'}</span>
           </div>
 
         </div>
 
         {/* Sağ Kolon: Sanatsal Dokulu Eser Çerçevesi (Featured Master Artwork Display) */}
-        <div className="lg:col-span-5 relative">
-          <div className="relative mx-auto max-w-sm sm:max-w-md aspect-[4/5] bg-neutral-900 border-2 border-neutral-700/80 p-3 shadow-[12px_12px_0px_rgba(0,0,0,0.8)] group transition-transform duration-500 hover:-translate-y-1">
+        <div className="lg:col-span-5 relative mt-4 lg:mt-0">
+          <div className="relative mx-auto max-w-[280px] sm:max-w-md aspect-[4/5] bg-neutral-900 border-2 border-neutral-700/80 p-2.5 sm:p-3 shadow-[6px_6px_0px_rgba(0,0,0,0.8)] sm:shadow-[12px_12px_0px_rgba(0,0,0,0.8)] group transition-transform duration-500 hover:-translate-y-1">
             
             {/* Eser Görseli */}
             <div className="relative w-full h-full overflow-hidden bg-black">

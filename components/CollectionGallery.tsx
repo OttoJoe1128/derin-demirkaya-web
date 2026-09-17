@@ -152,12 +152,12 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
       {/* ========================================================================= */}
       {/* 📋 EDİTORYAL BRUTALİZM KONTROL VE ENVANTER ŞERİDİ */}
       {/* ========================================================================= */}
-      <div className="border border-neutral-950 bg-white p-4 sm:p-6 mb-10 shadow-[4px_4px_0px_#000]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="border border-neutral-950 bg-white p-3.5 sm:p-6 mb-6 sm:mb-10 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-6">
           
-          {/* Aks Filtreleme Butonları (Brutalist Chips) */}
-          <div className="flex flex-wrap items-center gap-2 font-mono text-xs uppercase">
-            <span className="text-neutral-400 font-bold mr-2 text-[10px] hidden sm:inline">
+          {/* Aks Filtreleme Butonları (Brutalist Chips - Mobilde Yatay Pürüzsüz Kaydırma) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-xs uppercase overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+            <span className="text-neutral-400 font-bold mr-1 sm:mr-2 text-[10px] shrink-0 hidden sm:inline">
               [FİLTRE // AKS]:
             </span>
             {categories.map((cat) => {
@@ -166,14 +166,14 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                 <button
                   key={cat.id}
                   onClick={() => handleCategorySelect(cat.id)}
-                  className={`px-4 py-2 border transition-all flex items-center gap-2 ${
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 border transition-all flex items-center gap-1.5 shrink-0 whitespace-nowrap text-[11px] sm:text-xs cursor-pointer ${
                     isActive
                       ? 'bg-neutral-950 text-white border-neutral-950 shadow-[2px_2px_0px_#888]'
                       : 'bg-neutral-50 text-neutral-700 border-neutral-300 hover:border-neutral-950 hover:bg-white'
                   }`}
                 >
                   <span className="font-semibold">{cat.label}</span>
-                  <span className={`text-[10px] ${isActive ? 'text-neutral-300' : 'text-neutral-400'}`}>
+                  <span className={`text-[9px] sm:text-[10px] ${isActive ? 'text-neutral-300' : 'text-neutral-400'}`}>
                     [{cat.count}]
                   </span>
                 </button>
@@ -182,16 +182,16 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
           </div>
 
           {/* Görünüm Modu & Arşiv Telemetrisi */}
-          <div className="flex items-center justify-between md:justify-end gap-4 border-t md:border-t-0 pt-3 md:pt-0 border-neutral-200">
-            <span className="text-[11px] font-mono text-neutral-500 uppercase">
-              GÖSTERİLEN: {filteredArtworks.length} / {artworks.length} ESER
+          <div className="flex items-center justify-between md:justify-end gap-2 sm:gap-4 border-t md:border-t-0 pt-2.5 md:pt-0 border-neutral-200">
+            <span className="text-[10px] sm:text-[11px] font-mono text-neutral-500 uppercase truncate">
+              {filteredArtworks.length} / {artworks.length} {isEn ? 'PIECES' : 'ESER'}
             </span>
 
             {/* 3 Görünüm Formatı: Slide (Kayar), Izgara (Grid), Tablo (Table) */}
-            <div className="flex items-center border border-neutral-950 bg-neutral-100 p-0.5">
+            <div className="flex items-center border border-neutral-950 bg-neutral-100 p-0.5 shrink-0">
               <button
                 onClick={() => setDisplayMode('slide')}
-                className={`px-3 py-1 text-xs font-mono uppercase flex items-center gap-1.5 transition-colors ${
+                className={`px-2.5 sm:px-3 py-1 text-xs font-mono uppercase flex items-center gap-1 sm:gap-1.5 transition-colors cursor-pointer ${
                   displayMode === 'slide' ? 'bg-neutral-950 text-white font-bold' : 'text-neutral-600 hover:text-black'
                 }`}
                 title="Slide (Kayar) Sergi Görünümü"
@@ -201,7 +201,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
               </button>
               <button
                 onClick={() => setDisplayMode('grid')}
-                className={`p-1.5 transition-colors ${
+                className={`p-1.5 transition-colors cursor-pointer ${
                   displayMode === 'grid' ? 'bg-neutral-950 text-white font-bold' : 'text-neutral-600 hover:text-black'
                 }`}
                 title="Editoryal Izgara Görünümü"
@@ -210,7 +210,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
               </button>
               <button
                 onClick={() => setDisplayMode('table')}
-                className={`p-1.5 transition-colors ${
+                className={`p-1.5 transition-colors cursor-pointer ${
                   displayMode === 'table' ? 'bg-neutral-950 text-white font-bold' : 'text-neutral-600 hover:text-black'
                 }`}
                 title="Teknik Envanter Tablosu"
@@ -223,15 +223,15 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
         </div>
 
         {/* Aks Açıklama Şeridi */}
-        <div className="mt-4 pt-3 border-t border-neutral-200 text-[11px] font-mono text-neutral-600 flex flex-col sm:flex-row justify-between gap-2">
-          <span>
+        <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-neutral-200 text-[10px] sm:text-[11px] font-mono text-neutral-600 flex flex-col sm:flex-row justify-between gap-1 sm:gap-2">
+          <span className="line-clamp-1 sm:line-clamp-none">
             {activeCategory === 'ALL' && (isEn ? 'FULL ARCHIVE: All Specimen Records Produced Between 2018–2025' : 'TÜM ARŞİV: 2018–2025 Tarihleri Arasında Üretilen Tüm Eser Kayıtları')}
             {activeCategory === 'OBJECT' && (isEn ? 'OBJECT: Sculptural jewelry and metallic explorations in direct dialogue with the body' : 'OBJECT: Doğrudan bedenle temas eden heykelsi takı ve maden araştırmaları')}
             {activeCategory === 'SPACE' && (isEn ? 'SPACE: Spatial sculptures and installations where jewelry expands beyond the human body' : 'SPACE: Takının bedenden mekana taştığı mekansal heykeller ve enstalasyonlar')}
             {activeCategory === 'LINE' && (isEn ? 'LINE: Drawings, sketches and process traces of paper, flame and material encounters' : 'LINE: Kağıt, ateş ve malzeme karşılaşmalarına ait eskiz ve süreç izleri')}
           </span>
-          <span className="text-neutral-500 text-right uppercase">
-            {isEn ? 'ACTIVE VIEW:' : 'AKTİF DÜZEN:'} {displayMode === 'slide' ? (isEn ? 'SLIDE' : 'SLİDE (KAYAR)') : displayMode === 'grid' ? (isEn ? 'GRID' : 'IZGARA') : (isEn ? 'TABLE' : 'TABLO')}
+          <span className="text-neutral-500 text-left sm:text-right uppercase shrink-0">
+            {isEn ? 'VIEW:' : 'DÜZEN:'} {displayMode === 'slide' ? (isEn ? 'SLIDE' : 'SLİDE') : displayMode === 'grid' ? (isEn ? 'GRID' : 'IZGARA') : (isEn ? 'TABLE' : 'TABLO')}
           </span>
         </div>
       </div>
@@ -280,7 +280,7 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUpOrLeave}
             onMouseLeave={handleMouseUpOrLeave}
-            className={`w-full overflow-x-auto scrollbar-none snap-x snap-mandatory flex gap-6 sm:gap-8 pb-8 pt-2 scroll-smooth ${
+            className={`w-full overflow-x-auto scrollbar-none snap-x snap-mandatory flex gap-4 sm:gap-8 pb-6 sm:pb-8 pt-2 scroll-smooth touch-pan-x overscroll-x-contain ${
               isMouseDragging ? 'cursor-grabbing select-none' : 'cursor-grab'
             }`}
           >
@@ -290,25 +290,25 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
               return (
                 <motion.article
                   key={item.id}
-                  className={`w-[85vw] sm:w-[65vw] md:w-[48vw] lg:w-[40vw] max-w-[560px] shrink-0 snap-center bg-white border-2 border-neutral-950 p-5 sm:p-6 flex flex-col justify-between transition-all duration-300 ${
+                  className={`w-[88vw] sm:w-[65vw] md:w-[48vw] lg:w-[40vw] max-w-[560px] shrink-0 snap-center bg-white border-2 border-neutral-950 p-3.5 sm:p-6 flex flex-col justify-between transition-all duration-300 ${
                     isActive
-                      ? 'shadow-[8px_8px_0px_#000] border-neutral-950'
-                      : 'shadow-[4px_4px_0px_#777] opacity-90 hover:opacity-100'
+                      ? 'shadow-[6px_6px_0px_#000] sm:shadow-[8px_8px_0px_#000] border-neutral-950'
+                      : 'shadow-[3px_3px_0px_#777] sm:shadow-[4px_4px_0px_#777] opacity-90 hover:opacity-100'
                   }`}
                 >
                   {/* Kart Başlık Şeridi */}
-                  <div className="flex items-center justify-between border-b border-neutral-950 pb-2.5 mb-3 text-xs font-mono uppercase tracking-widest">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between border-b border-neutral-950 pb-2 mb-2.5 sm:pb-2.5 sm:mb-3 text-[10px] sm:text-xs font-mono uppercase tracking-widest">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       <span className="font-bold text-neutral-950">[+]</span>
                       <span className="font-bold">NV-24-{String(idx + 1).padStart(2, '0')}</span>
                     </div>
                     <div>
                       {item.isUniquePiece ? (
-                        <span className="bg-neutral-950 text-amber-300 px-2 py-0.5 text-[9px] font-bold">
+                        <span className="bg-neutral-950 text-amber-300 px-1.5 sm:px-2 py-0.5 text-[8px] sm:text-[9px] font-bold">
                           {isEn ? '1/1 UNIQUE' : '1/1 EŞSİZ'}
                         </span>
                       ) : (
-                        <span className="border border-neutral-400 px-1.5 py-0.5 text-[9px] text-neutral-700">
+                        <span className="border border-neutral-400 px-1 sm:px-1.5 py-0.5 text-[8px] sm:text-[9px] text-neutral-700">
                           {isEn ? 'EDITION' : 'EDİSYON'}
                         </span>
                       )}
@@ -319,45 +319,45 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                   <Link
                     href={`/koleksiyon/${item.id}`}
                     onClick={handleCardClick}
-                    className="block relative aspect-[4/3] w-full bg-neutral-100 overflow-hidden border border-neutral-950 group cursor-pointer"
+                    className="block relative aspect-[16/10] sm:aspect-[4/3] w-full bg-neutral-100 overflow-hidden border border-neutral-950 group cursor-pointer"
                   >
                     <Image
                       src={item.images[0]}
                       alt={item.title}
                       fill
-                      sizes="(max-width: 768px) 85vw, 500px"
+                      sizes="(max-width: 768px) 88vw, 500px"
                       className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 filter contrast-[1.03]"
                       priority={idx < 2}
                       draggable={false}
                     />
 
-                    <div className="absolute bottom-0 right-0 bg-neutral-950 text-white px-3 py-1.5 text-xs font-mono uppercase tracking-wider transition-transform duration-300 translate-y-full group-hover:translate-y-0 flex items-center gap-1.5">
+                    <div className="absolute bottom-0 right-0 bg-neutral-950 text-white px-2.5 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-mono uppercase tracking-wider transition-transform duration-300 translate-y-full group-hover:translate-y-0 flex items-center gap-1 sm:gap-1.5">
                       <span>3D Parallax</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </div>
                   </Link>
 
                   {/* Eser Bilgileri */}
-                  <div className="mt-4 flex-grow flex flex-col justify-between">
+                  <div className="mt-3 sm:mt-4 flex-grow flex flex-col justify-between">
                     <div>
-                      <div className="flex items-baseline justify-between gap-2 text-xs font-mono uppercase tracking-widest text-neutral-500 mb-1">
+                      <div className="flex items-baseline justify-between gap-2 text-[10px] sm:text-xs font-mono uppercase tracking-widest text-neutral-500 mb-1">
                         <span>{item.category} • {item.year}</span>
-                        <span className="font-serif text-base font-bold text-neutral-950">{item.price}</span>
+                        <span className="font-serif text-sm sm:text-base font-bold text-neutral-950">{item.price}</span>
                       </div>
 
-                      <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tight text-neutral-950 hover:underline">
+                      <h3 className="font-serif text-xl sm:text-3xl uppercase tracking-tight text-neutral-950 hover:underline">
                         <Link href={`/koleksiyon/${item.id}`} onClick={handleCardClick}>
                           {item.title}
                         </Link>
                       </h3>
 
-                      <p className="mt-2 text-xs font-sans text-neutral-700 line-clamp-2 leading-relaxed">
+                      <p className="mt-1 sm:mt-2 text-[11px] sm:text-xs font-sans text-neutral-700 line-clamp-2 leading-relaxed">
                         {item.description}
                       </p>
                     </div>
 
                     {/* Teknik Matris */}
-                    <div className="mt-4 pt-3 border-t border-neutral-950 grid grid-cols-2 gap-2 text-[11px] font-mono uppercase">
+                    <div className="mt-3 sm:mt-4 pt-2.5 sm:pt-3 border-t border-neutral-950 grid grid-cols-2 gap-2 text-[10px] sm:text-[11px] font-mono uppercase">
                       <div>
                         <span className="text-neutral-400 block text-[8px]">{isEn ? 'MATERIAL' : 'MATERYAL'}</span>
                         <span className="text-neutral-950 font-semibold truncate block">{item.material}</span>
@@ -369,14 +369,14 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
                     </div>
 
                     {/* Detay Butonu */}
-                    <div className="mt-4 pt-3 border-t border-neutral-200 flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-neutral-500 uppercase">
+                    <div className="mt-3 sm:mt-4 pt-2 sm:pt-3 border-t border-neutral-200 flex items-center justify-between">
+                      <span className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase truncate max-w-[130px] sm:max-w-none">
                         {item.collectionName}
                       </span>
                       <Link
                         href={`/koleksiyon/${item.id}`}
                         onClick={handleCardClick}
-                        className="inline-flex items-center gap-1.5 bg-neutral-950 hover:bg-neutral-800 text-white px-4 py-2 font-mono text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_#666]"
+                        className="inline-flex items-center gap-1 sm:gap-1.5 bg-neutral-950 hover:bg-neutral-800 text-white px-3 sm:px-4 py-1.5 sm:py-2 font-mono text-[10px] sm:text-xs uppercase tracking-widest transition-all shadow-[2px_2px_0px_#666]"
                       >
                         <span>{isEn ? 'Inspect Parallax' : 'Parallax İncele'}</span>
                         <span>→</span>
@@ -530,8 +530,8 @@ export default function CollectionGallery({ artworks }: CollectionGalleryProps) 
       {/* 📊 GÖRÜNÜM 3: BRUTALİST TEKNİK ENVANTER TABLOSU (ARCHIVAL TABLE) */}
       {/* ========================================================================= */}
       {displayMode === 'table' && (
-        <div className="w-full overflow-x-auto border border-neutral-950 bg-white shadow-[6px_6px_0px_#000]">
-          <table className="w-full text-left border-collapse font-mono text-xs">
+        <div className="w-full overflow-x-auto border border-neutral-950 bg-white shadow-[3px_3px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
+          <table className="w-full min-w-[720px] text-left border-collapse font-mono text-xs">
             <thead>
               <tr className="bg-neutral-950 text-white uppercase text-[10px] tracking-widest border-b border-neutral-950">
                 <th className="py-3 px-4 border-r border-neutral-800">REF NO</th>
