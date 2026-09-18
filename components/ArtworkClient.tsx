@@ -371,10 +371,10 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       {/* ========================================================================= */}
       {/* 📱 MOBİL & TABLET: %100 TAM EKRAN SABİT KASA (100DVH APP-LIKE FORMÜL) */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden h-[100dvh] w-full relative overflow-hidden flex flex-col bg-[#0a0a0a] text-neutral-100 pr-16 select-none">
+      <div className="block lg:hidden fixed inset-0 h-[100dvh] w-full overflow-hidden flex flex-col bg-[#0a0a0a] text-neutral-100 pr-16 select-none z-30 overscroll-none">
         
-        {/* Mobil Sabit Üst Bar (Geri Linki & Paylaş & Eser Ref) */}
-        <header className="h-14 px-4 border-b border-neutral-850 bg-neutral-950/90 backdrop-blur-md flex items-center justify-between z-30 shrink-0">
+        {/* 1. ÜST BAR: GERİ LİNKİ & PAYLAŞ & REF SAYAÇ (COMPACT FLEX-NONE) */}
+        <header className="h-12 px-3 sm:px-4 border-b border-neutral-850 bg-neutral-950/95 backdrop-blur-md flex items-center justify-between z-30 shrink-0 flex-none">
           <Link
             href="/koleksiyon"
             onClick={() => soundFx.playClick()}
@@ -391,17 +391,17 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             <button
               type="button"
               onClick={handleShare}
-              className="text-xs font-mono text-amber-300 hover:text-amber-200 uppercase tracking-widest px-2 py-1 bg-neutral-900 border border-neutral-800 transition-colors cursor-pointer"
+              className="text-xs font-mono text-amber-300 hover:text-amber-200 uppercase tracking-widest px-2 py-0.5 bg-neutral-900 border border-neutral-800 transition-colors cursor-pointer"
             >
               {isCopied ? '✓' : (language === 'EN' ? 'Share' : 'Paylaş')}
             </button>
           </div>
         </header>
 
-        {/* 2. ÜST KISIM: YATAY AKIŞ VE MANYETİK SWIPE (THE TOP GALLERY) */}
-        <div className="flex-1 w-full relative overflow-hidden flex flex-col justify-center bg-neutral-950">
+        {/* 2. ORTA KISIM: YATAY AKIŞ VE MANYETİK SWIPE (FLEX-1 KUSURSUZ DOLULUK) */}
+        <div className="flex-1 relative min-h-0 w-full overflow-hidden flex flex-col justify-center bg-neutral-950">
           {/* Arka Plan Ambient Radyal Işık */}
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.06)_0%,transparent_75%)]" />
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.05)_0%,transparent_75%)]" />
 
           {/* Yatay Manyetik Scroll & Snap Container */}
           <div
@@ -412,12 +412,12 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 setActiveImageIndex(idx);
               }
             }}
-            className="w-full h-full flex flex-row overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] items-center"
+            className="w-full h-full flex flex-row overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-pan-x overscroll-x-contain items-center"
           >
             {displayImages.map((imgSrc, idx) => (
               <div
                 key={idx}
-                className="w-full h-full shrink-0 snap-center flex items-center justify-center p-3.5 relative"
+                className="w-full h-full shrink-0 snap-center relative flex items-center justify-center p-2 sm:p-3"
               >
                 <div
                   onClick={() => {
@@ -425,7 +425,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                     setActiveImageIndex(idx);
                     setIsZoomOpen(true);
                   }}
-                  className="relative w-full h-[96%] max-h-[52dvh] bg-neutral-900/90 border border-neutral-800/90 overflow-hidden shadow-2xl group cursor-zoom-in"
+                  className="relative w-full h-full flex items-center justify-center overflow-hidden border border-neutral-850/80 bg-neutral-900/60 shadow-2xl cursor-zoom-in group"
                 >
                   <Image
                     src={imgSrc}
@@ -433,23 +433,23 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                     fill
                     priority={idx === 0}
                     sizes="(max-width: 1024px) 100vw"
-                    className="object-contain p-2"
+                    className="object-contain"
                   />
 
                   {/* Sol Üst Ref Rozeti */}
-                  <div className="absolute top-2.5 left-2.5 bg-neutral-950/90 font-mono text-[9px] px-2 py-0.5 text-amber-400 border border-neutral-800 tracking-wider">
+                  <div className="absolute top-2.5 left-2.5 bg-neutral-950/90 backdrop-blur-xs font-mono text-[9px] px-2 py-0.5 text-amber-400 border border-neutral-800 tracking-wider">
                     SPECIMEN 0{idx + 1}
                   </div>
 
                   {/* Sağ Üst Büyütme Butonu */}
-                  <div className="absolute top-2.5 right-2.5 p-1.5 bg-neutral-950/80 border border-neutral-800 text-neutral-400">
-                    <Maximize2 className="w-3 h-3 text-neutral-300" />
+                  <div className="absolute top-2.5 right-2.5 p-1.5 bg-neutral-950/80 backdrop-blur-xs border border-neutral-800 text-neutral-400 group-hover:text-amber-300 transition-colors">
+                    <Maximize2 className="w-3.5 h-3.5 text-neutral-300" />
                   </div>
 
                   {/* Görsel Alt Bilgi Şeridi */}
-                  <div className="absolute bottom-0 left-0 right-0 py-1.5 px-2.5 bg-neutral-950/90 border-t border-neutral-900 flex items-center justify-between text-[9px] font-mono text-neutral-400 uppercase tracking-widest">
-                    <span>{localizedArtwork.material}</span>
-                    <span className="text-amber-400/80">{localizedArtwork.weight}</span>
+                  <div className="absolute bottom-0 left-0 right-0 py-1 px-2.5 bg-neutral-950/90 backdrop-blur-xs border-t border-neutral-850/80 flex items-center justify-between text-[9px] font-mono text-neutral-400 uppercase tracking-widest">
+                    <span className="truncate max-w-[60%]">{localizedArtwork.material}</span>
+                    <span className="text-amber-400/90 shrink-0">{localizedArtwork.weight}</span>
                   </div>
                 </div>
               </div>
@@ -457,7 +457,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </div>
 
           {/* Galeri Manyetik Noktaları (Pagination Indicators) */}
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center items-center gap-1.5 pointer-events-none z-10">
+          <div className="absolute bottom-1 left-0 right-0 flex justify-center items-center gap-1.5 pointer-events-none z-10">
             {displayImages.map((_, i) => (
               <span
                 key={i}
@@ -471,38 +471,38 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </div>
         </div>
 
-        {/* 3. SABİT ALT KÜNYE VE AKSİYON BARI (FIXED BOTTOM ANCHOR) */}
-        <footer className="mt-auto shrink-0 bg-neutral-950/98 border-t border-neutral-850/90 p-3.5 sm:p-4 z-20 shadow-[0_-12px_28px_rgba(0,0,0,0.85)] flex flex-col gap-2.5">
+        {/* 3. SABİT ALT KÜNYE VE AKSİYON BARI (FLEX-NONE MT-AUTO) */}
+        <footer className="mt-auto shrink-0 flex-none bg-neutral-950/98 border-t border-neutral-850 p-3 sm:p-4 z-20 shadow-[0_-12px_28px_rgba(0,0,0,0.9)] flex flex-col gap-2">
           {/* Eser Başlığı ve Fiyat */}
-          <div className="flex items-end justify-between gap-2">
+          <div className="flex items-baseline justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 mb-0.5">
                 <span className="text-[9px] font-mono text-amber-400 uppercase tracking-widest truncate">
                   {localizedArtwork.category} • {localizedArtwork.year}
                 </span>
                 {localizedArtwork.isUniquePiece && (
-                  <span className="px-1.5 py-0.2 bg-amber-400/10 border border-amber-400/30 text-[8px] font-mono text-amber-300 uppercase">
-                    1/1 PIECE
+                  <span className="px-1 py-0.2 bg-amber-400/10 border border-amber-400/30 text-[8px] font-mono text-amber-300 uppercase shrink-0">
+                    1/1
                   </span>
                 )}
               </div>
-              <h1 className="font-serif text-lg sm:text-xl text-white font-light uppercase tracking-tight truncate leading-snug">
+              <h1 className="font-serif text-lg sm:text-xl text-white font-light uppercase tracking-tight truncate leading-tight">
                 {localizedArtwork.title}
               </h1>
             </div>
 
             <div className="text-right shrink-0">
-              <span className="block font-serif text-lg sm:text-xl text-amber-300 font-normal leading-none">
+              <span className="block font-serif text-lg sm:text-xl text-amber-300 font-normal leading-tight">
                 {localizedArtwork.price}
               </span>
               <span className="font-mono text-[8px] uppercase tracking-widest text-neutral-500 mt-0.5 block">
-                {language === 'EN' ? 'Tax & Custom Crate Inc.' : 'Özel Sandık & KDV Dahil'}
+                {language === 'EN' ? 'Tax Inc.' : 'KDV Dahil'}
               </span>
             </div>
           </div>
 
           {/* Kompakt Künye Özeti */}
-          <div className="grid grid-cols-2 gap-2 text-[10px] font-mono bg-neutral-900/70 border border-neutral-850 px-2.5 py-1.5">
+          <div className="grid grid-cols-2 gap-2 text-[9px] sm:text-[10px] font-mono bg-neutral-900/80 border border-neutral-850 px-2.5 py-1">
             <div className="truncate text-neutral-400">
               <span className="text-neutral-500 uppercase">{language === 'EN' ? 'Mat: ' : 'Malz: '}</span>
               <span className="text-neutral-200">{localizedArtwork.material}</span>
@@ -514,14 +514,14 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </div>
 
           {/* İkili Aksiyon Butonları (Satın Al / Danış & Sertifika) */}
-          <div className="grid grid-cols-5 gap-2 pt-0.5">
+          <div className="flex items-center gap-2 pt-0.5">
             <button
               type="button"
               onClick={() => {
                 soundFx.playClick();
                 setIsOrderModalOpen(true);
               }}
-              className="col-span-4 py-3 bg-white text-neutral-950 font-mono text-xs uppercase tracking-widest font-bold shadow-lg hover:bg-amber-300 transition-colors cursor-pointer text-center"
+              className="flex-1 py-2.5 bg-white text-neutral-950 font-mono text-xs uppercase tracking-widest font-bold shadow-lg hover:bg-amber-300 active:scale-[0.99] transition-colors cursor-pointer text-center"
             >
               {t('artwork.orderBtn')}
             </button>
@@ -533,7 +533,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 setIsCertModalOpen(true);
               }}
               title={t('artwork.cert')}
-              className="col-span-1 py-3 border border-amber-400/40 text-amber-300 hover:bg-amber-400/10 font-mono text-xs uppercase tracking-widest flex items-center justify-center transition-colors cursor-pointer"
+              className="px-3.5 py-2.5 border border-amber-400/40 text-amber-300 hover:bg-amber-400/10 font-mono text-xs uppercase tracking-widest flex items-center justify-center transition-colors cursor-pointer shrink-0"
             >
               <ShieldCheck className="w-4 h-4" />
             </button>
