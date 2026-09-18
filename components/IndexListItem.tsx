@@ -32,8 +32,11 @@ export default function IndexListItem({
         onHover(artwork);
         soundFx.playHover();
       }}
+      onTouchStart={() => {
+        onHover(artwork);
+      }}
       onClick={() => soundFx.playClick()}
-      className="group relative block w-full py-4 sm:py-5 lg:py-6 border-b border-neutral-800/60 transition-colors duration-300 select-none cursor-pointer"
+      className="group relative block w-full py-3 sm:py-3.5 lg:py-4 border-b border-neutral-800/60 transition-colors duration-300 select-none cursor-pointer"
     >
       {/* Hafif satır arka plan parlaması (hover durumunda) */}
       <div

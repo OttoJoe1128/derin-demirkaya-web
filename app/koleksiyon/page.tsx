@@ -3,8 +3,8 @@ import { getDictionary } from "@/lib/get-dictionary";
 import CollectionPageClient from "@/components/CollectionPageClient";
 
 export const metadata = {
-  title: "nonvalue • archive — Derin Buse Demirkaya",
-  description: "Süreç odaklı çağdaş takı, mekansal heykel ve eskiz arşivi. Ateşin dönüştürücü gücüyle şekillenen 2018–2025 eserleri.",
+  title: "nonvalue • Koleksiyon & İndeks — Derin Buse Demirkaya",
+  description: "Süreç odaklı çağdaş takı, mekansal heykel ve eskiz arşivi. Ateşin dönüştürücü gücüyle şekillenen 2018–2026 eserleri.",
 };
 
 export default async function KoleksiyonPage() {
