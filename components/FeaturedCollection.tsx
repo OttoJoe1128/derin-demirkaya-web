@@ -47,10 +47,10 @@ export default function FeaturedCollection() {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isMouseDownRef.current || !sliderRef.current) return;
-    e.preventDefault();
     const x = e.pageX - sliderRef.current.offsetLeft;
     const walk = (x - startXRef.current) * 1.5;
-    if (Math.abs(walk) > 5) {
+    if (Math.abs(walk) > 12) {
+      e.preventDefault();
       hasMovedRef.current = true;
       setIsMouseDragging(true);
     }

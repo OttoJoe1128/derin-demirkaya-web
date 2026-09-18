@@ -112,7 +112,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-1"
           aria-label={spreads[0]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Dokulu & Granüllü Sanatsal Arka Plan Katmanı */}
           <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-luminosity">
@@ -183,9 +183,14 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
               </div>
             </div>
 
-            {/* Sağ: Hero Specimen Heykel Kartı */}
+            {/* Sağ: Hero Specimen Heykel Kartı (Tıklanabilir Link) */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative group w-full max-w-sm h-[54vh] sm:h-[60vh] border border-neutral-800 bg-neutral-900/60 p-3 sm:p-4 backdrop-blur-sm shadow-[0_20px_50px_rgba(0,0,0,0.8)] shrink-0">
+              <Link
+                href={`${langPrefix}/koleksiyon/1`}
+                onClick={() => soundFx.playClick()}
+                onMouseEnter={() => soundFx.playHover()}
+                className="block relative group w-full max-w-sm h-[50vh] sm:h-[54vh] lg:h-[60vh] border border-neutral-800 hover:border-amber-400/80 bg-neutral-900/60 p-3 sm:p-4 backdrop-blur-sm shadow-[0_20px_50px_rgba(0,0,0,0.8)] shrink-0 cursor-pointer transition-all"
+              >
                 <div className="relative w-full h-full overflow-hidden bg-neutral-950">
                   <Image
                     src="/artworks/4107f9b51db8c3dbac92156e1eebba6e.jpg"
@@ -201,14 +206,17 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                       <span className="font-mono text-[9px] text-amber-400 tracking-widest uppercase block">
                         {spread1.specimenTag}
                       </span>
-                      <h2 className="font-serif text-lg text-white font-light">
+                      <h2 className="font-serif text-lg text-white font-light group-hover:text-amber-300 transition-colors">
                         {spread1.specimenTitle}
                       </h2>
                     </div>
                     <span className="font-mono text-xs text-neutral-400">{spread1.specimenWeight}</span>
                   </div>
+                  <div className="absolute top-3 right-3 bg-neutral-950/90 border border-neutral-700 px-2 py-0.5 text-[9px] font-mono text-amber-300 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    {lang === 'en' ? 'View 3D →' : 'İncele →'}
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
           </div>
 
@@ -225,7 +233,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-2"
           aria-label={spreads[1]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -245,10 +253,15 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
             </Link>
           </header>
 
-          {/* 3'lü Heykelsi Eser Grid Seçkisi */}
+          {/* 3'lü Heykelsi Eser Grid Seçkisi (Tıklanabilir Vitrin Linkleri) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-center my-auto">
             {/* Eser 1 */}
-            <div className="border border-neutral-800 bg-neutral-950 p-4 space-y-3 group hover:border-amber-400/80 transition-all shadow-xl">
+            <Link
+              href={`${langPrefix}/koleksiyon/1`}
+              onClick={() => soundFx.playClick()}
+              onMouseEnter={() => soundFx.playHover()}
+              className="block border border-neutral-800 bg-neutral-950 hover:border-amber-400/80 p-4 space-y-3 group transition-all shadow-xl cursor-pointer"
+            >
               <div className="relative aspect-square w-full bg-neutral-900 overflow-hidden">
                 <Image
                   src="/artworks/4107f9b51db8c3dbac92156e1eebba6e.jpg"
@@ -259,6 +272,9 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                 />
                 <span className="absolute top-2 left-2 bg-neutral-950/80 font-mono text-[9px] px-2 py-0.5 text-neutral-400 border border-neutral-800">
                   REF. {spread2.card1.num}
+                </span>
+                <span className="absolute bottom-2 right-2 bg-neutral-950/90 text-amber-300 font-mono text-[9px] px-2 py-0.5 border border-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {lang === 'en' ? 'View Piece →' : 'Eseri İncele →'}
                 </span>
               </div>
               <div>
@@ -273,10 +289,15 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                 <span className="text-amber-400 font-bold">{spread2.card1.purity}</span>
                 <span className="text-neutral-400">{spread2.card1.weight}</span>
               </div>
-            </div>
+            </Link>
 
             {/* Eser 2 */}
-            <div className="border border-neutral-800 bg-neutral-950 p-4 space-y-3 group hover:border-amber-400/80 transition-all shadow-xl">
+            <Link
+              href={`${langPrefix}/koleksiyon/2`}
+              onClick={() => soundFx.playClick()}
+              onMouseEnter={() => soundFx.playHover()}
+              className="block border border-neutral-800 bg-neutral-950 hover:border-amber-400/80 p-4 space-y-3 group transition-all shadow-xl cursor-pointer"
+            >
               <div className="relative aspect-square w-full bg-neutral-900 overflow-hidden">
                 <Image
                   src="/artworks/73b378038d10ce1b9338f05e324efaa2.jpg"
@@ -287,6 +308,9 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                 />
                 <span className="absolute top-2 left-2 bg-neutral-950/80 font-mono text-[9px] px-2 py-0.5 text-neutral-400 border border-neutral-800">
                   REF. {spread2.card2.num}
+                </span>
+                <span className="absolute bottom-2 right-2 bg-neutral-950/90 text-amber-300 font-mono text-[9px] px-2 py-0.5 border border-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {lang === 'en' ? 'View Piece →' : 'Eseri İncele →'}
                 </span>
               </div>
               <div>
@@ -301,10 +325,15 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                 <span className="text-amber-400 font-bold">{spread2.card2.purity}</span>
                 <span className="text-neutral-400">{spread2.card2.weight}</span>
               </div>
-            </div>
+            </Link>
 
             {/* Eser 3 */}
-            <div className="border border-neutral-800 bg-neutral-950 p-4 space-y-3 group hover:border-amber-400/80 transition-all shadow-xl">
+            <Link
+              href={`${langPrefix}/koleksiyon/3`}
+              onClick={() => soundFx.playClick()}
+              onMouseEnter={() => soundFx.playHover()}
+              className="block border border-neutral-800 bg-neutral-950 hover:border-amber-400/80 p-4 space-y-3 group transition-all shadow-xl cursor-pointer"
+            >
               <div className="relative aspect-square w-full bg-neutral-900 overflow-hidden">
                 <Image
                   src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
@@ -315,6 +344,9 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                 />
                 <span className="absolute top-2 left-2 bg-neutral-950/80 font-mono text-[9px] px-2 py-0.5 text-neutral-400 border border-neutral-800">
                   REF. {spread2.card3.num}
+                </span>
+                <span className="absolute bottom-2 right-2 bg-neutral-950/90 text-amber-300 font-mono text-[9px] px-2 py-0.5 border border-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {lang === 'en' ? 'View Piece →' : 'Eseri İncele →'}
                 </span>
               </div>
               <div>
@@ -329,7 +361,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                 <span className="text-amber-400 font-bold">{spread2.card3.purity}</span>
                 <span className="text-neutral-400">{spread2.card3.weight}</span>
               </div>
-            </div>
+            </Link>
           </div>
 
           {/* Alt Bilgi */}
@@ -352,7 +384,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-3"
           aria-label={spreads[2]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Alev Atmosferi */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full filter blur-3xl pointer-events-none" />
@@ -442,7 +474,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-4"
           aria-label={spreads[3]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -529,7 +561,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-5"
           aria-label={spreads[4]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-20 sm:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -629,9 +661,10 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         ALT PANEL: EDİTORYAL DERGİ İNDİKATÖRÜ VE İLERLEME ÇUBUĞU
         - Sayfa numaraları (01 / 02 / 03 / 04 / 05)
         - Doğrudan sayfa tıklaması ve ses efekti
-        - Sağ dikey menüden `pr-24` ile izole
+        - Mobilde bottom-14 (mobil barın hemen üstünde) ve tam genişlik
+        - Tablet ve Desktop'ta bottom-0 ve sağ dikey menü için md:right-16 lg:right-24
       */}
-      <div className="fixed bottom-0 left-0 right-20 sm:right-24 z-40 bg-neutral-950/80 backdrop-blur-md border-t border-neutral-800/80 px-4 sm:px-8 py-2.5 flex items-center justify-between text-xs font-mono select-none">
+      <div className="fixed bottom-14 md:bottom-0 left-0 right-0 md:right-16 lg:right-24 z-40 bg-neutral-950/85 backdrop-blur-md border-t border-neutral-800/80 px-4 sm:px-8 py-2 md:py-2.5 flex items-center justify-between text-xs font-mono select-none">
         {/* Sol: İleri / Geri Kontrolleri */}
         <div className="flex items-center gap-2">
           <button

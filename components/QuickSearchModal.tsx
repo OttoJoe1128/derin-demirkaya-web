@@ -173,7 +173,7 @@ export default function QuickSearchModal({ isOpen, onClose }: QuickSearchModalPr
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 pt-16 sm:pt-24 select-none">
+      <div className="fixed inset-0 z-[150] flex items-start justify-center p-4 sm:p-6 pt-16 sm:pt-24 select-none">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
