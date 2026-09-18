@@ -4,9 +4,10 @@ import { useEffect, useRef } from 'react';
 
 export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Mobil veya dokunmatik cihazlarda çalıştırma
+    // Dokunmatik ve mobil cihazlarda imleci tamamen devre dışı bırak
     if (
       typeof window === 'undefined' ||
       !window.matchMedia('(hover: hover) and (pointer: fine)').matches
@@ -18,48 +19,36 @@ export default function CustomCursor() {
     }
 
     const cursor = cursorRef.current;
-    if (!cursor) return;
+    const dot = dotRef.current;
+    if (!cursor || !dot) return;
 
-    // Koordinat ve durum değişkenleri (React state'ten tamamen bağımsız)
-    let mouseX = -100;
-    let mouseY = -100;
-    let cursorX = -100;
-    let cursorY = -100;
-    let targetScale = 1;
-    let currentScale = 1;
-    let targetOpacity = 0;
-    let currentOpacity = 0;
-    let isVisible = false;
     let isOverInput = false;
-    let rafId: number;
+    let isVisible = false;
 
-    // Linear Interpolation (Lerp) fonksiyonu
-    const lerp = (start: number, end: number, factor: number) =>
-      start + (end - start) * factor;
-
-    // Fare hareket dinleyicisi
+    // 1. Sıfır Gecikme (No Spring, No Lerp):
+    // Donanımsal fare koordinatına (clientX, clientY) anında 1:1 ışıma (0ms lag)
     const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
+      // Taşıyıcı div'i farenin merkezine doğrudan konumlandır
+      cursor.style.transform = `translate3d(${e.clientX - 10}px, ${e.clientY - 10}px, 0)`;
 
       if (!isVisible && !isOverInput) {
         isVisible = true;
-        targetOpacity = 1;
+        cursor.style.opacity = '1';
       }
     };
 
     const handleMouseEnter = () => {
       if (!isOverInput) {
-        targetOpacity = 1;
+        cursor.style.opacity = '1';
         cursor.style.display = 'block';
       }
     };
 
     const handleMouseLeave = () => {
-      targetOpacity = 0;
+      cursor.style.opacity = '0';
     };
 
-    // Form ve metin giriş elemanı tespiti (input, textarea, select, contenteditable)
+    // Form alanı tespiti (input, textarea, select, contenteditable)
     const checkIsInput = (element: HTMLElement | null): boolean => {
       if (!element) return false;
       return !!element.closest(
@@ -67,7 +56,7 @@ export default function CustomCursor() {
       );
     };
 
-    // Tıklanabilir interaktif eleman tespiti (link, button vb.)
+    // Tıklanabilir interaktif eleman tespiti (link, button, role=button)
     const checkIsInteractive = (element: HTMLElement | null): boolean => {
       if (!element) return false;
       return !!element.closest(
@@ -75,99 +64,70 @@ export default function CustomCursor() {
       );
     };
 
-    // 3. Form Elemanlarında Özel İmleci Anında Gizle (Savaşma)
+    // 4. Hover Durumlarında Hızlı Tepki (Event Delegation):
+    // Konum (X/Y) asla transition almaz; sadece iç nokta (dot) scale animasyonu yapar.
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
+      // Form elemanlarında özel imleci anında yok et (OS imlecine bırak)
       if (checkIsInput(target)) {
         isOverInput = true;
         cursor.style.display = 'none';
-        targetOpacity = 0;
-        currentOpacity = 0;
         return;
       }
 
-      // Form alanından çıkıldıysa görünürlüğü anında geri getir
       if (isOverInput) {
         isOverInput = false;
         cursor.style.display = 'block';
+        cursor.style.opacity = '1';
       }
 
       if (checkIsInteractive(target)) {
-        targetScale = 2.2;
-        targetOpacity = 0.9;
-        cursor.classList.add('is-hovering');
+        dot.style.transform = 'scale(2)';
       } else {
-        targetScale = 1;
-        targetOpacity = 1;
-        cursor.classList.remove('is-hovering');
+        dot.style.transform = 'scale(1)';
       }
     };
 
     const handleMouseOut = (e: MouseEvent) => {
       const relatedTarget = e.relatedTarget as HTMLElement | null;
 
-      // Pencereden dışarı çıkıldıysa
+      // Pencere sınırlarından çıkıldıysa
       if (!relatedTarget || relatedTarget.nodeName === 'HTML') {
-        targetOpacity = 0;
-        cursor.classList.remove('is-hovering');
+        cursor.style.opacity = '0';
+        dot.style.transform = 'scale(1)';
         return;
       }
 
       if (checkIsInput(relatedTarget)) {
         isOverInput = true;
         cursor.style.display = 'none';
-        targetOpacity = 0;
-        currentOpacity = 0;
         return;
       }
 
       if (isOverInput) {
         isOverInput = false;
         cursor.style.display = 'block';
+        cursor.style.opacity = '1';
       }
 
       if (checkIsInteractive(relatedTarget)) {
-        targetScale = 2.2;
-        targetOpacity = 0.9;
-        cursor.classList.add('is-hovering');
+        dot.style.transform = 'scale(2)';
       } else {
-        targetScale = 1;
-        targetOpacity = 1;
-        cursor.classList.remove('is-hovering');
+        dot.style.transform = 'scale(1)';
       }
     };
 
-    // 60-144Hz requestAnimationFrame Render Döngüsü
-    const render = () => {
-      if (!isOverInput) {
-        cursorX = lerp(cursorX, mouseX, 0.25);
-        cursorY = lerp(cursorY, mouseY, 0.25);
-        currentScale = lerp(currentScale, targetScale, 0.25);
-        currentOpacity = lerp(currentOpacity, targetOpacity, 0.25);
-
-        // 2. Bağımsız GPU Katmanı: translate3d + translateZ(0) ile Hardware Compositing
-        cursor.style.transform = `translate3d(${cursorX - 10}px, ${cursorY - 10}px, 0) translateZ(0) scale(${currentScale})`;
-        cursor.style.opacity = currentOpacity.toFixed(3);
-      }
-
-      rafId = requestAnimationFrame(render);
-    };
-
-    // Event dinleyicilerini bağla
+    // Event listener'ları bağla (Passive: true ile tarayıcı kaydırma performansını kilitlemez)
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseenter', handleMouseEnter);
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseover', handleMouseOver, { passive: true });
     document.addEventListener('mouseout', handleMouseOut, { passive: true });
 
-    // rAF döngüsünü başlat
-    rafId = requestAnimationFrame(render);
-
-    // 4. Event Listener Cleanup (Hafıza Kaçağı / Memory Leak Önlemi)
+    // Temizleme fonksiyonu (Memory Leak engeli)
     return () => {
-      cancelAnimationFrame(rafId);
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
@@ -176,19 +136,28 @@ export default function CustomCursor() {
     };
   }, []);
 
-  // 1. CSS Render Darboğazlarını Sil: mix-blend-mode ve backdrop-filter kaldırıldı.
-  // Katı (solid) amber rengi, bağımsız GPU katmanı (translateZ(0), isolation: isolate, backfaceVisibility: hidden)
   return (
+    // 2. Pointer Events Kesinliği: pointer-events-none ve z-[999999] (Tamamen hayalet eleman)
+    // Konum taşıyıcısında KESİNLİKLE CSS transition YOKTUR (1:1 anında ışınlanma)
     <div
       ref={cursorRef}
       aria-hidden="true"
-      className="fixed top-0 left-0 w-5 h-5 rounded-full pointer-events-none z-[999999] bg-amber-400 opacity-0 will-change-transform shadow-[0_0_12px_rgba(251,191,36,0.4)] border border-amber-300/70"
+      className="fixed top-0 left-0 pointer-events-none z-[999999] opacity-0 will-change-transform"
       style={{
-        transform: 'translate3d(-100px, -100px, 0) translateZ(0) scale(1)',
+        transform: 'translate3d(-100px, -100px, 0)',
         backfaceVisibility: 'hidden',
         WebkitBackfaceVisibility: 'hidden',
-        isolation: 'isolate',
       }}
-    />
+    >
+      {/* 3. Katı ve Basit CSS: mix-blend-mode, box-shadow, backdrop-filter tamamen SİLİNDİ.
+          Sadece scale için hafif bir CSS transition uygulanır; konum asla gecikmez. */}
+      <div
+        ref={dotRef}
+        className="w-5 h-5 rounded-full bg-amber-400 pointer-events-none transition-transform duration-150 ease-out"
+        style={{
+          transform: 'scale(1)',
+        }}
+      />
+    </div>
   );
 }
