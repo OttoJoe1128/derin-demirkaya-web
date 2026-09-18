@@ -146,11 +146,11 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           {/* ------------------------------------------------------------- */}
           {/* SOL SÜTUN (Sticky Anchor - %38 Genişlik - Asla Hareket Etmez) */}
           {/* ------------------------------------------------------------- */}
-          <aside className="w-[38%] xl:w-[36%] h-full flex flex-col justify-between p-8 xl:p-12 border-r border-neutral-800/80 bg-neutral-950/95 backdrop-blur-md z-30 overflow-y-auto scrollbar-none">
+          <aside className="w-[38%] xl:w-[36%] h-full flex flex-col justify-between p-6 xl:p-8 border-r border-neutral-800/80 bg-neutral-950/95 backdrop-blur-md z-30 overflow-hidden">
             
             {/* Sol Sütun Üst Bilgisi */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
                 <Link
                   href="/koleksiyon"
                   onClick={() => soundFx.playClick()}
@@ -163,7 +163,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 <button
                   type="button"
                   onClick={handleShare}
-                  className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-widest text-neutral-400 hover:text-white px-3 py-1 border border-neutral-800 hover:border-neutral-600 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-neutral-400 hover:text-white px-2.5 py-0.5 border border-neutral-800 hover:border-neutral-600 transition-colors cursor-pointer"
                 >
                   {isCopied ? (
                     <>
@@ -181,98 +181,84 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
               {/* Tipografik Eser Kimliği */}
               <div>
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 border border-amber-400/40 bg-amber-400/10 mb-3">
+                <div className="inline-flex items-center gap-2 px-2 py-0.5 border border-amber-400/40 bg-amber-400/10 mb-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                  <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-amber-300 font-semibold">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-amber-300 font-semibold">
                     {localizedArtwork.category} • {localizedArtwork.year}
                   </span>
                 </div>
 
-                <h1 className="font-serif text-4xl xl:text-5xl font-light tracking-tight text-white uppercase leading-tight">
+                <h1 className="font-serif text-3xl xl:text-4xl font-light tracking-tight text-white uppercase leading-tight">
                   {localizedArtwork.title}
                 </h1>
 
-                <div className="flex items-baseline justify-between mt-3 pt-3 border-t border-neutral-800/80">
-                  <span className="font-mono text-xs text-neutral-400 uppercase tracking-widest">
+                <div className="flex items-baseline justify-between mt-2 pt-2 border-t border-neutral-800/80">
+                  <span className="font-mono text-[11px] text-neutral-400 uppercase tracking-widest">
                     {localizedArtwork.collectionName}
                   </span>
-                  <span className="font-serif text-2xl xl:text-3xl text-amber-300 font-light">
+                  <span className="font-serif text-2xl text-amber-300 font-light">
                     {localizedArtwork.price}
                   </span>
                 </div>
               </div>
 
               {/* Kısa Editoryal Açıklama */}
-              <p className="font-sans text-xs xl:text-sm text-neutral-300 leading-relaxed font-light border-l-2 border-amber-400/50 pl-3">
+              <p className="font-sans text-xs text-neutral-300 leading-relaxed font-light border-l-2 border-amber-400/50 pl-3 line-clamp-3">
                 {localizedArtwork.description}
               </p>
 
-              {/* Kompakt Telemetri & Künye Tablosu */}
-              <div className="bg-neutral-900/60 border border-neutral-800 p-4 space-y-2 text-xs font-mono">
-                <div className="flex justify-between items-center text-neutral-400">
-                  <span className="uppercase">{t('artwork.metalClay')}:</span>
-                  <span className="text-neutral-200 font-medium text-right">{localizedArtwork.material}</span>
-                </div>
-                <div className="flex justify-between items-center text-neutral-400">
-                  <span className="uppercase">{t('artwork.technique')}:</span>
-                  <span className="text-neutral-200 font-medium text-right">{localizedArtwork.technique}</span>
-                </div>
-                <div className="flex justify-between items-center text-neutral-400">
-                  <span className="uppercase">{t('artwork.weight')}:</span>
-                  <span className="text-amber-300 font-bold">{localizedArtwork.weight}</span>
-                </div>
-                <div className="flex justify-between items-center text-neutral-400">
-                  <span className="uppercase">{t('artwork.dimensions')}:</span>
-                  <span className="text-neutral-200 font-medium text-right">{localizedArtwork.dimensions}</span>
-                </div>
-                <div className="flex justify-between items-center text-neutral-400">
-                  <span className="uppercase">{t('artwork.status')}:</span>
-                  <span className="text-emerald-400">
-                    {localizedArtwork.stock > 0
-                      ? `${t('artwork.inStudio')} (${localizedArtwork.stock})`
-                      : t('artwork.customOrder')}
+              {/* 1. Kompakt ve Yoğun Eser Künyesi (Müze Telemetry Plaque) */}
+              <div className="pt-3 border-t border-neutral-800/80 text-[9.5px] font-mono uppercase tracking-widest text-neutral-400 leading-relaxed">
+                <span className="text-neutral-200">{localizedArtwork.material}</span>
+                <span className="text-neutral-600 mx-1.5">•</span>
+                <span>{localizedArtwork.technique}</span>
+                <span className="text-neutral-600 mx-1.5">•</span>
+                <span className="text-amber-300 font-bold">{localizedArtwork.weight}</span>
+                <span className="text-neutral-600 mx-1.5">•</span>
+                <span>{localizedArtwork.dimensions}</span>
+                <span className="text-neutral-600 mx-1.5">•</span>
+                <span className="text-emerald-400">
+                  {localizedArtwork.stock > 0
+                    ? `${t('artwork.inStudio')} (${localizedArtwork.stock})`
+                    : t('artwork.customOrder')}
+                </span>
+                {localizedArtwork.specs && localizedArtwork.specs.map((item, i) => (
+                  <span key={i}>
+                    <span className="text-neutral-600 mx-1.5">{"//"}</span>
+                    <span className="text-neutral-500">{item.label}:</span>{' '}
+                    <span className="text-neutral-300">{item.value}</span>
                   </span>
-                </div>
+                ))}
               </div>
-
-              {/* Detaylı Şartname Parametreleri */}
-              {localizedArtwork.specs && localizedArtwork.specs.length > 0 && (
-                <div className="divide-y divide-neutral-800/80 font-mono text-[11px] pt-2">
-                  {localizedArtwork.specs.map((item, i) => (
-                    <div key={i} className="py-2 flex justify-between items-center">
-                      <span className="text-neutral-500 uppercase tracking-wider">{item.label}</span>
-                      <span className="text-neutral-300 text-right">{item.value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
-            {/* Sol Sütun Alt Butonları & Sertifika */}
-            <div className="space-y-3 pt-6 border-t border-neutral-800 mt-6">
+            {/* Sol Sütun Alt Bölümü (Vurucu İnce Buton & Zarif Metin Linkleri) */}
+            <div className="space-y-2.5 pt-3 border-t border-neutral-800/80 mt-2">
+              {/* 3. Vurucu Ama İnce Ana Aksiyon (Order Button) */}
               <button
                 type="button"
                 onClick={() => {
                   soundFx.playClick();
                   setIsOrderModalOpen(true);
                 }}
-                className="w-full py-3.5 px-6 bg-white hover:bg-amber-300 text-neutral-950 font-mono text-xs uppercase tracking-[0.2em] font-bold transition-all shadow-[2px_2px_0px_#999] active:translate-x-[1px] active:translate-y-[1px] flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-2.5 px-4 bg-white hover:bg-amber-300 text-black font-mono text-xs uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
               >
                 <span>{t('artwork.orderBtn')}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
 
-              <div className="grid grid-cols-2 gap-2">
+              {/* 2. İkincil Aksiyonları Zarif Metinlere Çevir (Inquire & Certificate) */}
+              <div className="flex items-center justify-between px-0.5 text-[10px] font-mono tracking-widest uppercase">
                 <a
                   href={`mailto:sircaedebiyat@gmail.com?subject=${encodeURIComponent(
                     language === 'EN'
                       ? `Studio Inquiry: ${localizedArtwork.title}`
                       : `Atölye Talebi: ${localizedArtwork.title}`
                   )}`}
-                  className="py-2.5 px-3 border border-neutral-700 hover:border-neutral-400 text-neutral-300 hover:text-white font-mono text-[11px] uppercase tracking-wider text-center flex items-center justify-center gap-1.5 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors underline underline-offset-4 decoration-neutral-700 hover:decoration-white"
                 >
                   <Mail className="w-3 h-3 text-neutral-400" />
-                  <span>{language === 'EN' ? 'Inquire' : 'Danış'}</span>
+                  <span>{language === 'EN' ? 'Studio Inquiry' : 'Atölye Danışma'}</span>
                 </a>
 
                 <button
@@ -281,7 +267,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                     soundFx.playClick();
                     setIsCertModalOpen(true);
                   }}
-                  className="py-2.5 px-3 border border-amber-400/30 hover:border-amber-400 bg-amber-400/5 text-amber-300 hover:text-amber-200 font-mono text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-amber-300/85 hover:text-amber-200 transition-colors underline underline-offset-4 decoration-amber-400/40 hover:decoration-amber-300 cursor-pointer"
                   title={language === 'EN' ? 'Inspect Official COA' : 'Resmi Belgeyi Gör'}
                 >
                   <ShieldCheck className="w-3 h-3 text-amber-400" />
@@ -290,9 +276,9 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               </div>
 
               {/* Scroll İpucu */}
-              <div className="pt-2 flex items-center justify-between text-[10px] font-mono text-neutral-500 uppercase tracking-widest">
+              <div className="pt-1 flex items-center justify-between text-[9px] font-mono text-neutral-500 uppercase tracking-widest">
                 <span className="flex items-center gap-1">
-                  <Compass className="w-3 h-3 text-amber-400 animate-spin" />
+                  <Compass className="w-2.5 h-2.5 text-amber-400 animate-spin" />
                   {language === 'EN' ? 'Scroll down to slide archive →' : 'Aşağı kaydırarak vitrini akıtın →'}
                 </span>
                 <span>01 / 0{totalCards}</span>
