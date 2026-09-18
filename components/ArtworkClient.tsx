@@ -369,38 +369,38 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       </section>
 
       {/* ========================================================================= */}
-      {/* 📱 MOBİL & TABLET: %100 TAM EKRAN SABİT KASA (100DVH APP-LIKE FORMÜL) */}
+      {/* 📱 MOBİL & TABLET: %100 TAM EKRAN SABİT KASA (ÜST GÖRSEL, ALT BOTTOM SHEET) */}
       {/* ========================================================================= */}
-      <div className="block lg:hidden fixed inset-0 h-[100dvh] w-full overflow-hidden flex flex-col bg-[#0a0a0a] text-neutral-100 select-none z-30 overscroll-none">
+      <div className="block lg:hidden fixed inset-0 h-[100dvh] w-full flex flex-col overflow-hidden bg-black text-neutral-100 select-none z-30 overscroll-none">
         
-        {/* 1. ÜST NAVİGASYON (GERİ DÖN / SAYAÇ / PAYLAŞ - COMPACT FLEX-NONE) */}
-        <header className="flex-none shrink-0 h-12 px-4 pr-16 border-b border-neutral-850 bg-neutral-950/95 backdrop-blur-md flex items-center justify-between z-30">
-          <Link
-            href="/koleksiyon"
-            onClick={() => soundFx.playClick()}
-            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-neutral-400 hover:text-white transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>{language === 'EN' ? 'Archive' : 'Arşiv'}</span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] text-neutral-500 uppercase tracking-widest">
-              0{activeImageIndex + 1} / 0{displayImages.length}
-            </span>
-            <button
-              type="button"
-              onClick={handleShare}
-              className="text-xs font-mono text-amber-300 hover:text-amber-200 uppercase tracking-widest px-2.5 py-1 bg-neutral-900 border border-neutral-800 transition-colors cursor-pointer"
+        {/* 1. ÜST KATMAN: SADECE YATAY KAYAN GÖRSELLER (DOM'DAKİ İLK ELEMAN - FLEX-1) */}
+        <div className="flex-1 w-full relative min-h-0 overflow-hidden bg-black">
+          {/* Gezer Üst Navigasyon Katmanı (Geri Dön / Sayaç / Paylaş) */}
+          <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between p-3.5 pr-16 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none">
+            <Link
+              href="/koleksiyon"
+              onClick={() => soundFx.playClick()}
+              className="pointer-events-auto inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-neutral-300 hover:text-white px-2.5 py-1 bg-black/60 backdrop-blur-md border border-neutral-800 transition-colors cursor-pointer"
             >
-              {isCopied ? '✓' : (language === 'EN' ? 'Share' : 'Paylaş')}
-            </button>
-          </div>
-        </header>
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>{language === 'EN' ? 'Archive' : 'Arşiv'}</span>
+            </Link>
 
-        {/* 2. ORTA GÖRSEL GALERİSİ: FLEX-1 İLE TÜM BOŞLUĞU DOLDURAN YATAY ŞERİT */}
-        <div className="flex-1 w-full relative min-h-0 overflow-hidden bg-[#0a0a0a]">
-          {/* Yatay Manyetik Scroll & Snap Container (Sıfır Çerçeve / Sıfır Fazlalık Padding) */}
+            <div className="pointer-events-auto flex items-center gap-2">
+              <span className="font-mono text-[10px] text-neutral-400 bg-black/60 backdrop-blur-md px-2 py-1 border border-neutral-800 uppercase tracking-widest">
+                0{activeImageIndex + 1} / 0{displayImages.length}
+              </span>
+              <button
+                type="button"
+                onClick={handleShare}
+                className="text-xs font-mono text-amber-300 hover:text-amber-200 uppercase tracking-widest px-2.5 py-1 bg-black/60 backdrop-blur-md border border-neutral-800 transition-colors cursor-pointer"
+              >
+                {isCopied ? '✓' : (language === 'EN' ? 'Share' : 'Paylaş')}
+              </button>
+            </div>
+          </div>
+
+          {/* Yatay Kayan Görsel Galerisi (Yalnızca Görseller, Metin İçermez) */}
           <div
             onScroll={(e) => {
               const el = e.currentTarget;
@@ -409,7 +409,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 setActiveImageIndex(idx);
               }
             }}
-            className="w-full h-full flex flex-row overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-pan-x overscroll-x-contain"
+            className="w-full h-full flex overflow-x-auto snap-x snap-mandatory scrollbar-none no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-pan-x overscroll-x-contain"
           >
             {displayImages.map((imgSrc, idx) => (
               <div
@@ -419,7 +419,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                   setActiveImageIndex(idx);
                   setIsZoomOpen(true);
                 }}
-                className="w-full h-full shrink-0 snap-center snap-always relative cursor-zoom-in"
+                className="w-screen shrink-0 h-full snap-center relative cursor-zoom-in"
               >
                 <Image
                   src={imgSrc}
@@ -431,19 +431,19 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 />
 
                 {/* Minimalist Specimen Rozeti */}
-                <div className="absolute top-3.5 left-3.5 bg-neutral-950/85 backdrop-blur-xs font-mono text-[9px] px-2 py-0.5 text-amber-400 border border-neutral-800 tracking-wider z-10 pointer-events-none">
+                <div className="absolute top-14 left-3.5 bg-neutral-950/80 backdrop-blur-xs font-mono text-[9px] px-2 py-0.5 text-amber-400 border border-neutral-800 tracking-wider z-10 pointer-events-none">
                   SPECIMEN 0{idx + 1}
                 </div>
 
-                {/* Büyütme İkonu (Sağ Bar Güvenli Mesafesiyle) */}
-                <div className="absolute top-3.5 right-16 p-1.5 bg-neutral-950/85 backdrop-blur-xs border border-neutral-800 text-neutral-300 z-10 pointer-events-none">
+                {/* Büyütme İkonu */}
+                <div className="absolute top-14 right-16 p-1.5 bg-neutral-950/80 backdrop-blur-xs border border-neutral-800 text-neutral-300 z-10 pointer-events-none">
                   <Maximize2 className="w-3.5 h-3.5" />
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Galeri Manyetik Noktaları (Pagination Indicators) */}
+          {/* Galeri Manyetik Sayfa Noktaları */}
           <div className="absolute bottom-2 left-0 right-0 flex justify-center items-center gap-1.5 pointer-events-none z-10">
             {displayImages.map((_, i) => (
               <span
@@ -451,90 +451,127 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                 className={`h-1 transition-all rounded-full ${
                   i === activeImageIndex
                     ? 'w-6 bg-amber-400'
-                    : 'w-1.5 bg-neutral-700'
+                    : 'w-1.5 bg-neutral-700/80'
                 }`}
               />
             ))}
           </div>
         </div>
 
-        {/* 3. SABİT ALT PANEL (FLEX-NONE SHRINK-0 - EZİLMEYEN VE SAĞ BAR KORUMALI) */}
-        <footer className="shrink-0 flex-none bg-neutral-950 border-t border-neutral-800 p-5 pb-8 pr-16 z-20 shadow-[0_-16px_36px_rgba(0,0,0,0.95)] flex flex-col gap-3">
-          {/* Eser Başlığı ve Fiyat */}
-          <div className="flex items-baseline justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="text-[9px] font-mono text-amber-400 uppercase tracking-widest truncate">
+        {/* 2. ALT KATMAN: SABİT BİLGİ VE SATIN AL PANELİ (BOTTOM SHEET - H-[45DVH]) */}
+        <div className="h-[45dvh] shrink-0 w-full bg-neutral-950 flex flex-col z-10 border-t border-neutral-800">
+          
+          {/* İç Kısım 1: Kaydırılabilir Künye ve Detaylar */}
+          <div className="flex-1 overflow-y-auto p-5 pr-16 space-y-4 no-scrollbar">
+            {/* Başlık ve Kategori */}
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono text-amber-400 uppercase tracking-widest">
                   {localizedArtwork.category} • {localizedArtwork.year}
                 </span>
                 {localizedArtwork.isUniquePiece && (
-                  <span className="px-1.5 py-0.2 bg-amber-400/10 border border-amber-400/30 text-[8px] font-mono text-amber-300 uppercase shrink-0">
+                  <span className="px-1.5 py-0.2 bg-amber-400/10 border border-amber-400/30 text-[8px] font-mono text-amber-300 uppercase">
                     1/1 PIECE
                   </span>
                 )}
               </div>
-              <h1 className="font-serif text-lg sm:text-xl text-white font-light uppercase tracking-tight truncate leading-tight">
+              <h1 className="font-serif text-xl sm:text-2xl text-white font-light uppercase tracking-tight leading-snug">
                 {localizedArtwork.title}
               </h1>
             </div>
 
-            <div className="text-right shrink-0">
-              <span className="block font-serif text-xl sm:text-2xl text-amber-300 font-normal leading-tight">
-                {localizedArtwork.price}
+            {/* Kompakt Teknik Künye Izgarası */}
+            <div className="grid grid-cols-2 gap-2 text-[10px] font-mono bg-neutral-900/80 border border-neutral-800/90 p-3">
+              <div>
+                <span className="text-neutral-500 uppercase block text-[9px] mb-0.5">{language === 'EN' ? 'Material' : 'Malzeme'}</span>
+                <span className="text-neutral-200">{localizedArtwork.material}</span>
+              </div>
+              <div>
+                <span className="text-neutral-500 uppercase block text-[9px] mb-0.5">{language === 'EN' ? 'Technique' : 'Teknik'}</span>
+                <span className="text-neutral-200">{localizedArtwork.technique}</span>
+              </div>
+              <div>
+                <span className="text-neutral-500 uppercase block text-[9px] mb-0.5">{language === 'EN' ? 'Dimensions' : 'Boyut'}</span>
+                <span className="text-neutral-200">{localizedArtwork.dimensions}</span>
+              </div>
+              <div>
+                <span className="text-neutral-500 uppercase block text-[9px] mb-0.5">{language === 'EN' ? 'Weight' : 'Ağırlık'}</span>
+                <span className="text-neutral-200">{localizedArtwork.weight}</span>
+              </div>
+            </div>
+
+            {/* Felsefe & Editoryal Not */}
+            {localizedArtwork.editorialNote && (
+              <div className="border-l-2 border-amber-400/60 pl-3 py-1 bg-amber-400/[0.02]">
+                <p className="font-serif italic text-xs text-neutral-300 leading-relaxed">
+                  &ldquo;{localizedArtwork.editorialNote}&rdquo;
+                </p>
+              </div>
+            )}
+
+            {/* Detaylı Açıklama */}
+            {localizedArtwork.description && (
+              <div className="text-xs text-neutral-400 leading-relaxed font-light">
+                <p>{localizedArtwork.description}</p>
+              </div>
+            )}
+
+            {/* Atölye Doğrulama İmzası */}
+            <div className="pt-2 border-t border-neutral-900 space-y-1.5 font-mono text-[9px] text-neutral-500">
+              <div className="flex items-center justify-between">
+                <span className="uppercase">{language === 'EN' ? 'Atelier Verification' : 'Atölye Kaydı'}</span>
+                <span className="text-amber-400/90 font-bold">#DD-{localizedArtwork.id.toUpperCase()}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="uppercase">{language === 'EN' ? 'Provenance' : 'Provenans'}</span>
+                <span className="text-neutral-300">DERİN DEMİRKAYA ATELIER</span>
+              </div>
+            </div>
+          </div>
+
+          {/* İç Kısım 2: Sabit Fiyat ve Satın Al Butonları */}
+          <div className="shrink-0 p-4 pr-16 border-t border-neutral-800 bg-neutral-950 flex flex-col gap-2.5">
+            <div className="flex items-baseline justify-between">
+              <div>
+                <span className="font-mono text-[8px] uppercase tracking-widest text-neutral-500 block">
+                  {language === 'EN' ? 'Acquisition Value' : 'Eser Değeri'}
+                </span>
+                <span className="font-serif text-xl sm:text-2xl text-amber-300 font-normal leading-none">
+                  {localizedArtwork.price}
+                </span>
+              </div>
+              <span className="font-mono text-[8px] uppercase tracking-widest text-neutral-500">
+                {language === 'EN' ? 'Tax & Custom Crate Inc.' : 'KDV & Özel Sandık Dahil'}
               </span>
-              <span className="font-mono text-[8px] uppercase tracking-widest text-neutral-500 mt-0.5 block">
-                {language === 'EN' ? 'Tax Inc.' : 'KDV Dahil'}
-              </span>
+            </div>
+
+            <div className="flex items-center gap-2 pt-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playClick();
+                  setIsOrderModalOpen(true);
+                }}
+                className="flex-1 py-3 bg-white text-neutral-950 font-mono text-xs uppercase tracking-widest font-bold shadow-xl hover:bg-amber-300 active:scale-[0.99] transition-all cursor-pointer text-center"
+              >
+                {t('artwork.orderBtn')}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  soundFx.playClick();
+                  setIsCertModalOpen(true);
+                }}
+                title={t('artwork.cert')}
+                className="px-3.5 py-3 border border-amber-400/40 text-amber-300 hover:bg-amber-400/10 font-mono text-xs uppercase tracking-widest flex items-center justify-center transition-colors cursor-pointer shrink-0"
+              >
+                <ShieldCheck className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
-          {/* Kompakt Künye Özeti */}
-          <div className="grid grid-cols-2 gap-2 text-[10px] font-mono bg-neutral-900/80 border border-neutral-800/90 px-3 py-2">
-            <div className="truncate text-neutral-400">
-              <span className="text-neutral-500 uppercase">{language === 'EN' ? 'Mat: ' : 'Malz: '}</span>
-              <span className="text-neutral-200">{localizedArtwork.material}</span>
-            </div>
-            <div className="truncate text-right text-neutral-400">
-              <span className="text-neutral-500 uppercase">{language === 'EN' ? 'Tech: ' : 'Teknik: '}</span>
-              <span className="text-neutral-200">{localizedArtwork.technique}</span>
-            </div>
-          </div>
-
-          {/* Kendi İçinde Kayan Felsefe / Editoryal Not (Korumalı max-h-[14vh] overflow-y-auto) */}
-          {localizedArtwork.editorialNote && (
-            <div className="overflow-y-auto max-h-[14vh] border-l-2 border-amber-400/50 pl-3 py-0.5 no-scrollbar">
-              <p className="font-serif italic text-xs text-neutral-300 leading-relaxed">
-                &ldquo;{localizedArtwork.editorialNote}&rdquo;
-              </p>
-            </div>
-          )}
-
-          {/* İkili Aksiyon Butonları (Satın Al / Danış & Sertifika) */}
-          <div className="flex items-center gap-2.5 pt-1">
-            <button
-              type="button"
-              onClick={() => {
-                soundFx.playClick();
-                setIsOrderModalOpen(true);
-              }}
-              className="flex-1 py-3.5 bg-white text-neutral-950 font-mono text-xs uppercase tracking-widest font-bold shadow-xl hover:bg-amber-300 active:scale-[0.99] transition-all cursor-pointer text-center"
-            >
-              {t('artwork.orderBtn')}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                soundFx.playClick();
-                setIsCertModalOpen(true);
-              }}
-              title={t('artwork.cert')}
-              className="px-4 py-3.5 border border-amber-400/40 text-amber-300 hover:bg-amber-400/10 font-mono text-xs uppercase tracking-widest flex items-center justify-center transition-colors cursor-pointer shrink-0"
-            >
-              <ShieldCheck className="w-4 h-4" />
-            </button>
-          </div>
-        </footer>
+        </div>
       </div>
 
       {/* ========================================================================= */}
