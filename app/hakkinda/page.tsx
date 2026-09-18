@@ -21,14 +21,15 @@ export default function HakkindaPage() {
 
   // 144Hz pürüzsüz yay fiziği (Yatay eksende süzülme)
   const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 280,
-    damping: 36,
+    stiffness: 260,
+    damping: 34,
     restDelta: 0.001,
   });
 
-  // 3 Panel: 0% -> -66.666% (300vw genişlikteki şeridi tam 2 ekran sola kaydırarak 3. paneli kilitler)
-  const xTranslate = useTransform(smoothProgress, [0, 1], ['0%', '-66.666%']);
-  const progressBarWidth = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
+  // 320vw genişliğindeki şerit için milimetrik translateX hesabı:
+  // [0, 0.88] aralığında kaydırma tamamlanır; son %12'lik payda son panel (Education) kilitlenir ve kesinti engellenir.
+  const xTranslate = useTransform(smoothProgress, [0, 0.88], ['0%', '-68.75%'], { clamp: true });
+  const progressBarWidth = useTransform(smoothProgress, [0, 0.88], ['0%', '100%'], { clamp: true });
 
   const exhibitions = [
     { year: '2025', title: 'nonvalue', venue: 'bazaar shop | Hormoz Island', location: 'Iran' },
@@ -98,9 +99,9 @@ export default function HakkindaPage() {
   return (
     <main className="bg-neutral-950 text-neutral-100 selection:bg-amber-400 selection:text-neutral-950 font-sans">
       {/* ========================================================================= */}
-      {/* MASAÜSTÜ: 350vh Dikey Scroll ile Yatay Editoryal Akış (Horizontal Spread) */}
+      {/* MASAÜSTÜ: 480vh Dikey Scroll ile Yatay Editoryal Akış (Horizontal Spread) */}
       {/* ========================================================================= */}
-      <div ref={containerRef} className="hidden lg:block relative h-[360vh]">
+      <div ref={containerRef} className="hidden lg:block relative h-[480vh]">
         <div className="sticky top-0 h-screen w-full overflow-hidden bg-neutral-950 flex flex-col justify-between">
           {/* Üst Editoryal Durum Çubuğu (Persistent Header) */}
           <header className="h-16 px-10 border-b border-neutral-800/80 flex items-center justify-between z-40 bg-neutral-950/90 backdrop-blur-md shrink-0">
@@ -136,11 +137,11 @@ export default function HakkindaPage() {
             </div>
           </header>
 
-          {/* Yatay Eksende Kayan 3 Panelli Gövde (300vw) */}
+          {/* Yatay Eksende Kayan 3 Panelli Gövde (320vw) */}
           <div className="flex-1 w-full overflow-hidden relative">
             <motion.div
               style={{ x: xTranslate }}
-              className="flex flex-row h-full w-[300vw] will-change-transform"
+              className="flex flex-row h-full w-[320vw] will-change-transform"
             >
               {/* ======================================================= */}
               {/* PANEL 01: KAPAK (COVER SPREAD)                          */}
@@ -293,7 +294,7 @@ export default function HakkindaPage() {
               {/* ======================================================= */}
               {/* PANEL 03: ARŞİV & SERGİ İNDEKSİ (THE INDEX SPREAD)      */}
               {/* ======================================================= */}
-              <section className="w-screen h-full shrink-0 p-10 xl:p-14 flex flex-col justify-between relative bg-neutral-950">
+              <section className="w-[120vw] h-full shrink-0 p-10 xl:p-14 pr-20 xl:pr-28 flex flex-col justify-between relative bg-neutral-950">
                 <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
                   <span className="font-mono text-xs uppercase tracking-[0.25em] text-neutral-300">
                     SPREAD 03 // ARCHIVE, EXHIBITIONS & PEDAGOGY
