@@ -21,6 +21,65 @@ interface Props {
   dict: Dictionary;
 }
 
+interface CuratedSpecimen {
+  id: string;
+  refNum: string;
+  title: string;
+  desc: string;
+  purity: string;
+  weight: string;
+  image: string;
+  href: string;
+}
+
+function CuratedSpecimenCard({
+  specimen,
+  viewPieceLabel,
+}: {
+  specimen: CuratedSpecimen;
+  viewPieceLabel: string;
+}) {
+  const [imgSrc, setImgSrc] = useState<string>(specimen.image);
+
+  return (
+    <Link
+      href={specimen.href}
+      onClick={() => soundFx.playClick()}
+      onMouseEnter={() => soundFx.playHover()}
+      className="block border border-neutral-800 bg-neutral-950 hover:border-amber-400/80 p-4 space-y-3 group transition-all shadow-xl cursor-pointer"
+    >
+      <div className="relative aspect-square w-full bg-neutral-900 overflow-hidden">
+        <Image
+          src={imgSrc}
+          alt={specimen.title}
+          fill
+          sizes="(max-width: 768px) 100vw, 320px"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          onError={() => setImgSrc('/artworks/744a7950cff34beaff3f06e308a540a0.jpg')}
+        />
+        <span className="absolute top-2 left-2 bg-neutral-950/80 font-mono text-[9px] px-2 py-0.5 text-neutral-400 border border-neutral-800">
+          REF. {specimen.refNum}
+        </span>
+        <span className="absolute bottom-2 right-2 bg-neutral-950/90 text-amber-300 font-mono text-[9px] px-2 py-0.5 border border-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity">
+          {viewPieceLabel}
+        </span>
+      </div>
+      <div>
+        <h3 className="font-serif text-lg text-white group-hover:text-amber-300 transition-colors">
+          {specimen.title}
+        </h3>
+        <p className="text-xs text-neutral-400 font-sans mt-1 line-clamp-2">
+          {specimen.desc}
+        </p>
+      </div>
+      <div className="pt-2.5 mt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
+        <span className="text-amber-400 font-bold">{specimen.purity}</span>
+        <span className="text-neutral-400">{specimen.weight}</span>
+      </div>
+    </Link>
+  );
+}
+
 export default function EditorialMagazinePage({ lang, dict }: Props) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activePageIndex, setActivePageIndex] = useState<number>(0);
@@ -91,6 +150,42 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
   };
 
   const { spread1, spread2, spread3, spread4, spread5, controls } = dict.magazine;
+
+  const viewPieceLabel = lang === 'en' ? 'View Piece →' : 'Eseri İncele →';
+
+  // Curated Specimens - Clean Architecture Single Source of Truth
+  const curatedSpecimens: CuratedSpecimen[] = [
+    {
+      id: '1',
+      refNum: spread2.card1.num,
+      title: spread2.card1.title,
+      desc: spread2.card1.desc,
+      purity: spread2.card1.purity,
+      weight: spread2.card1.weight,
+      image: '/artworks/744a7950cff34beaff3f06e308a540a0.jpg',
+      href: `${langPrefix}/koleksiyon/1`,
+    },
+    {
+      id: '4',
+      refNum: spread2.card2.num,
+      title: spread2.card2.title,
+      desc: spread2.card2.desc,
+      purity: spread2.card2.purity,
+      weight: spread2.card2.weight,
+      image: '/artworks/5f01a919e1659e62d8e4f6367d419720.jpg',
+      href: `${langPrefix}/koleksiyon/4`,
+    },
+    {
+      id: '6',
+      refNum: spread2.card3.num,
+      title: spread2.card3.title,
+      desc: spread2.card3.desc,
+      purity: spread2.card3.purity,
+      weight: spread2.card3.weight,
+      image: '/artworks/d579cd77efd0e2e64a2057ab336012b3.jpg',
+      href: `${langPrefix}/koleksiyon/6`,
+    },
+  ];
 
   return (
     <main
@@ -253,115 +348,15 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
             </Link>
           </header>
 
-          {/* 3'lü Heykelsi Eser Grid Seçkisi (Tıklanabilir Vitrin Linkleri) */}
+          {/* 3'lü Heykelsi Eser Grid Seçkisi (Clean Architecture Map Döngüsü) */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-center my-auto">
-            {/* Eser 1 */}
-            <Link
-              href={`${langPrefix}/koleksiyon/1`}
-              onClick={() => soundFx.playClick()}
-              onMouseEnter={() => soundFx.playHover()}
-              className="block border border-neutral-800 bg-neutral-950 hover:border-amber-400/80 p-4 space-y-3 group transition-all shadow-xl cursor-pointer"
-            >
-              <div className="relative aspect-square w-full bg-neutral-900 overflow-hidden">
-                <Image
-                  src="/artworks/4107f9b51db8c3dbac92156e1eebba6e.jpg"
-                  alt={spread2.card1.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 320px"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute top-2 left-2 bg-neutral-950/80 font-mono text-[9px] px-2 py-0.5 text-neutral-400 border border-neutral-800">
-                  REF. {spread2.card1.num}
-                </span>
-                <span className="absolute bottom-2 right-2 bg-neutral-950/90 text-amber-300 font-mono text-[9px] px-2 py-0.5 border border-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {lang === 'en' ? 'View Piece →' : 'Eseri İncele →'}
-                </span>
-              </div>
-              <div>
-                <h3 className="font-serif text-lg text-white group-hover:text-amber-300 transition-colors">
-                  {spread2.card1.title}
-                </h3>
-                <p className="text-xs text-neutral-400 font-sans mt-1 line-clamp-2">
-                  {spread2.card1.desc}
-                </p>
-              </div>
-              <div className="pt-2.5 mt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-amber-400 font-bold">{spread2.card1.purity}</span>
-                <span className="text-neutral-400">{spread2.card1.weight}</span>
-              </div>
-            </Link>
-
-            {/* Eser 2 */}
-            <Link
-              href={`${langPrefix}/koleksiyon/2`}
-              onClick={() => soundFx.playClick()}
-              onMouseEnter={() => soundFx.playHover()}
-              className="block border border-neutral-800 bg-neutral-950 hover:border-amber-400/80 p-4 space-y-3 group transition-all shadow-xl cursor-pointer"
-            >
-              <div className="relative aspect-square w-full bg-neutral-900 overflow-hidden">
-                <Image
-                  src="/artworks/73b378038d10ce1b9338f05e324efaa2.jpg"
-                  alt={spread2.card2.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 320px"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute top-2 left-2 bg-neutral-950/80 font-mono text-[9px] px-2 py-0.5 text-neutral-400 border border-neutral-800">
-                  REF. {spread2.card2.num}
-                </span>
-                <span className="absolute bottom-2 right-2 bg-neutral-950/90 text-amber-300 font-mono text-[9px] px-2 py-0.5 border border-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {lang === 'en' ? 'View Piece →' : 'Eseri İncele →'}
-                </span>
-              </div>
-              <div>
-                <h3 className="font-serif text-lg text-white group-hover:text-amber-300 transition-colors">
-                  {spread2.card2.title}
-                </h3>
-                <p className="text-xs text-neutral-400 font-sans mt-1 line-clamp-2">
-                  {spread2.card2.desc}
-                </p>
-              </div>
-              <div className="pt-2.5 mt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-amber-400 font-bold">{spread2.card2.purity}</span>
-                <span className="text-neutral-400">{spread2.card2.weight}</span>
-              </div>
-            </Link>
-
-            {/* Eser 3 */}
-            <Link
-              href={`${langPrefix}/koleksiyon/3`}
-              onClick={() => soundFx.playClick()}
-              onMouseEnter={() => soundFx.playHover()}
-              className="block border border-neutral-800 bg-neutral-950 hover:border-amber-400/80 p-4 space-y-3 group transition-all shadow-xl cursor-pointer"
-            >
-              <div className="relative aspect-square w-full bg-neutral-900 overflow-hidden">
-                <Image
-                  src="/artworks/8d5dfd92ca8a252321fe4766ecad76bc.jpg"
-                  alt={spread2.card3.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 320px"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <span className="absolute top-2 left-2 bg-neutral-950/80 font-mono text-[9px] px-2 py-0.5 text-neutral-400 border border-neutral-800">
-                  REF. {spread2.card3.num}
-                </span>
-                <span className="absolute bottom-2 right-2 bg-neutral-950/90 text-amber-300 font-mono text-[9px] px-2 py-0.5 border border-amber-400/30 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {lang === 'en' ? 'View Piece →' : 'Eseri İncele →'}
-                </span>
-              </div>
-              <div>
-                <h3 className="font-serif text-lg text-white group-hover:text-amber-300 transition-colors">
-                  {spread2.card3.title}
-                </h3>
-                <p className="text-xs text-neutral-400 font-sans mt-1 line-clamp-2">
-                  {spread2.card3.desc}
-                </p>
-              </div>
-              <div className="pt-2.5 mt-2.5 border-t border-neutral-800 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-amber-400 font-bold">{spread2.card3.purity}</span>
-                <span className="text-neutral-400">{spread2.card3.weight}</span>
-              </div>
-            </Link>
+            {curatedSpecimens.map((specimen) => (
+              <CuratedSpecimenCard
+                key={specimen.id}
+                specimen={specimen}
+                viewPieceLabel={viewPieceLabel}
+              />
+            ))}
           </div>
 
           {/* Alt Bilgi */}
