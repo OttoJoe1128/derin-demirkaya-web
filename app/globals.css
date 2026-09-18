@@ -49,8 +49,20 @@
   }
 
   @media (hover: hover) and (pointer: fine) {
-    body, a, button, input, select, textarea, [role="button"], .cursor-pointer {
+    /* Evrensel imleç gizleme: Tüm elementlerde işletim sistemi imlecini gizler */
+    *,
+    *::before,
+    *::after {
       cursor: none !important;
+    }
+
+    /* Form ve metin giriş alanları KESİNLİKLE istisna tutulur: Sistem metin imleci aktif */
+    input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]),
+    textarea,
+    select,
+    [contenteditable],
+    [contenteditable="true"] {
+      cursor: text !important;
     }
   }
 }
