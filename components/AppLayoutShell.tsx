@@ -16,12 +16,32 @@ interface AppLayoutShellProps {
 export default function AppLayoutShell({ children, lang, dict }: AppLayoutShellProps) {
   const pathname = usePathname();
   const isHomePage = pathname === '/' || pathname === '/tr' || pathname === '/en';
+  const isAboutPage =
+    pathname === '/hakkinda' ||
+    pathname === '/about' ||
+    pathname === '/tr/hakkinda' ||
+    pathname === '/en/hakkinda' ||
+    pathname === '/tr/about' ||
+    pathname === '/en/about' ||
+    pathname?.endsWith('/hakkinda') ||
+    pathname?.endsWith('/about');
 
   // Ana Sayfa (Yatay Dergi): 9 saniyelik sinematik intro ve bağımsız z-[101] üst-orta logo
   if (isHomePage) {
     return (
       <div className="w-screen h-screen overflow-hidden bg-neutral-950 text-neutral-100 relative">
         <CinematicLogoIntro />
+        {children}
+      </div>
+    );
+  }
+
+  // Hakkında / About Sayfası (Yatay Monografi): Tam ekran monografi + Sağ Dikey Navigasyon
+  if (isAboutPage) {
+    return (
+      <div className="w-screen h-screen overflow-hidden bg-neutral-950 text-neutral-100 relative">
+        <CinematicLogoIntro />
+        <VerticalNavigation lang={lang} dict={dict} />
         {children}
       </div>
     );

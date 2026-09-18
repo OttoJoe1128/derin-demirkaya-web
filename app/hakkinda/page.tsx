@@ -278,7 +278,7 @@ export default function HakkindaPage() {
           {/* STICKY VİEWPORT: Ekrana kilitlenen ve yatay şeridi gösteren ana sahne */}
           <div className="sticky top-0 h-screen w-full overflow-hidden bg-neutral-950 flex flex-col justify-between">
             {/* Üst Editoryal Durum Çubuğu (Persistent Nav Header) */}
-            <header className="h-14 sm:h-16 px-4 sm:px-8 lg:px-12 border-b border-neutral-800/80 flex items-center justify-between z-40 bg-neutral-950/90 backdrop-blur-md shrink-0">
+            <header className="h-14 sm:h-16 pl-4 sm:pl-8 lg:pl-12 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 border-b border-neutral-800/80 flex items-center justify-between z-40 bg-neutral-950/90 backdrop-blur-md shrink-0">
               <Link
                 href="/"
                 onClick={() => soundFx.playClick()}
@@ -331,6 +331,14 @@ export default function HakkindaPage() {
             <div className="flex-1 w-full overflow-hidden relative">
               <motion.div
                 style={{ x: xTranslate }}
+                onPanEnd={(_e, info) => {
+                  const threshold = 35;
+                  if (info.offset.x < -threshold || info.velocity.x < -180) {
+                    scrollToPanel(activeSpreadRef.current + 1);
+                  } else if (info.offset.x > threshold || info.velocity.x > 180) {
+                    scrollToPanel(activeSpreadRef.current - 1);
+                  }
+                }}
                 className="flex flex-row h-full w-[400vw] will-change-transform"
               >
                 {/* ======================================================= */}
@@ -338,7 +346,7 @@ export default function HakkindaPage() {
                 {/* ======================================================= */}
                 <section
                   id="panel-01"
-                  className="w-screen h-full shrink-0 border-r border-neutral-800/80 p-5 sm:p-10 xl:p-14 flex flex-col justify-between relative bg-neutral-950"
+                  className="w-screen h-full shrink-0 border-r border-neutral-800/80 p-5 sm:p-8 md:p-10 xl:p-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 flex flex-col justify-between relative bg-neutral-950"
                 >
                   <div className="flex items-center justify-between">
                     <div className="inline-flex items-center gap-2 px-2.5 py-1 border border-amber-400/40 bg-amber-400/10">
@@ -412,7 +420,7 @@ export default function HakkindaPage() {
                 {/* ======================================================= */}
                 <section
                   id="panel-02"
-                  className="w-screen h-full shrink-0 border-r border-neutral-800/80 p-5 sm:p-10 xl:p-14 flex flex-col justify-between relative bg-neutral-900/60 backdrop-blur-xs"
+                  className="w-screen h-full shrink-0 border-r border-neutral-800/80 p-5 sm:p-8 md:p-10 xl:p-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 flex flex-col justify-between relative bg-neutral-900/60 backdrop-blur-xs"
                 >
                   <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
                     <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-neutral-300">
@@ -514,7 +522,7 @@ export default function HakkindaPage() {
                 {/* ======================================================= */}
                 <section
                   id="panel-03"
-                  className="w-screen h-full shrink-0 border-r border-neutral-800/80 p-5 sm:p-10 xl:p-14 flex flex-col justify-between relative bg-neutral-950"
+                  className="w-screen h-full shrink-0 border-r border-neutral-800/80 p-5 sm:p-8 md:p-10 xl:p-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 flex flex-col justify-between relative bg-neutral-950"
                 >
                   <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
                     <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-neutral-300">
@@ -583,7 +591,7 @@ export default function HakkindaPage() {
                 {/* ======================================================= */}
                 <section
                   id="panel-04"
-                  className="w-screen h-full shrink-0 p-5 sm:p-10 xl:p-14 flex flex-col justify-between relative bg-neutral-950"
+                  className="w-screen h-full shrink-0 p-5 sm:p-8 md:p-10 xl:p-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 flex flex-col justify-between relative bg-neutral-950"
                 >
                   <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
                     <span className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-neutral-300">
@@ -682,7 +690,7 @@ export default function HakkindaPage() {
             </div>
 
             {/* Alt Sabit Manyetik Navigasyon Çubuğu (Floating Spread Dock) */}
-            <footer className="h-10 px-4 sm:px-8 border-t border-neutral-800/80 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-neutral-400 bg-neutral-950/95 shrink-0 z-40">
+            <footer className="h-10 pl-4 sm:pl-8 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 border-t border-neutral-800/80 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-neutral-400 bg-neutral-950/95 shrink-0 z-40">
               <div className="flex items-center gap-2">
                 <span className="text-amber-400 font-bold">0{activeSpread + 1} / 04</span>
                 <span className="text-neutral-600">|</span>

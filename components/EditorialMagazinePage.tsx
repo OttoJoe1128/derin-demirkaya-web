@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import {
   ArrowRight,
   ArrowLeft,
@@ -82,6 +83,7 @@ function CuratedSpecimenCard({
 
 export default function EditorialMagazinePage({ lang, dict }: Props) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [activePageIndex, setActivePageIndex] = useState<number>(0);
   const activePageIndexRef = useRef<number>(0);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
@@ -90,14 +92,38 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
   const spreads = dict.magazine.spreads;
   const langPrefix = `/${lang}`;
 
-  // Belirli bir sayfaya yumuşak ve manyetik olarak kaydırma
+  // 1. Dikeyden Yataya Scroll Mapping (Framer Motion container hedefli - 5 Sayfa)
+  const { scrollYProgress } = useScroll({
+    container: scrollContainerRef,
+    target: containerRef,
+    offset: ['start start', 'end end'],
+  });
+
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 280,
+    damping: 34,
+    restDelta: 0.001,
+  });
+
+  // 5 sayfa için [0, 1] aralığı '0%' ile '-80%' arasına ötelenir
+  const xTranslate = useTransform(smoothProgress, [0, 1], ['0%', '-80%'], { clamp: true });
+
+  // İlerleme yüzdesi takibi
+  useEffect(() => {
+    const unsubscribe = smoothProgress.on('change', (latest) => {
+      setScrollProgress(Math.min(100, Math.max(0, latest * 100)));
+    });
+    return () => unsubscribe();
+  }, [smoothProgress]);
+
+  // Belirli bir sayfaya yumuşak ve manyetik olarak kaydırma (Hakkında sayfası formülü)
   const scrollToPage = useCallback(
     (index: number) => {
       if (!scrollContainerRef.current) return;
       const clampedIndex = Math.max(0, Math.min(spreads.length - 1, index));
-      const targetX = clampedIndex * window.innerWidth;
+      const h = window.innerHeight || 1;
       scrollContainerRef.current.scrollTo({
-        left: targetX,
+        top: clampedIndex * h,
         behavior: 'smooth',
       });
       activePageIndexRef.current = clampedIndex;
@@ -107,7 +133,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
     [spreads.length]
   );
 
-  // 1. Manyetik Oturma (Wheel Snapping): Her tekerlek dönüşünde bir sonraki/önceki 100vh/100vw bloğuna kilitlen
+  // 1. Manyetik Oturma (Wheel Snapping)
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -116,7 +142,6 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
     let wheelTimer: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
-      // İçerideki dikey kaydırılabilir elementlerin (varsa) kendi içinde kaymasına izin ver
       const target = e.target as HTMLElement | null;
       const scrollableChild = target?.closest('.overflow-y-auto');
       if (scrollableChild && scrollableChild !== container) {
@@ -154,35 +179,32 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
     };
   }, [scrollToPage]);
 
-  // 2. Doğal Sağa/Sola ve Aşağı/Yukarı Touch Swipe Desteği
-  const touchStartX = useRef<number>(0);
+  // 2. Touch Swipe Desteği (Hakkında sayfasındaki kararlı ve pürüzsüz formül)
   const touchStartY = useRef<number>(0);
+  const touchStartX = useRef<number>(0);
   const touchStartTime = useRef<number>(0);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-    touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
+    touchStartX.current = e.touches[0].clientX;
     touchStartTime.current = Date.now();
   };
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-    const touchEndX = e.changedTouches[0].clientX;
     const touchEndY = e.changedTouches[0].clientY;
-    const deltaX = touchEndX - touchStartX.current;
+    const touchEndX = e.changedTouches[0].clientX;
     const deltaY = touchEndY - touchStartY.current;
+    const deltaX = touchEndX - touchStartX.current;
     const duration = Date.now() - touchStartTime.current;
 
-    if (duration < 700) {
-      // Yatay swipe (Sola = sonraki, Sağa = önceki)
-      if (Math.abs(deltaX) > Math.abs(deltaY) * 1.15 && Math.abs(deltaX) > 35) {
+    if (duration < 600) {
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 40) {
         if (deltaX < 0) {
           scrollToPage(activePageIndexRef.current + 1);
         } else {
           scrollToPage(activePageIndexRef.current - 1);
         }
-      }
-      // Dikey swipe (Aşağı = sonraki, Yukarı = önceki)
-      else if (Math.abs(deltaY) > Math.abs(deltaX) * 1.15 && Math.abs(deltaY) > 40) {
+      } else if (Math.abs(deltaY) > 40) {
         if (deltaY < 0) {
           scrollToPage(activePageIndexRef.current + 1);
         } else {
@@ -210,25 +232,23 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
   // Kaydırma Pozisyonu ve Aktif Sayfa Takibi (Manyetik Oturma Kalkanı)
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    const page = Math.round(scrollLeft / clientWidth);
+    const st = scrollContainerRef.current.scrollTop;
+    const h = window.innerHeight || 1;
+    const page = Math.round(st / h);
     if (page !== activePageIndexRef.current) {
       activePageIndexRef.current = page;
       setActivePageIndex(page);
     }
 
-    const maxScroll = scrollWidth - clientWidth;
-    const progress = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
-    setScrollProgress(progress);
-
     // Manyetik Kilit: Kaydırma durduğunda en yakın sayfaya mıknatıs gibi yapış
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     scrollTimeoutRef.current = setTimeout(() => {
       if (!scrollContainerRef.current) return;
-      const targetX = page * scrollContainerRef.current.clientWidth;
-      if (Math.abs(scrollContainerRef.current.scrollLeft - targetX) > 4) {
+      const currentSt = scrollContainerRef.current.scrollTop;
+      const targetTop = page * (window.innerHeight || 1);
+      if (Math.abs(currentSt - targetTop) > 4) {
         scrollContainerRef.current.scrollTo({
-          left: targetX,
+          top: targetTop,
           behavior: 'smooth',
         });
       }
@@ -281,22 +301,48 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
       {/* Sabit Sağ Kenar Dikey Navigasyonu (Dil ve Sözlük prop'ları ile) */}
       <VerticalNavigation lang={lang} dict={dict} />
 
-      {/* YATAY DERGİ SARGISI (Horizontal Scroll Track) */}
+      {/* DİKEYDE KAYAN, YATAYDA PROJEKSİYON SAĞLAYAN EDİTORYAL SEYİR ALANI */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className="h-full flex flex-row overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth"
+        className="h-screen w-screen overflow-y-auto overflow-x-hidden snap-y snap-mandatory scroll-smooth no-scrollbar [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] select-none"
       >
-        {/* ============================================================ */}
-        {/* SAYFA 01 // DERGİ KAPAĞI (COVER & PROLOGUE) */}
-        {/* ============================================================ */}
-        <section
-          id="spread-1"
-          aria-label={spreads[0]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
-        >
+        <div ref={containerRef} className="relative h-[500vh]">
+          {/* 5 GÖRÜNMEZ MANYETİK ÇAPA DIV'İ (CSS Scroll Snapping İçin) */}
+          <div className="absolute inset-0 pointer-events-none flex flex-col">
+            <div id="snap-page-0" className="h-screen w-full snap-start snap-always" />
+            <div id="snap-page-1" className="h-screen w-full snap-start snap-always" />
+            <div id="snap-page-2" className="h-screen w-full snap-start snap-always" />
+            <div id="snap-page-3" className="h-screen w-full snap-start snap-always" />
+            <div id="snap-page-4" className="h-screen w-full snap-start snap-always" />
+          </div>
+
+          {/* STICKY VİEWPORT: Ekrana kilitlenen ve yatay şeridi gösteren ana sahne */}
+          <div className="sticky top-0 h-screen w-full overflow-hidden bg-neutral-950 flex flex-col justify-between">
+            {/* Yatay Eksende Kayan 5 Panelli Gövde (500vw) */}
+            <div className="flex-1 w-full overflow-hidden relative">
+              <motion.div
+                style={{ x: xTranslate }}
+                onPanEnd={(_e, info) => {
+                  const threshold = 35;
+                  if (info.offset.x < -threshold || info.velocity.x < -180) {
+                    scrollToPage(activePageIndexRef.current + 1);
+                  } else if (info.offset.x > threshold || info.velocity.x > 180) {
+                    scrollToPage(activePageIndexRef.current - 1);
+                  }
+                }}
+                className="flex flex-row h-full w-[500vw] will-change-transform"
+              >
+                {/* ============================================================ */}
+                {/* SAYFA 01 // DERGİ KAPAĞI (COVER & PROLOGUE) */}
+                {/* ============================================================ */}
+                <section
+                  id="spread-1"
+                  aria-label={spreads[0]?.title}
+                  className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
+                >
           {/* Dokulu & Granüllü Sanatsal Arka Plan Katmanı */}
           <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-luminosity">
             <Image
@@ -416,7 +462,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-2"
           aria-label={spreads[1]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-900/95"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -467,7 +513,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-3"
           aria-label={spreads[2]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Alev Atmosferi */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full filter blur-3xl pointer-events-none" />
@@ -557,7 +603,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-4"
           aria-label={spreads[3]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-900/90"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -644,7 +690,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-5"
           aria-label={spreads[4]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -738,6 +784,10 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
             </button>
           </footer>
         </section>
+              </motion.div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* 
