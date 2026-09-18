@@ -83,70 +83,156 @@ function CuratedSpecimenCard({
 export default function EditorialMagazinePage({ lang, dict }: Props) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activePageIndex, setActivePageIndex] = useState<number>(0);
+  const activePageIndexRef = useRef<number>(0);
   const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const spreads = dict.magazine.spreads;
   const langPrefix = `/${lang}`;
 
-  // Belirli bir sayfaya yumuşakça kaydırma
-  const scrollToPage = useCallback((index: number) => {
-    if (!scrollContainerRef.current) return;
-    const clampedIndex = Math.max(0, Math.min(spreads.length - 1, index));
-    const targetX = clampedIndex * window.innerWidth;
-    scrollContainerRef.current.scrollTo({
-      left: targetX,
-      behavior: 'smooth',
-    });
-    setActivePageIndex(clampedIndex);
-    soundFx.playClick();
-  }, [spreads.length]);
+  // Belirli bir sayfaya yumuşak ve manyetik olarak kaydırma
+  const scrollToPage = useCallback(
+    (index: number) => {
+      if (!scrollContainerRef.current) return;
+      const clampedIndex = Math.max(0, Math.min(spreads.length - 1, index));
+      const targetX = clampedIndex * window.innerWidth;
+      scrollContainerRef.current.scrollTo({
+        left: targetX,
+        behavior: 'smooth',
+      });
+      activePageIndexRef.current = clampedIndex;
+      setActivePageIndex(clampedIndex);
+      soundFx.playClick();
+    },
+    [spreads.length]
+  );
 
-  // Yatay Dergi Akışı (Fare Tekerleğini Dikeyden Yataya Çevirme)
+  // 1. Manyetik Oturma (Wheel Snapping): Her tekerlek dönüşünde bir sonraki/önceki 100vh/100vw bloğuna kilitlen
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    let isWheeling = false;
+    let wheelTimer: NodeJS.Timeout;
+
     const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) >= Math.abs(e.deltaX)) {
-        e.preventDefault();
-        container.scrollBy({
-          left: e.deltaY * 1.3,
-          behavior: 'auto',
-        });
+      // İçerideki dikey kaydırılabilir elementlerin (varsa) kendi içinde kaymasına izin ver
+      const target = e.target as HTMLElement | null;
+      const scrollableChild = target?.closest('.overflow-y-auto');
+      if (scrollableChild && scrollableChild !== container) {
+        const hasOverflow = scrollableChild.scrollHeight > scrollableChild.clientHeight;
+        const isAtTop = scrollableChild.scrollTop <= 0 && e.deltaY < 0;
+        const isAtBottom =
+          scrollableChild.scrollTop + scrollableChild.clientHeight >= scrollableChild.scrollHeight - 2 &&
+          e.deltaY > 0;
+        if (hasOverflow && !isAtTop && !isAtBottom) return;
       }
+
+      const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if (Math.abs(delta) < 22) return;
+
+      e.preventDefault();
+      if (isWheeling) return;
+
+      isWheeling = true;
+      if (delta > 0) {
+        scrollToPage(activePageIndexRef.current + 1);
+      } else {
+        scrollToPage(activePageIndexRef.current - 1);
+      }
+
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => {
+        isWheeling = false;
+      }, 500);
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => {
       container.removeEventListener('wheel', handleWheel);
+      clearTimeout(wheelTimer);
     };
-  }, []);
+  }, [scrollToPage]);
+
+  // 2. Doğal Sağa/Sola ve Aşağı/Yukarı Touch Swipe Desteği
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+  const touchStartTime = useRef<number>(0);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    touchStartTime.current = Date.now();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaX = touchEndX - touchStartX.current;
+    const deltaY = touchEndY - touchStartY.current;
+    const duration = Date.now() - touchStartTime.current;
+
+    if (duration < 700) {
+      // Yatay swipe (Sola = sonraki, Sağa = önceki)
+      if (Math.abs(deltaX) > Math.abs(deltaY) * 1.15 && Math.abs(deltaX) > 35) {
+        if (deltaX < 0) {
+          scrollToPage(activePageIndexRef.current + 1);
+        } else {
+          scrollToPage(activePageIndexRef.current - 1);
+        }
+      }
+      // Dikey swipe (Aşağı = sonraki, Yukarı = önceki)
+      else if (Math.abs(deltaY) > Math.abs(deltaX) * 1.15 && Math.abs(deltaY) > 40) {
+        if (deltaY < 0) {
+          scrollToPage(activePageIndexRef.current + 1);
+        } else {
+          scrollToPage(activePageIndexRef.current - 1);
+        }
+      }
+    }
+  };
 
   // Klavye ok tuşları (A11y - Sol / Sağ oklar)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === 'ArrowDown') {
         e.preventDefault();
-        scrollToPage(activePageIndex + 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        scrollToPage(activePageIndexRef.current + 1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'ArrowUp') {
         e.preventDefault();
-        scrollToPage(activePageIndex - 1);
+        scrollToPage(activePageIndexRef.current - 1);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activePageIndex, scrollToPage]);
+  }, [scrollToPage]);
 
-  // Kaydırma Pozisyonu ve Aktif Sayfa Takibi
+  // Kaydırma Pozisyonu ve Aktif Sayfa Takibi (Manyetik Oturma Kalkanı)
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
     const page = Math.round(scrollLeft / clientWidth);
-    setActivePageIndex(page);
+    if (page !== activePageIndexRef.current) {
+      activePageIndexRef.current = page;
+      setActivePageIndex(page);
+    }
 
     const maxScroll = scrollWidth - clientWidth;
     const progress = maxScroll > 0 ? (scrollLeft / maxScroll) * 100 : 0;
     setScrollProgress(progress);
+
+    // Manyetik Kilit: Kaydırma durduğunda en yakın sayfaya mıknatıs gibi yapış
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      if (!scrollContainerRef.current) return;
+      const targetX = page * scrollContainerRef.current.clientWidth;
+      if (Math.abs(scrollContainerRef.current.scrollLeft - targetX) > 4) {
+        scrollContainerRef.current.scrollTo({
+          left: targetX,
+          behavior: 'smooth',
+        });
+      }
+    }, 120);
   };
 
   const { spread1, spread2, spread3, spread4, spread5, controls } = dict.magazine;
@@ -199,6 +285,8 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         className="h-full flex flex-row overflow-x-auto overflow-y-hidden snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth"
       >
         {/* ============================================================ */}
@@ -207,7 +295,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-1"
           aria-label={spreads[0]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Dokulu & Granüllü Sanatsal Arka Plan Katmanı */}
           <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-luminosity">
@@ -328,7 +416,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-2"
           aria-label={spreads[1]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
+          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -379,7 +467,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-3"
           aria-label={spreads[2]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Alev Atmosferi */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full filter blur-3xl pointer-events-none" />
@@ -469,7 +557,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-4"
           aria-label={spreads[3]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
+          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -556,7 +644,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-5"
           aria-label={spreads[4]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start snap-always relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
