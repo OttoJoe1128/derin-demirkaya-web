@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -11,22 +11,35 @@ import { soundFx } from '@/lib/sound-fx';
  * 1. Siyah Ekranda Kaybolan Logo (Z-Index Hatası):
  *    - Perde: z-[100] (fixed inset-0 bg-black)
  *    - Logo: KESİNLİKLE z-[101]
- *    - Logo hem /nonvalue-wordmark-white.svg hem bembeyaz metin fallback ile %100 görünür.
- * 2. Eski Yatay Üst Barı (Header) Tamamen Yok Et:
- *    - Eski arama, dil, ses, linkler vb. içeren yatay bar tamamen kaldırılmıştır.
- *    - Üst-orta alanda YALNIZCA "nonvalue" logosu tek başına yer alır.
- * 3. Logonun Final Boyutunu Büyüt (Daha Görkemli Yerleşim):
- *    - Animasyon sonunda scale: 1 yerine scale: 1.35 (ihtişamlı, net ve okunaklı).
+ * 2. Responsive Sinematik Açılış:
+ *    - Mobilde ekran genişliğini aşmayacak şekilde optimize edilmiş dinamik scale (1.6x)
+ *    - Masaüstünde görkemli ve lüks sinematik ölçek (2.8x)
+ *    - Hiçbir cihazda ekran dışına taşma yaşanmaz (max-w-[85vw] güvencesi)
  */
 export default function CinematicLogoIntro() {
   const pathname = usePathname();
   const isHomePage = pathname === '/' || pathname === '/tr' || pathname === '/en';
   const [isAnimationFinished, setIsAnimationFinished] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Mobil ekran kontrolü (ekran taşmasını engellemek için)
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Mevcut dile göre ana sayfa rotasını belirle (/tr veya /en)
   const currentLang = pathname?.startsWith('/en') ? 'en' : 'tr';
   const homeHref = `/${currentLang}`;
+
+  const startScale = isMobile ? 1.6 : 2.8;
+  const finalScale = isMobile ? 1.05 : 1.25;
+  const startY = isMobile ? '36vh' : '38vh';
 
   return (
     <>
@@ -57,17 +70,17 @@ export default function CinematicLogoIntro() {
       {/* 
         KURAL 1 & 2 & 3: Ekranın Üst-Ortasındaki Bağımsız nonvalue Logosu (z-[101])
         - Kesinlikle perdenin önündedir (z-[101])
-        - Eski yatay menü çöpe atılmış, sadece bu logo tek başına kalmıştır
-        - Açılışta 3 saniye ekran merkezinde (y: 38vh, scale: 3.6) beyaz olarak parlar
-        - 6 saniyede üst-ortadaki yuvasına süzülür (y: 0vh, scale: 1.35)
+        - Mobilde ekran genişliğini aşmayacak şekilde güvenli max-w-[85vw]
+        - Açılışta 3 saniye ekran merkezinde beyaz olarak parlar
+        - 6 saniyede üst-ortadaki yuvasına süzülür
       */}
       <div
         id="cinematic-logo-anchor"
-        className="fixed top-5 sm:top-7 left-1/2 -translate-x-1/2 z-[101] flex items-center justify-center pointer-events-auto select-none"
+        className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[101] flex items-center justify-center pointer-events-auto select-none max-w-[90vw]"
       >
         <motion.div
-          initial={isHomePage ? { y: '38vh', scale: 3.6 } : { y: '0vh', scale: 1.35 }}
-          animate={{ y: '0vh', scale: 1.35 }}
+          initial={isHomePage ? { y: startY, scale: startScale } : { y: '0vh', scale: finalScale }}
+          animate={{ y: '0vh', scale: finalScale }}
           transition={
             isHomePage
               ? {
@@ -78,18 +91,18 @@ export default function CinematicLogoIntro() {
               : { duration: 0.3 }
           }
           style={{ willChange: 'transform' }}
-          className="origin-center relative flex items-center justify-center"
+          className="origin-center relative flex items-center justify-center max-w-[85vw]"
         >
           <Link
             href={homeHref}
             onClick={() => soundFx.playClick()}
             className="relative flex items-center justify-center group focus:outline-none focus-visible:ring-1 focus-visible:ring-amber-400/50"
-            title={currentLang === 'en' ? "nonvalue — Home" : "nonvalue — Ana Sayfa"}
+            title={currentLang === 'en' ? 'nonvalue — Home' : 'nonvalue — Ana Sayfa'}
           >
-            <div className="relative flex items-center justify-center px-4 py-2">
+            <div className="relative flex items-center justify-center px-2 sm:px-4 py-1.5 sm:py-2 max-w-[85vw]">
               {/* Garanti Bembeyaz Tipografik Karşılık (Görsel gecikse veya hata verse dahi siyah ekranda asla kaybolmaz) */}
               <span
-                className={`font-serif text-2xl sm:text-3xl tracking-[0.25em] text-white lowercase select-none drop-shadow-[0_2px_16px_rgba(255,255,255,0.7)] ${
+                className={`font-serif text-xl sm:text-2xl md:text-3xl tracking-[0.25em] text-white lowercase select-none drop-shadow-[0_2px_16px_rgba(255,255,255,0.7)] ${
                   !imgError ? 'sr-only' : 'block'
                 }`}
               >
@@ -105,7 +118,7 @@ export default function CinematicLogoIntro() {
                   height={48}
                   priority
                   onError={() => setImgError(true)}
-                  className="h-8 sm:h-9 md:h-10 w-auto object-contain filter drop-shadow-[0_2px_20px_rgba(255,255,255,0.6)] group-hover:opacity-85 transition-opacity"
+                  className="h-7 sm:h-8 md:h-10 w-auto max-w-[75vw] sm:max-w-none object-contain filter drop-shadow-[0_2px_20px_rgba(255,255,255,0.6)] group-hover:opacity-85 transition-opacity"
                 />
               )}
             </div>

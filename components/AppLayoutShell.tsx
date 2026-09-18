@@ -28,9 +28,9 @@ export default function AppLayoutShell({ children, lang, dict }: AppLayoutShellP
   }
 
   // Alt sayfalar (/koleksiyon, /arsiv, /atolye, /admin vb.):
-  // Üst-ortada yalnız ve görkemli "nonvalue" logosu, sağ kenarda dikey navigasyon (mobilde alt bar), altta footer.
+  // Üst-ortada yalnız ve görkemli "nonvalue" logosu, sağ kenarda tüm ekranlarda sabit dikey navigasyon bar.
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100 pr-0 md:pr-16 lg:pr-24 pb-14 md:pb-0 relative">
+    <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100 pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 relative">
       <CinematicLogoIntro />
       <VerticalNavigation lang={lang} dict={dict} />
       <main className="flex-grow w-full pt-16 sm:pt-20">{children}</main>

@@ -112,7 +112,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-1"
           aria-label={spreads[0]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Dokulu & Granüllü Sanatsal Arka Plan Katmanı */}
           <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-luminosity">
@@ -233,7 +233,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-2"
           aria-label={spreads[1]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/95"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -384,7 +384,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-3"
           aria-label={spreads[2]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Alev Atmosferi */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full filter blur-3xl pointer-events-none" />
@@ -474,7 +474,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-4"
           aria-label={spreads[3]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-900/90"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -561,7 +561,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-5"
           aria-label={spreads[4]?.title}
-          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-0 md:pr-16 lg:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-6 sm:px-10 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-screen flex-shrink-0 snap-start relative overflow-hidden pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 flex flex-col justify-between pt-20 sm:pt-24 pb-16 px-4 sm:px-8 lg:px-14 border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -664,7 +664,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         - Mobilde bottom-14 (mobil barın hemen üstünde) ve tam genişlik
         - Tablet ve Desktop'ta bottom-0 ve sağ dikey menü için md:right-16 lg:right-24
       */}
-      <div className="fixed bottom-14 md:bottom-0 left-0 right-0 md:right-16 lg:right-24 z-40 bg-neutral-950/85 backdrop-blur-md border-t border-neutral-800/80 px-4 sm:px-8 py-2 md:py-2.5 flex items-center justify-between text-xs font-mono select-none">
+      <div className="fixed bottom-0 left-0 right-11 sm:right-13 md:right-16 lg:right-20 xl:right-24 z-40 bg-neutral-950/85 backdrop-blur-md border-t border-neutral-800/80 px-3 sm:px-6 md:px-8 py-2 md:py-2.5 flex items-center justify-between text-xs font-mono select-none">
         {/* Sol: İleri / Geri Kontrolleri */}
         <div className="flex items-center gap-2">
           <button
