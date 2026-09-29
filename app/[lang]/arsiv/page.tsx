@@ -1,5 +1,5 @@
-import ArchiveCanvas from "@/app/arsiv/page";
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
+import CinematicCanvasPortal from '@/components/CinematicCanvasPortal';
 
 export const metadata: Metadata = {
   title: "Sinematik Arşiv — Derin Buse Demirkaya | nonvalue jewel",
@@ -7,6 +7,9 @@ export const metadata: Metadata = {
 };
 
 export default function LocalizedArchivePage() {
-  // [lang]/layout.tsx zaten AppLayoutShell ve Footer sarmalamasını tekil olarak sağlıyor.
-  return <ArchiveCanvas />;
+  return (
+    <div className="w-full min-h-screen bg-black text-neutral-200 pt-16 sm:pt-20 pb-16">
+      <CinematicCanvasPortal />
+    </div>
+  );
 }

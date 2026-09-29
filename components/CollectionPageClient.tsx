@@ -150,7 +150,7 @@ export default function CollectionPageClient({ lang: initialLang }: CollectionPa
 
                     {/* Detayları Gör İpucu */}
                     <Link
-                      href={`${langPrefix}/koleksiyon/${activeArtwork.id}`}
+                      href={`${langPrefix}/shop/${activeArtwork.id}`}
                       onClick={() => soundFx.playClick()}
                       className="absolute bottom-2.5 right-2.5 bg-neutral-950/90 hover:bg-neutral-900 border border-neutral-700 px-2.5 py-1 text-[9px] font-mono text-neutral-200 uppercase tracking-widest flex items-center gap-1 shadow-lg transition-all"
                     >
@@ -195,7 +195,7 @@ export default function CollectionPageClient({ lang: initialLang }: CollectionPa
                     {isEn ? (activeArtwork.materialEn || activeArtwork.material) : activeArtwork.material}
                   </span>
                   <Link
-                    href={`${langPrefix}/koleksiyon/${activeArtwork.id}`}
+                    href={`${langPrefix}/shop/${activeArtwork.id}`}
                     onClick={() => soundFx.playClick()}
                     className="text-amber-400 hover:text-amber-300 transition-colors uppercase tracking-wider flex items-center gap-1 shrink-0"
                   >

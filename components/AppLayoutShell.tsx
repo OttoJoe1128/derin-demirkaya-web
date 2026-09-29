@@ -1,9 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import CinematicLogoIntro from './CinematicLogoIntro';
-import Footer from './Footer';
-import VerticalNavigation from './VerticalNavigation';
+import SpatialLayoutShell from './SpatialLayoutShell';
 import type { Dictionary } from '@/lib/get-dictionary';
 import type { Locale } from '@/lib/i18n-config';
 
@@ -13,48 +10,10 @@ interface AppLayoutShellProps {
   dict?: Dictionary;
 }
 
-export default function AppLayoutShell({ children, lang, dict }: AppLayoutShellProps) {
-  const pathname = usePathname();
-  const isHomePage = pathname === '/' || pathname === '/tr' || pathname === '/en';
-  const isAboutPage =
-    pathname === '/hakkinda' ||
-    pathname === '/about' ||
-    pathname === '/tr/hakkinda' ||
-    pathname === '/en/hakkinda' ||
-    pathname === '/tr/about' ||
-    pathname === '/en/about' ||
-    pathname?.endsWith('/hakkinda') ||
-    pathname?.endsWith('/about');
-
-  // Ana Sayfa (Yatay Dergi): 9 saniyelik sinematik intro ve bağımsız z-[101] üst-orta logo
-  if (isHomePage) {
-    return (
-      <div className="w-screen h-screen overflow-hidden bg-neutral-950 text-neutral-100 relative">
-        <CinematicLogoIntro />
-        {children}
-      </div>
-    );
-  }
-
-  // Hakkında / About Sayfası (Yatay Monografi): Tam ekran monografi + Sağ Dikey Navigasyon
-  if (isAboutPage) {
-    return (
-      <div className="w-screen h-screen overflow-hidden bg-neutral-950 text-neutral-100 relative">
-        <CinematicLogoIntro />
-        <VerticalNavigation lang={lang} dict={dict} />
-        {children}
-      </div>
-    );
-  }
-
-  // Alt sayfalar (/koleksiyon, /arsiv, /atolye, /admin vb.):
-  // Üst-ortada yalnız ve görkemli "nonvalue" logosu, sağ kenarda tüm ekranlarda sabit dikey navigasyon bar.
+export default function AppLayoutShell({ children, lang = 'tr', dict }: AppLayoutShellProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-neutral-950 text-neutral-100 pr-11 sm:pr-13 md:pr-16 lg:pr-20 xl:pr-24 relative">
-      <CinematicLogoIntro />
-      <VerticalNavigation lang={lang} dict={dict} />
-      <main className="flex-grow w-full pt-16 sm:pt-20">{children}</main>
-      <Footer />
-    </div>
+    <SpatialLayoutShell lang={lang} dict={dict}>
+      {children}
+    </SpatialLayoutShell>
   );
 }

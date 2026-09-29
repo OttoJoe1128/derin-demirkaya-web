@@ -1,6 +1,6 @@
 import { isValidLocale, type Locale } from '@/lib/i18n-config';
 import { getDictionary } from '@/lib/get-dictionary';
-import AppLayoutShell from '@/components/AppLayoutShell';
+import SpatialLayoutShell from '@/components/SpatialLayoutShell';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,8 +17,8 @@ export default async function LocalizedLayout({ children, params }: LayoutProps)
   const dict = await getDictionary(locale);
 
   return (
-    <AppLayoutShell lang={locale} dict={dict}>
+    <SpatialLayoutShell lang={locale} dict={dict}>
       {children}
-    </AppLayoutShell>
+    </SpatialLayoutShell>
   );
 }

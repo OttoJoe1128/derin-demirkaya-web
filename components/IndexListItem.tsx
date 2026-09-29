@@ -27,7 +27,7 @@ export default function IndexListItem({
 
   return (
     <Link
-      href={`${langPrefix}/koleksiyon/${artwork.id}`}
+      href={`${langPrefix}/shop/${artwork.id}`}
       onMouseEnter={() => {
         onHover(artwork);
         soundFx.playHover();

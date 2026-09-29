@@ -122,7 +122,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="font-sans min-h-screen bg-neutral-950 text-neutral-100 md:cursor-none antialiased"
+        className="font-sans min-h-screen bg-black text-neutral-200 overflow-x-hidden md:cursor-none antialiased"
         suppressHydrationWarning
       >
         <Providers>

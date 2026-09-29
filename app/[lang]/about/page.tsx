@@ -1,5 +1,4 @@
-import HakkindaPage from '@/app/hakkinda/page';
+import LocalizedHakkindaPage, { metadata } from '../hakkinda/page';
 
-export default function LocalizedAboutPage() {
-  return <HakkindaPage />;
-}
+export { metadata };
+export default LocalizedHakkindaPage;
