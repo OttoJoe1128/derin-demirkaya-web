@@ -169,19 +169,20 @@ export default function SpatialLayoutShell({
           >
             <div
               style={{
-                WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 70%)',
-                maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 70%)',
+                WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
+                maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
               }}
-              className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center overflow-hidden"
+              className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
             >
               <Image
-                src="/nvdarklogo_2.jpg"
+                src="/websites.jpg"
                 alt="nonvalue"
                 width={80}
                 height={80}
                 quality={100}
+                unoptimized={true}
                 priority
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover object-center"
               />
             </div>
 
