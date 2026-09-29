@@ -88,7 +88,7 @@ const jsonLdGlobal = {
         "@id": "https://nonvaluejewel.com/#artist",
       },
       "description": "Studio of process-based contemporary jewelry, sculptural objects, and lost-wax casting workshops.",
-      "email": "nonvaluejewel@gmail.com",
+      "email": "derinbusedemirkaya@gmail.com",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Beyoğlu / Karaköy",

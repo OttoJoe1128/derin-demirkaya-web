@@ -32,10 +32,10 @@ export default function Footer() {
             @derinsem__
           </a>
           <a
-            href="mailto:nonvaluejewel@gmail.com"
+            href="mailto:derinbusedemirkaya@gmail.com"
             className="hover:text-neutral-950 underline transition-colors"
           >
-            nonvaluejewel@gmail.com
+            derinbusedemirkaya@gmail.com
           </a>
         </div>
       </div>

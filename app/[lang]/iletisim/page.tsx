@@ -54,8 +54,8 @@ export default function LocalizedIletisimPage() {
             </span>
             <div className="flex items-center gap-2.5 text-neutral-200">
               <Mail className="w-4 h-4 text-amber-400 shrink-0" />
-              <a href="mailto:nonvaluejewel@gmail.com" className="text-white hover:text-amber-400 transition-colors">
-                nonvaluejewel@gmail.com
+              <a href="mailto:derinbusedemirkaya@gmail.com" className="text-white hover:text-amber-400 transition-colors">
+                derinbusedemirkaya@gmail.com
               </a>
             </div>
           </div>

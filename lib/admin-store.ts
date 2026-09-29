@@ -113,7 +113,7 @@ const INITIAL_BOOKINGS: AdminBooking[] = [
     workshopTitle: "Seramik Heykel & Raku Pişirimi",
     workshopDate: "2026-09-19 13:00",
     attendeeName: "Sırça Koleksiyoner",
-    attendeeEmail: "sircaedebiyat@gmail.com",
+    attendeeEmail: "derinbusedemirkaya@gmail.com",
     seatCount: 1,
     totalPrice: 4500,
     status: "confirmed",

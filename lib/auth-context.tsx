@@ -49,7 +49,7 @@ interface AuthContextType {
 const DEFAULT_DEMO_USER: UserProfile = {
   id: 'usr-col-892',
   name: 'Sırça Koleksiyoner',
-  email: 'sircaedebiyat@gmail.com',
+  email: 'derinbusedemirkaya@gmail.com',
   phone: '+90 532 892 44 10',
   city: 'İstanbul, TR',
   memberSince: '2024 / Q2',
