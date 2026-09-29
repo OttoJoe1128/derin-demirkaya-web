@@ -167,14 +167,14 @@ export default function SpatialLayoutShell({
             className="group flex flex-col items-center tracking-widest transition-opacity duration-300 hover:opacity-100 p-2"
             title="nonvalue — Hakkında & Manifesto"
           >
-            <div className="relative flex items-center justify-center">
+            <div className="relative w-14 h-14 flex items-center justify-center mix-blend-screen">
               <Image
-                src="/nonvalue-wordmark-white.svg"
+                src="/nvdarklogo.jpg"
                 alt="nonvalue"
-                width={160}
-                height={32}
+                width={56}
+                height={56}
                 priority
-                className="h-5 sm:h-6 md:h-7 w-auto object-contain filter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-all"
+                className="w-14 h-14 object-contain mix-blend-screen filter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-all"
               />
             </div>
 
