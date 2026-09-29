@@ -25,11 +25,14 @@ interface ArchiveCanvasViewProps {
 export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProps) {
   const isEn = lang === 'en';
 
-  // Tuval Konumu ve Zoom
+  // Tuval Konumu ve Zoom (Mobilde başlangıç ölçeği 0.55)
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(() => (typeof window !== 'undefined' && window.innerWidth < 768 ? 0.55 : 1));
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+
+  const initialPinchDist = useRef<number | null>(null);
+  const initialZoom = useRef<number>(1);
 
   // Seçili Eser (Drawer / Modal)
   const [selectedArtwork, setSelectedArtwork] = useState<ArtworkDetail | null>(null);
@@ -59,16 +62,55 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
     setIsDragging(false);
   };
 
+  // Dokunmatik (Touch) Sürükleme ve İki Parmak Yakınlaştırma (Pinch-to-zoom)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX - pan.x,
+        y: e.touches[0].clientY - pan.y,
+      });
+    } else if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      initialPinchDist.current = dist;
+      initialZoom.current = zoom;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 1 && isDragging) {
+      setPan({
+        x: e.touches[0].clientX - dragStart.x,
+        y: e.touches[0].clientY - dragStart.y,
+      });
+    } else if (e.touches.length === 2 && initialPinchDist.current) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scaleRatio = dist / initialPinchDist.current;
+      setZoom(Math.min(Math.max(0.4, initialZoom.current * scaleRatio), 2.2));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    initialPinchDist.current = null;
+  };
+
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const zoomFactor = -e.deltaY * 0.001;
-    setZoom((prev) => Math.min(Math.max(0.6, prev + zoomFactor), 2.2));
+    setZoom((prev) => Math.min(Math.max(0.4, prev + zoomFactor), 2.2));
   };
 
   const handleReset = () => {
     soundFx.playClick();
     setPan({ x: 0, y: 0 });
-    setZoom(1);
+    setZoom(typeof window !== 'undefined' && window.innerWidth < 768 ? 0.55 : 1);
   };
 
   const handleToggleSound = () => {
@@ -83,8 +125,12 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       onWheel={handleWheel}
-      className={`relative w-screen h-screen overflow-hidden bg-[#050608] text-neutral-100 select-none ${
+      className={`relative w-screen h-screen overflow-hidden bg-[#050608] text-neutral-100 select-none touch-none ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
@@ -206,7 +252,7 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
               className="absolute -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
             >
               {/* Çerçevesiz Heykelsi Görsel */}
-              <div className="relative w-28 sm:w-36 md:w-44 aspect-[4/5] bg-neutral-950 border border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.8)] overflow-hidden group-hover:border-amber-400/80 transition-colors">
+              <div className="relative w-28 sm:w-36 md:w-44 aspect-[4/5] bg-neutral-950 border border-neutral-800 shadow-[0_10px_35px_rgba(0,0,0,0.8)] overflow-hidden group-hover:border-white transition-colors">
                 <Image
                   src={art.images[0]}
                   alt={art.title}
@@ -219,7 +265,7 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
 
               {/* Koordinat & Eser Rozeti */}
               <div className="mt-2 text-center pointer-events-none">
-                <span className="font-mono text-[8px] sm:text-[9px] text-neutral-400 group-hover:text-amber-300 uppercase tracking-widest block truncate max-w-[150px]">
+                <span className="font-mono text-[8px] sm:text-[9px] text-neutral-400 group-hover:text-white uppercase tracking-widest block truncate max-w-[150px]">
                   {art.title}
                 </span>
                 <span className="font-mono text-[7px] text-neutral-600 tracking-wider">
@@ -270,14 +316,14 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
               {/* Bilgiler */}
               <div className="md:col-span-7 flex flex-col justify-between space-y-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-2 font-mono text-[10px] text-amber-400 tracking-widest uppercase">
-                    <Sparkles className="w-3 h-3" />
+                  <div className="flex items-center gap-2 mb-2 font-mono text-[10px] text-neutral-400 tracking-widest uppercase">
+                    <Sparkles className="w-3 h-3 text-white" />
                     <span>{selectedArtwork.collectionName}</span>
                   </div>
-                  <h2 className="font-serif text-2xl sm:text-3xl text-white uppercase tracking-tight">
+                  <h2 className="font-serif text-[14px] text-white uppercase tracking-widest font-normal">
                     {selectedArtwork.title}
                   </h2>
-                  <p className="font-sans text-xs text-neutral-400 leading-relaxed mt-3 line-clamp-3">
+                  <p className="font-sans text-[12px] text-neutral-300 leading-relaxed mt-2.5 line-clamp-3 font-light">
                     {isEn ? selectedArtwork.descriptionEn || selectedArtwork.description : selectedArtwork.description}
                   </p>
 
@@ -296,7 +342,7 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
                     </div>
                     <div>
                       <span className="text-neutral-600 block uppercase">Fiyat</span>
-                      <span className="text-amber-400 font-semibold block">{selectedArtwork.price}</span>
+                      <span className="text-white font-semibold block">{selectedArtwork.price}</span>
                     </div>
                   </div>
                 </div>
@@ -305,10 +351,10 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
                   <Link
                     href={`/${lang}/shop/${selectedArtwork.id}`}
                     onClick={() => soundFx.playClick()}
-                    className="bg-white hover:bg-neutral-200 text-black px-5 py-2.5 font-mono text-xs uppercase tracking-wider font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                    className="bg-white hover:bg-neutral-200 text-black px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider font-semibold flex items-center gap-2 transition-colors cursor-pointer"
                   >
                     <span>{isEn ? 'Open Specimen Page' : 'Eser Sayfasını Aç'}</span>
-                    <ArrowUpRight className="w-4 h-4" />
+                    <ArrowUpRight className="w-3.5 h-3.5" />
                   </Link>
 
                   <span className="font-mono text-[9px] text-neutral-500 uppercase">

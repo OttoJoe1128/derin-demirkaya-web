@@ -141,10 +141,10 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
             ATELIER // 2026 CALENDAR & SESSIONS
           </span>
         </div>
-        <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight uppercase font-light">
+        <h1 className="font-serif text-[14px] text-white tracking-widest uppercase font-normal">
           {isEn ? 'Atelier & Masterclasses' : 'Atölye & Takvim'}
         </h1>
-        <p className="mt-3 font-mono text-xs sm:text-sm text-neutral-400 max-w-2xl leading-relaxed">
+        <p className="mt-2 font-sans text-[12px] text-neutral-400 max-w-2xl leading-relaxed font-light">
           {isEn
             ? 'Interactive monthly schedule for lost-wax casting, molten silver pouring, and contemporary sculptural jewelry.'
             : 'Kayıp mum döküm, akkor gümüş akıtma ve heykelsi takı tasarımı üzerine interaktif takvim ve seans rezervasyonu.'}
@@ -185,7 +185,7 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
         <div className="flex items-center justify-between pb-6 border-b border-neutral-800/80 mb-6">
           <div className="flex items-center gap-3">
             <Calendar className="w-4 h-4 text-amber-400" />
-            <span className="font-serif text-xl sm:text-2xl text-white uppercase tracking-wider font-light">
+            <span className="font-serif text-[14px] text-white uppercase tracking-wider font-normal">
               {monthNames[currentMonthIndex]} {currentYear}
             </span>
           </div>
@@ -306,7 +306,7 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
         <div className="flex items-center justify-between pb-4 border-b border-neutral-800 mb-6">
           <div className="flex items-center gap-2">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <h2 className="font-serif text-xl sm:text-2xl text-white uppercase tracking-tight font-light">
+            <h2 className="font-serif text-[14px] text-white uppercase tracking-widest font-normal">
               {selectedDay !== null
                 ? `${selectedDay} ${monthNames[currentMonthIndex]} ${isEn ? 'Sessions' : 'Seansları'}`
                 : isEn
@@ -314,7 +314,7 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
                 : 'Tüm Planlanan Atölyeler'}
             </h2>
           </div>
-          <span className="font-mono text-xs text-neutral-400">
+          <span className="font-mono text-[10px] text-neutral-400">
             {displayedWorkshops.length} {isEn ? 'SESSIONS AVAILABLE' : 'SEANS MEVCUT'}
           </span>
         </div>
@@ -365,11 +365,11 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-lg sm:text-xl text-white uppercase tracking-tight mb-2 group-hover:text-amber-300 transition-colors">
+                  <h3 className="font-serif text-[12px] text-white uppercase tracking-wider mb-2 group-hover:text-amber-300 transition-colors font-normal">
                     {isEn ? ws.titleEn : ws.title}
                   </h3>
 
-                  <p className="font-sans text-xs text-neutral-400 line-clamp-3 leading-relaxed mb-4">
+                  <p className="font-sans text-[12px] text-neutral-400 line-clamp-3 leading-relaxed mb-4 font-light">
                     {isEn ? ws.descriptionEn : ws.description}
                   </p>
 
@@ -387,7 +387,7 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
                 <div className="mt-6 pt-4 border-t border-neutral-800 flex items-center justify-between">
                   <div>
                     <span className="text-[9px] font-mono text-neutral-500 block uppercase">Ücret</span>
-                    <span className="font-mono text-sm sm:text-base font-semibold text-white">{ws.price}</span>
+                    <span className="font-mono text-[10px] font-semibold text-white">{ws.price}</span>
                   </div>
 
                   <button
@@ -427,16 +427,16 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
                 <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
                   <Check className="w-6 h-6" />
                 </div>
-                <h3 className="font-serif text-2xl text-white uppercase">Rezervasyon Onaylandı</h3>
-                <p className="font-mono text-xs text-neutral-400">
+                <h3 className="font-serif text-[14px] text-white uppercase tracking-wider font-normal">Rezervasyon Onaylandı</h3>
+                <p className="font-sans text-[12px] text-neutral-400 font-light">
                   {confirmedBooking.workshop.title} seansınız için kaydınız başarıyla oluşturuldu.
                 </p>
 
                 {/* Bilet Kartı */}
-                <div className="border border-neutral-800 bg-neutral-900/60 p-4 text-left font-mono text-xs space-y-2 mt-4">
+                <div className="border border-neutral-800 bg-neutral-900/60 p-4 text-left font-mono text-[10px] space-y-2 mt-4">
                   <div className="flex justify-between border-b border-neutral-800 pb-2">
                     <span className="text-neutral-500">BİLET KODU:</span>
-                    <span className="text-amber-400 font-bold">{confirmedBooking.ticketCode}</span>
+                    <span className="text-white font-bold">{confirmedBooking.ticketCode}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-neutral-500">TARİH & SAAT:</span>
@@ -455,7 +455,7 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
                 <button
                   type="button"
                   onClick={() => setActiveModalWorkshop(null)}
-                  className="w-full bg-white text-black py-2.5 font-mono text-xs uppercase tracking-wider font-semibold mt-4 cursor-pointer"
+                  className="w-full bg-white text-black py-2.5 font-mono text-[10px] uppercase tracking-wider font-bold mt-4 cursor-pointer"
                 >
                   Kapat
                 </button>
@@ -463,13 +463,13 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
             ) : (
               <form onSubmit={handleConfirmReservation} className="space-y-4">
                 <div className="border-b border-neutral-800 pb-3">
-                  <span className="font-mono text-[9px] text-amber-400 uppercase tracking-widest block">
+                  <span className="font-mono text-[9px] text-neutral-400 uppercase tracking-widest block">
                     SEANS REZERVASYONU
                   </span>
-                  <h3 className="font-serif text-xl sm:text-2xl text-white uppercase mt-1">
+                  <h3 className="font-serif text-[14px] text-white uppercase mt-1 tracking-wider font-normal">
                     {activeModalWorkshop.title}
                   </h3>
-                  <p className="font-mono text-xs text-neutral-400 mt-1">
+                  <p className="font-mono text-[10px] text-neutral-400 mt-1">
                     Tarih: {activeModalWorkshop.dateOffsetDays} {monthNames[currentMonthIndex]} {currentYear} • {activeModalWorkshop.hour}:00
                   </p>
                 </div>
