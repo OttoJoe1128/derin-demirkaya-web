@@ -13,7 +13,6 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { soundFx } from '@/lib/sound-fx';
-import VerticalNavigation from '@/components/VerticalNavigation';
 import type { Dictionary } from '@/lib/get-dictionary';
 import type { Locale } from '@/lib/i18n-config';
 
@@ -298,9 +297,6 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
       id="editorial-magazine-viewport"
       className="relative w-screen h-screen overflow-hidden bg-neutral-950 text-neutral-100 select-none font-sans"
     >
-      {/* Sabit Sağ Kenar Dikey Navigasyonu (Dil ve Sözlük prop'ları ile) */}
-      <VerticalNavigation lang={lang} dict={dict} />
-
       {/* DİKEYDE KAYAN, YATAYDA PROJEKSİYON SAĞLAYAN EDİTORYAL SEYİR ALANI */}
       <div
         ref={scrollContainerRef}
@@ -341,7 +337,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
                 <section
                   id="spread-1"
                   aria-label={spreads[0]?.title}
-                  className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
+                  className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-4 sm:pr-8 lg:pr-14 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
                 >
           {/* Dokulu & Granüllü Sanatsal Arka Plan Katmanı */}
           <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-luminosity">
@@ -462,7 +458,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-2"
           aria-label={spreads[1]?.title}
-          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-900/95"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-4 sm:pr-8 lg:pr-14 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-900/95"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -513,7 +509,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-3"
           aria-label={spreads[2]?.title}
-          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-4 sm:pr-8 lg:pr-14 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Alev Atmosferi */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-amber-600/10 rounded-full filter blur-3xl pointer-events-none" />
@@ -603,7 +599,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-4"
           aria-label={spreads[3]?.title}
-          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-900/90"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-4 sm:pr-8 lg:pr-14 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-900/90"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
@@ -690,7 +686,7 @@ export default function EditorialMagazinePage({ lang, dict }: Props) {
         <section
           id="spread-5"
           aria-label={spreads[4]?.title}
-          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-14 sm:pr-16 md:pr-20 lg:pr-24 xl:pr-28 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
+          className="w-screen h-full shrink-0 relative overflow-hidden pl-4 sm:pl-8 lg:pl-14 pr-4 sm:pr-8 lg:pr-14 pt-20 sm:pt-24 pb-16 flex flex-col justify-between border-r border-neutral-800/80 bg-neutral-950"
         >
           {/* Üst Başlık */}
           <header className="flex items-center justify-between border-b border-neutral-800 pb-3">
