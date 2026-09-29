@@ -167,14 +167,21 @@ export default function SpatialLayoutShell({
             className="group flex flex-col items-center tracking-widest transition-opacity duration-300 hover:opacity-100 p-2"
             title="nonvalue — Hakkında & Manifesto"
           >
-            <div className="relative w-14 h-14 flex items-center justify-center mix-blend-screen">
+            <div
+              style={{
+                WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 70%)',
+                maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 70%)',
+              }}
+              className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center overflow-hidden"
+            >
               <Image
-                src="/nvdarklogo.jpg"
+                src="/nvdarklogo_2.jpg"
                 alt="nonvalue"
-                width={56}
-                height={56}
+                width={80}
+                height={80}
+                quality={100}
                 priority
-                className="w-14 h-14 object-contain mix-blend-screen filter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)] group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.7)] transition-all"
+                className="w-full h-full object-contain"
               />
             </div>
 

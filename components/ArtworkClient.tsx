@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -77,14 +77,19 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
     ];
   }, [localizedArtwork.images]);
 
-  // Fare Tekerleği ile Yatay Kaydırma (Mouse Wheel to Horizontal Scroll)
-  const handleGalleryWheel = (e: React.WheelEvent) => {
-    if (galleryRef.current) {
-      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-        galleryRef.current.scrollLeft += e.deltaY;
+  // Native Event Listener ile Güçlü Yatay Kaydırma (Passive: false)
+  useEffect(() => {
+    const el = galleryRef.current;
+    if (!el) return;
+    const handleWheel = (e: WheelEvent) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
       }
-    }
-  };
+    };
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   const handleShare = async () => {
     soundFx.playClick();
@@ -262,7 +267,6 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       {/* ========================================================================= */}
       <main
         ref={galleryRef}
-        onWheel={handleGalleryWheel}
         className="flex-1 h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex flex-row items-center gap-6 sm:gap-10 px-8 sm:px-16 no-scrollbar bg-black"
       >
         {displayImages.map((imageSrc, index) => (
