@@ -23,36 +23,36 @@ export default function LocalizedHakkindaPage() {
       </div>
 
       <div className="relative z-10 pt-24 sm:pt-32 pb-32 px-6 sm:px-12 max-w-4xl mx-auto">
-        {/* 1. ÜST KİMLİK & MİNİMALİST KÜNYE (KURAL 5) */}
-        <section className="mb-16 sm:mb-24">
-          <div className="flex items-center gap-2 mb-8">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            <span className="font-mono text-[9px] sm:text-[10px] text-amber-400 tracking-[0.35em] uppercase">
+        {/* 1. ÜST KİMLİK & MİNİMALİST KÜNYE (MAKSİMUM 14PX KURALI) */}
+        <section className="mb-14 sm:mb-20">
+          <div className="flex items-center gap-2 mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+            <span className="font-mono text-[10px] text-neutral-400 tracking-[0.35em] uppercase">
               NONVALUE // ARTIST STATEMENT
             </span>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight uppercase font-light mb-8">
+          <h1 className="font-serif text-[14px] text-white tracking-widest uppercase font-normal mb-6">
             Derin Buse Demirkaya
           </h1>
 
           {/* Minimalist Manifesto ve İletişim Bloğu */}
-          <div className="space-y-6 font-mono text-xs sm:text-sm text-neutral-300 leading-relaxed border-l-2 border-neutral-800 pl-4 sm:pl-6 py-2">
+          <div className="space-y-4 font-mono text-[12px] text-neutral-300 leading-relaxed border-l-2 border-neutral-800 pl-4 sm:pl-6 py-1">
             <p className="text-white font-normal tracking-wide">
               produces work based on process • material • movement
             </p>
 
-            <div className="space-y-1 text-neutral-400">
+            <div className="space-y-1 text-neutral-400 text-[12px]">
               <span className="text-white block font-medium">open</span>
               <p>exhibitions • residencies • collaborations</p>
             </div>
 
-            <div className="space-y-1.5 pt-2 text-neutral-300">
+            <div className="space-y-1 pt-2 text-neutral-300 text-[12px]">
               <p>
                 mail •{' '}
                 <a
                   href="mailto:derinbusedemirkaya@gmail.com"
-                  className="text-white hover:text-amber-400 underline underline-offset-4 decoration-neutral-700 hover:decoration-amber-400 transition-colors"
+                  className="text-white hover:underline underline-offset-4 decoration-neutral-600 transition-colors"
                 >
                   derinbusedemirkaya@gmail.com
                 </a>
@@ -63,7 +63,7 @@ export default function LocalizedHakkindaPage() {
                   href="https://instagram.com/derinsem__"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white hover:text-amber-400 underline underline-offset-4 decoration-neutral-700 hover:decoration-amber-400 transition-colors"
+                  className="text-white hover:underline underline-offset-4 decoration-neutral-600 transition-colors"
                 >
                   @derinsem__
                 </a>
@@ -73,7 +73,7 @@ export default function LocalizedHakkindaPage() {
         </section>
 
         {/* 2. SANATÇI PORTRESİ & MONOGRAFİ (Untitled design - 2.png) */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 items-start mb-20 border-t border-neutral-900 pt-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12 items-start mb-16 border-t border-neutral-900 pt-12">
           <div className="md:col-span-5 relative aspect-[3/4] w-full border border-neutral-800 bg-neutral-900 overflow-hidden shadow-2xl">
             <Image
               src="/Untitled design - 2.png"
@@ -86,15 +86,15 @@ export default function LocalizedHakkindaPage() {
             />
           </div>
 
-          <div className="md:col-span-7 space-y-6 text-xs sm:text-sm text-neutral-400 font-sans font-light leading-relaxed">
+          <div className="md:col-span-7 space-y-4 text-[12px] text-neutral-400 font-sans font-light leading-relaxed">
             <p>
-              <strong className="text-white font-serif text-base sm:text-lg block mb-1">
+              <strong className="text-white font-serif text-[14px] block mb-2 font-normal">
                 Malzemenin Belleği ve Ateşin Dönüştürücü Gücü
               </strong>
               Marmara Üniversitesi Kuyumculuk Teknolojisi ve Tasarımı Bölümü’nden mezun olduktan sonra Hochschule Düsseldorf (HSD) bünyesinde çağdaş takı, heykel ve metal morfolojisi üzerine araştırmalar yürüttü.
             </p>
             <p>
-              Geleneksel süsleme kalıplarını reddeden <span className="text-white font-mono">nonvalue</span> pratiği; kusurluluğu, erimiş gümüşün akışkanlığını, organik dokuları ve takının bedenle kurduğu heykelsi gerilimi merkeze alır. Her bir eser, seri üretimden uzak, doğrudan kayıp mum (lost-wax casting) tekniğiyle tekil veya sayılı edisyonlar olarak biçimlendirilir.
+              Geleneksel süsleme kalıplarını reddeden <span className="text-white font-mono text-[12px]">nonvalue</span> pratiği; kusurluluğu, erimiş gümüşün akışkanlığını, organik dokuları ve takının bedenle kurduğu heykelsi gerilimi merkeze alır. Her bir eser, seri üretimden uzak, doğrudan kayıp mum (lost-wax casting) tekniğiyle tekil veya sayılı edisyonlar olarak biçimlendirilir.
             </p>
             <p>
               Karaköy ve Galata eksenindeki stüdyosunda üretimini sürdüren Demirkaya, aynı zamanda bağımsız atölyeler ve malzeme laboratuvarları aracılığıyla kayıp mum ve döküm pratiklerini yeni kuşak yaratıcılarla paylaşmaktadır.
@@ -103,22 +103,22 @@ export default function LocalizedHakkindaPage() {
         </div>
 
         {/* 3. AKADEMİK & STÜDYO KRONOLOJİSİ */}
-        <section className="border-t border-neutral-800 pt-12">
-          <h2 className="font-serif text-xl sm:text-2xl text-white uppercase tracking-tight mb-8">
+        <section className="border-t border-neutral-900 pt-10">
+          <h2 className="font-serif text-[14px] text-white uppercase tracking-widest mb-6 font-normal">
             Akademik & Stüdyo Kronolojisi
           </h2>
-          <div className="space-y-4 font-mono text-xs text-neutral-400">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-neutral-900 gap-1">
-              <span className="text-white font-semibold">Hochschule Düsseldorf (HSD)</span>
-              <span className="text-neutral-500">Contemporary Jewellery & Object / Almanya</span>
+          <div className="space-y-3 font-mono text-[10px] sm:text-[12px] text-neutral-400">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-neutral-900 gap-1">
+              <span className="text-white font-normal text-[12px]">Hochschule Düsseldorf (HSD)</span>
+              <span className="text-neutral-500 text-[10px]">Contemporary Jewellery & Object / Almanya</span>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-neutral-900 gap-1">
-              <span className="text-white font-semibold">Marmara Üniversitesi</span>
-              <span className="text-neutral-500">Kuyumculuk Teknolojisi ve Tasarımı / İstanbul</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-neutral-900 gap-1">
+              <span className="text-white font-normal text-[12px]">Marmara Üniversitesi</span>
+              <span className="text-neutral-500 text-[10px]">Kuyumculuk Teknolojisi ve Tasarımı / İstanbul</span>
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-neutral-900 gap-1">
-              <span className="text-white font-semibold">nonvalue studio</span>
-              <span className="text-neutral-500">Karaköy Atölye ve Arşiv Kuruluşu (2018–Günümüz)</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-neutral-900 gap-1">
+              <span className="text-white font-normal text-[12px]">nonvalue studio</span>
+              <span className="text-neutral-500 text-[10px]">Karaköy Atölye ve Arşiv Kuruluşu (2018–Günümüz)</span>
             </div>
           </div>
         </section>

@@ -53,7 +53,6 @@ export default function SpatialLayoutShell({
   const isWorkshopActive = pathname.includes('/atolye');
   const isShopActive = pathname.includes('/shop');
   const isArchiveActive = pathname.includes('/arsiv');
-  const isAboutActive = pathname.includes('/hakkinda') || pathname.includes('/about');
 
   const handleNavigate = (e: React.MouseEvent, href: string, dir: Direction) => {
     if (pathname === href) return;
@@ -188,18 +187,13 @@ export default function SpatialLayoutShell({
 
             {/* 
               KURAL 2: MANIFESTO // ABOUT YAZISI
-              Başlangıçta TAMAMEN GÖRÜNMEZ (opacity-0).
-              Yalnızca logo yerine oturduktan sonra (2.7s delay) yavaşça görünür (opacity-100).
+              mix-blend-difference ve text-white ile açık fotoğraflar üzerinde siyah, koyu zeminlerde beyaz görünür.
             */}
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
-              className={`font-mono text-[7px] sm:text-[8px] tracking-[0.45em] uppercase mt-1 transition-colors ${
-                isAboutActive
-                  ? 'text-amber-400 font-semibold'
-                  : 'text-neutral-500 group-hover:text-neutral-300'
-              }`}
+              className="font-mono text-[7px] sm:text-[8px] tracking-[0.45em] uppercase mt-1 mix-blend-difference text-white transition-opacity"
             >
               MANIFESTO // ABOUT
             </motion.span>
@@ -207,29 +201,42 @@ export default function SpatialLayoutShell({
         </motion.div>
       </header>
 
+      {/* LANGUAGE TOGGLE (EN / TR) - mix-blend-difference */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
+        className="fixed top-4 sm:top-6 right-4 sm:right-8 z-50 pointer-events-auto select-none bg-transparent mix-blend-difference"
+      >
+        <Link
+          href={pathname.replace(`/${lang}`, `/${lang === 'tr' ? 'en' : 'tr'}`) || `/${lang === 'tr' ? 'en' : 'tr'}`}
+          onClick={() => soundFx.playClick()}
+          className="mix-blend-difference text-white font-mono text-[9px] sm:text-[10px] tracking-[0.25em] uppercase hover:opacity-75 transition-opacity py-1 px-1.5 font-medium"
+          title={lang === 'tr' ? 'Switch to English' : 'Türkçe Dil Seçeneği'}
+        >
+          {lang === 'tr' ? 'EN' : 'TR'}
+        </Link>
+      </motion.div>
+
       {/* LEFT (Sol Orta): WORKSHOP -> '/[lang]/atolye' (Kayma Yönü: SOL) */}
       <motion.aside
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
         aria-label="Workshop Navigation"
-        className="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 z-50 pointer-events-auto select-none bg-transparent"
+        className="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 z-50 pointer-events-auto select-none bg-transparent mix-blend-difference"
       >
         <Link
           href={`/${lang}/atolye`}
           onClick={(e) => handleNavigate(e, `/${lang}/atolye`, 'left')}
           onMouseEnter={() => soundFx.playHover()}
-          className={`group flex items-center gap-2 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 [writing-mode:vertical-rl] rotate-180 whitespace-nowrap py-4 px-1.5 ${
-            isWorkshopActive
-              ? 'text-white font-semibold'
-              : 'text-neutral-400 hover:text-white'
-          }`}
+          className="group flex items-center gap-2 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 [writing-mode:vertical-rl] rotate-180 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
         >
           <span
             className={`w-1 h-1 rounded-full transition-all duration-300 ${
               isWorkshopActive
-                ? 'bg-amber-400 scale-125 shadow-[0_0_8px_rgba(251,191,36,0.9)]'
-                : 'bg-neutral-600 group-hover:bg-amber-400/90'
+                ? 'bg-white scale-125'
+                : 'bg-white/80 group-hover:scale-125'
             }`}
           />
           <span>WORKSHOP</span>
@@ -242,23 +249,19 @@ export default function SpatialLayoutShell({
         animate={{ opacity: 1 }}
         transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
         aria-label="Shop Navigation"
-        className="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 z-50 pointer-events-auto select-none bg-transparent"
+        className="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 z-50 pointer-events-auto select-none bg-transparent mix-blend-difference"
       >
         <Link
           href={`/${lang}/shop`}
           onClick={(e) => handleNavigate(e, `/${lang}/shop`, 'right')}
           onMouseEnter={() => soundFx.playHover()}
-          className={`group flex items-center gap-2 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 [writing-mode:vertical-rl] rotate-180 whitespace-nowrap py-4 px-1.5 ${
-            isShopActive
-              ? 'text-white font-semibold'
-              : 'text-neutral-400 hover:text-white'
-          }`}
+          className="group flex items-center gap-2 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 [writing-mode:vertical-rl] rotate-180 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
         >
           <span
             className={`w-1 h-1 rounded-full transition-all duration-300 ${
               isShopActive
-                ? 'bg-amber-400 scale-125 shadow-[0_0_8px_rgba(251,191,36,0.9)]'
-                : 'bg-neutral-600 group-hover:bg-amber-400/90'
+                ? 'bg-white scale-125'
+                : 'bg-white/80 group-hover:scale-125'
             }`}
           />
           <span>SHOP</span>
@@ -270,23 +273,19 @@ export default function SpatialLayoutShell({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
-        className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none bg-transparent"
+        className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none bg-transparent mix-blend-difference"
       >
         <Link
           href={`/${lang}/arsiv`}
           onClick={(e) => handleNavigate(e, `/${lang}/arsiv`, 'down')}
           onMouseEnter={() => soundFx.playHover()}
-          className={`group flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 py-1.5 px-4 ${
-            isArchiveActive
-              ? 'text-white font-semibold'
-              : 'text-neutral-400 hover:text-white'
-          }`}
+          className="group flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 py-1.5 px-4 mix-blend-difference text-white"
         >
           <span
             className={`w-1 h-1 rounded-full transition-all duration-300 ${
               isArchiveActive
-                ? 'bg-amber-400 scale-125 shadow-[0_0_8px_rgba(251,191,36,0.9)]'
-                : 'bg-neutral-600 group-hover:bg-amber-400/90'
+                ? 'bg-white scale-125'
+                : 'bg-white/80 group-hover:scale-125'
             }`}
           />
           <span>ARCHIVE</span>

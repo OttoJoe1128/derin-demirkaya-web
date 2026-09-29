@@ -7,9 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
   Check,
-  ShieldCheck,
   Share2,
-  Mail,
   ChevronRight,
   Send,
   X,
@@ -77,14 +75,13 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
     ];
   }, [localizedArtwork.images]);
 
-  // Native Event Listener ile Güçlü Yatay Kaydırma (Passive: false)
   useEffect(() => {
     const el = galleryRef.current;
     if (!el) return;
     const handleWheel = (e: WheelEvent) => {
-      if (e.deltaY !== 0) {
+      if (Math.abs(e.deltaY) > 0) {
         e.preventDefault();
-        el.scrollLeft += e.deltaY;
+        el.scrollBy({ left: e.deltaY * 1.5, behavior: 'auto' });
       }
     };
     el.addEventListener('wheel', handleWheel, { passive: false });
@@ -144,12 +141,12 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             >
               {isCopied ? (
                 <>
-                  <Check className="w-3 h-3 text-emerald-400" />
-                  <span className="text-emerald-400">{isEn ? 'Copied' : 'Kopyalandı'}</span>
+                  <Check className="w-3 h-3 text-white" />
+                  <span className="text-white">{isEn ? 'Copied' : 'Kopyalandı'}</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="w-3 h-3 text-amber-400" />
+                  <Share2 className="w-3 h-3 text-white" />
                   <span>{isEn ? 'Share' : 'Paylaş'}</span>
                 </>
               )}
@@ -158,9 +155,8 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
           {/* Eser Başlığı & Fiyat */}
           <div className="space-y-2.5 mb-6">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 border border-amber-400/40 bg-amber-400/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-amber-300 font-semibold">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 border border-neutral-800 bg-neutral-900">
+              <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-neutral-300 font-medium">
                 {localizedArtwork.category} • {localizedArtwork.year}
               </span>
             </div>
@@ -173,14 +169,14 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               <span className="font-mono text-xs text-neutral-400 uppercase tracking-widest">
                 {localizedArtwork.collectionName}
               </span>
-              <span className="font-serif text-2xl xl:text-3xl text-amber-300 font-light">
+              <span className="font-serif text-2xl xl:text-3xl text-white font-light">
                 {localizedArtwork.price}
               </span>
             </div>
           </div>
 
           {/* Eser Açıklaması */}
-          <p className="font-sans text-xs xl:text-sm text-neutral-300 leading-relaxed font-light border-l-2 border-amber-400/50 pl-3 mb-6 line-clamp-3">
+          <p className="font-sans text-xs xl:text-sm text-neutral-300 leading-relaxed font-light border-l-2 border-neutral-700 pl-3 mb-6 line-clamp-3">
             {localizedArtwork.description}
           </p>
 
@@ -196,7 +192,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             </div>
             <div>
               <span className="text-neutral-500 block text-[9px] mb-0.5">{t('artwork.weight')}</span>
-              <span className="text-amber-300 font-bold">{localizedArtwork.weight}</span>
+              <span className="text-white font-medium">{localizedArtwork.weight}</span>
             </div>
             <div>
               <span className="text-neutral-500 block text-[9px] mb-0.5">{t('artwork.dimensions')}</span>
@@ -204,7 +200,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
             </div>
             <div>
               <span className="text-neutral-500 block text-[9px] mb-0.5">{t('artwork.status')}</span>
-              <span className="text-emerald-400 font-medium">
+              <span className="text-neutral-300 font-medium">
                 {localizedArtwork.stock > 0
                   ? `${t('artwork.inStudio')} (${localizedArtwork.stock})`
                   : t('artwork.customOrder')}
@@ -219,46 +215,20 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </div>
         </div>
 
-        {/* Alt Aksiyon Butonları */}
-        <div className="space-y-3 pt-2">
-          <button
-            type="button"
-            onClick={() => {
+        {/* Alt Aksiyon Butonu */}
+        <div className="pt-4">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
               soundFx.playClick();
               setIsOrderModalOpen(true);
             }}
-            className="w-full py-3 px-4 bg-white hover:bg-neutral-200 text-black font-mono text-xs uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
+            className="w-full py-3.5 px-4 bg-white hover:bg-neutral-200 text-black font-mono text-xs uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
           >
             <span>{t('artwork.orderBtn')}</span>
             <ChevronRight className="w-3.5 h-3.5" />
-          </button>
-
-          <div className="flex items-center justify-between px-1 text-[10px] font-mono tracking-widest uppercase">
-            <a
-              href={`mailto:derinbusedemirkaya@gmail.com?subject=${encodeURIComponent(
-                isEn
-                  ? `Studio Inquiry: ${localizedArtwork.title}`
-                  : `Atölye Talebi: ${localizedArtwork.title}`
-              )}`}
-              className="inline-flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors underline underline-offset-4 decoration-neutral-700 hover:decoration-white"
-            >
-              <Mail className="w-3 h-3 text-neutral-400" />
-              <span>{isEn ? 'Studio Inquiry' : 'Atölye Danışma'}</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={() => {
-                soundFx.playClick();
-                setIsCertModalOpen(true);
-              }}
-              className="inline-flex items-center gap-1.5 text-amber-300/85 hover:text-amber-200 transition-colors underline underline-offset-4 decoration-amber-400/40 hover:decoration-amber-300 cursor-pointer"
-              title={isEn ? 'Inspect Official COA' : 'Resmi Belgeyi Gör'}
-            >
-              <ShieldCheck className="w-3 h-3 text-amber-400" />
-              <span>{t('artwork.cert')}</span>
-            </button>
-          </div>
+          </a>
         </div>
       </aside>
 
