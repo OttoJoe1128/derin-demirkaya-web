@@ -119,34 +119,34 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
   return (
     <div className="w-screen h-screen overflow-hidden bg-black text-neutral-100 flex flex-col lg:flex-row select-none selection:bg-white selection:text-black">
       {/* ========================================================================= */}
-      {/* 1. SOL PANEL: DESKTOPTA SABİT SOL, MOBİLDE ALT %40 DİKEY KAYDIRMA          */}
+      {/* 1. SOL PANEL: DESKTOPTA SABİT SOL, MOBİLDE KESİNLİKLE SABİT ALT %35 (NO SCROLL) */}
       {/* ========================================================================= */}
-      <aside className="order-2 lg:order-1 w-full lg:w-[38%] xl:w-[35%] h-[40vh] lg:h-screen shrink-0 flex flex-col justify-between pl-20 sm:pl-24 pr-6 sm:pr-8 py-4 sm:py-8 xl:py-10 border-t lg:border-t-0 lg:border-r border-neutral-800/80 bg-neutral-950 z-30 overflow-y-auto no-scrollbar">
+      <aside className="order-2 lg:order-1 w-full lg:w-[38%] xl:w-[35%] h-[35vh] lg:h-screen shrink-0 flex flex-col justify-between pl-20 sm:pl-24 pr-4 sm:pr-8 py-2.5 sm:py-6 xl:py-10 border-t lg:border-t-0 lg:border-r border-neutral-800/80 bg-neutral-950 z-30 overflow-hidden lg:overflow-y-auto no-scrollbar">
         {/* Üst Kısım: Geri Dön Butonu & Paylaşım */}
-        <div>
-          <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3 mb-4 sm:mb-6 xl:mb-8">
+        <div className="space-y-1.5 sm:space-y-3">
+          <div className="flex items-center justify-between border-b border-neutral-800/80 pb-2 sm:pb-3 mb-1.5 sm:mb-4 xl:mb-8">
             <Link
               href={`/${langCode}/shop`}
               onClick={() => soundFx.playClick()}
-              className="group inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] font-mono text-neutral-400 hover:text-white transition-colors cursor-pointer"
+              className="group inline-flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-mono text-neutral-400 hover:text-white transition-colors cursor-pointer"
             >
-              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+              <ArrowLeft className="w-3 sm:w-3.5 h-3 sm:h-3.5 transition-transform group-hover:-translate-x-1" />
               <span>{isEn ? '← BACK TO SHOP' : '← MAĞAZAYA DÖN'}</span>
             </Link>
 
             <button
               type="button"
               onClick={handleShare}
-              className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-neutral-400 hover:text-white px-2.5 py-1 border border-neutral-800 hover:border-neutral-600 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-neutral-400 hover:text-white px-2 py-0.5 sm:px-2.5 sm:py-1 border border-neutral-800 hover:border-neutral-600 transition-colors cursor-pointer"
             >
               {isCopied ? (
                 <>
-                  <Check className="w-3 h-3 text-white" />
+                  <Check className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-white" />
                   <span className="text-white">{isEn ? 'Copied' : 'Kopyalandı'}</span>
                 </>
               ) : (
                 <>
-                  <Share2 className="w-3 h-3 text-white" />
+                  <Share2 className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-white" />
                   <span>{isEn ? 'Share' : 'Paylaş'}</span>
                 </>
               )}
@@ -154,34 +154,41 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
           </div>
 
           {/* Eser Başlığı & Fiyat */}
-          <div className="space-y-2 mb-4 sm:mb-6">
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 border border-neutral-800 bg-neutral-900">
-              <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-neutral-300 font-medium">
-                {localizedArtwork.category} • {localizedArtwork.year}
-              </span>
-            </div>
-
-            <h1 className="font-serif text-[14px] font-normal tracking-widest text-white uppercase leading-snug">
-              {localizedArtwork.title}
-            </h1>
-
-            <div className="flex items-baseline justify-between pt-1.5 border-t border-neutral-800/80">
-              <span className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">
-                {localizedArtwork.collectionName}
-              </span>
+          <div className="space-y-1 sm:space-y-2 mb-1 sm:mb-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="inline-flex items-center gap-2 px-2 py-0.5 border border-neutral-800 bg-neutral-900">
+                <span className="font-mono text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-neutral-300 font-medium">
+                  {localizedArtwork.category} • {localizedArtwork.year}
+                </span>
+              </div>
               <span className="font-mono text-[10px] text-white tracking-widest uppercase font-semibold">
                 {localizedArtwork.price}
               </span>
             </div>
+
+            <h1 className="font-serif text-[13px] sm:text-[14px] font-normal tracking-widest text-white uppercase leading-tight truncate">
+              {localizedArtwork.title}
+            </h1>
+
+            <div className="hidden lg:flex items-baseline justify-between pt-1.5 border-t border-neutral-800/80">
+              <span className="font-mono text-[10px] text-neutral-400 uppercase tracking-widest">
+                {localizedArtwork.collectionName}
+              </span>
+            </div>
           </div>
 
-          {/* Eser Açıklaması */}
-          <p className="font-sans text-[12px] text-neutral-300 leading-relaxed font-light border-l-2 border-neutral-700 pl-3 mb-4 sm:mb-6 line-clamp-3">
+          {/* Mobilde kompakt materyal/boyut satırı, Masaüstünde tam açıklama */}
+          <div className="lg:hidden text-[9px] font-mono uppercase tracking-wider text-neutral-400 truncate">
+            {localizedArtwork.material} • {localizedArtwork.technique} • {localizedArtwork.weight}
+          </div>
+
+          {/* Eser Açıklaması (Masaüstü) */}
+          <p className="hidden lg:block font-sans text-[12px] text-neutral-300 leading-relaxed font-light border-l-2 border-neutral-700 pl-3 mb-4 sm:mb-6 line-clamp-3">
             {localizedArtwork.description}
           </p>
 
-          {/* Eser Künye Tablosu */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-widest border-t border-b border-neutral-800/80 py-3 sm:py-4 mb-4 sm:mb-6">
+          {/* Eser Künye Tablosu (Masaüstü) */}
+          <div className="hidden lg:grid grid-cols-2 gap-x-6 gap-y-2 text-[10px] font-mono uppercase tracking-widest border-t border-b border-neutral-800/80 py-3 sm:py-4 mb-4 sm:mb-6">
             <div>
               <span className="text-neutral-500 block text-[9px] mb-0.5">{t('artwork.metalClay')}</span>
               <span className="text-neutral-200 font-medium">{localizedArtwork.material}</span>
@@ -216,7 +223,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
         </div>
 
         {/* Alt Aksiyon Butonu */}
-        <div className="pt-2 sm:pt-4">
+        <div className="pt-1.5 sm:pt-4">
           <a
             href="#"
             onClick={(e) => {
@@ -224,7 +231,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               soundFx.playClick();
               setIsOrderModalOpen(true);
             }}
-            className="w-full py-3 px-4 bg-white hover:bg-neutral-200 text-black font-mono text-[10px] uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
+            className="w-full py-2.5 sm:py-3 px-4 bg-white hover:bg-neutral-200 text-black font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
           >
             <span>{t('artwork.orderBtn')}</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -233,11 +240,11 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
       </aside>
 
       {/* ========================================================================= */}
-      {/* 2. SAĞ PANEL: MOBİLDE ÜST %60, DESKTOPTA SAĞ TAM EKRAN YATAY GALERİ         */}
+      {/* 2. SAĞ PANEL: MOBİLDE ÜST %65, DESKTOPTA SAĞ TAM EKRAN YATAY GALERİ         */}
       {/* ========================================================================= */}
       <main
         ref={galleryRef}
-        className="order-1 lg:order-2 w-full lg:flex-1 h-[60vh] lg:h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex flex-row items-center gap-4 sm:gap-6 lg:gap-10 px-6 sm:px-12 lg:px-16 no-scrollbar bg-black"
+        className="order-1 lg:order-2 w-full lg:flex-1 h-[65vh] lg:h-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory flex flex-row items-center gap-4 sm:gap-6 lg:gap-10 px-6 sm:px-12 lg:px-16 no-scrollbar bg-black"
       >
         {displayImages.map((imageSrc, index) => (
           <div
@@ -247,7 +254,7 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
               setActiveImageIndex(index);
               setIsZoomOpen(true);
             }}
-            className="relative h-[52vh] lg:h-[80vh] w-[75vw] sm:w-[50vw] lg:w-[44vw] xl:w-[38vw] max-w-[700px] shrink-0 snap-center overflow-hidden cursor-zoom-in group"
+            className="relative h-[56vh] lg:h-[80vh] w-[78vw] sm:w-[50vw] lg:w-[44vw] xl:w-[38vw] max-w-[700px] shrink-0 snap-center overflow-hidden cursor-zoom-in group"
           >
             {/* KESİN SIFIR METİN: Hiçbir metin, kutu, rozet veya karartıcı gradient yok */}
             <Image

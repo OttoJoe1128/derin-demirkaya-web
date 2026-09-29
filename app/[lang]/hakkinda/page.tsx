@@ -28,7 +28,7 @@ export default function LocalizedHakkindaPage() {
           <div className="flex items-center gap-2 mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-white" />
             <span className="font-mono text-[10px] text-neutral-400 tracking-[0.35em] uppercase">
-              NONVALUE // ARTIST STATEMENT
+              NONVALUE || ARTIST STATEMENT
             </span>
           </div>
 

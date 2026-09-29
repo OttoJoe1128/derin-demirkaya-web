@@ -159,12 +159,13 @@ export default function SpatialLayoutShell({
           }}
           className="origin-center flex flex-col items-center justify-center"
         >
+          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider */}
           <Link
-            href={`/${lang}/hakkinda`}
-            onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
+            href={`/${lang}`}
+            onClick={(e) => handleNavigate(e, `/${lang}`, 'none')}
             onMouseEnter={() => soundFx.playHover()}
-            className="group flex flex-col items-center tracking-widest transition-opacity duration-300 hover:opacity-100 p-2"
-            title="nonvalue — Hakkında & Manifesto"
+            className="group flex items-center justify-center tracking-widest transition-opacity duration-300 hover:opacity-100 p-1"
+            title="nonvalue — Home"
           >
             <div
               style={{
@@ -184,20 +185,24 @@ export default function SpatialLayoutShell({
                 className="w-full h-full object-cover object-center"
               />
             </div>
-
-            {/* 
-              KURAL 2: MANIFESTO // ABOUT YAZISI
-              mix-blend-difference ve text-white ile açık fotoğraflar üzerinde siyah, koyu zeminlerde beyaz görünür.
-            */}
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
-              className="font-mono text-[7px] sm:text-[8px] tracking-[0.45em] uppercase mt-1 mix-blend-difference text-white transition-opacity"
-            >
-              MANIFESTO // ABOUT
-            </motion.span>
           </Link>
+
+          {/* 2. MANIFESTO || ABOUT YAZISI: Hakkında Rotasına (/[lang]/hakkinda) Gider */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
+          >
+            <Link
+              href={`/${lang}/hakkinda`}
+              onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
+              onMouseEnter={() => soundFx.playHover()}
+              className="font-mono text-[7px] sm:text-[8px] tracking-[0.45em] uppercase mt-1 mix-blend-difference text-white transition-opacity hover:opacity-75 block text-center"
+              title="nonvalue — Manifesto & About"
+            >
+              MANIFESTO || ABOUT
+            </Link>
+          </motion.div>
         </motion.div>
       </header>
 
