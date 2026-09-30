@@ -16,7 +16,7 @@ export default function LocalizedHakkindaPage() {
           alt="nonvalue manifesto"
           width={800}
           height={600}
-          className="object-contain mix-blend-screen max-w-full h-auto"
+          className="object-contain max-w-full h-auto invert"
           priority
           unoptimized={true}
         />
