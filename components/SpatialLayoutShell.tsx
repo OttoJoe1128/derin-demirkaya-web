@@ -50,10 +50,6 @@ export default function SpatialLayoutShell({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isWorkshopActive = pathname.includes('/atolye');
-  const isShopActive = pathname.includes('/shop');
-  const isArchiveActive = pathname.includes('/arsiv');
-
   const handleNavigate = (e: React.MouseEvent, href: string, dir: Direction) => {
     if (pathname === href) return;
     e.preventDefault();
@@ -187,20 +183,29 @@ export default function SpatialLayoutShell({
             </div>
           </Link>
 
-          {/* 2. MANIFESTO || ABOUT YAZISI: Hakkında Rotasına (/[lang]/hakkinda) Gider */}
+          {/* 2. MANİFESTO BUTONU (nvlogotext.png) & EN ALTTA YEŞİL NOKTA: Hakkında Rotasına (/[lang]/hakkinda) Gider */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
+            className="flex flex-col items-center"
           >
             <Link
               href={`/${lang}/hakkinda`}
               onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
               onMouseEnter={() => soundFx.playHover()}
-              className="font-mono text-[7px] sm:text-[8px] tracking-[0.45em] uppercase mt-1 mix-blend-difference text-white transition-opacity hover:opacity-75 block text-center"
+              className="group flex flex-col items-center cursor-pointer"
               title="nonvalue — Manifesto & About"
             >
-              MANIFESTO || ABOUT
+              <Image
+                src="/nvlogotext.png"
+                alt="Manifesto"
+                width={120}
+                height={30}
+                className="object-contain opacity-70 hover:opacity-100 transition-opacity my-2"
+                unoptimized={true}
+              />
+              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
             </Link>
           </motion.div>
         </motion.div>
@@ -235,16 +240,10 @@ export default function SpatialLayoutShell({
           href={`/${lang}/atolye`}
           onClick={(e) => handleNavigate(e, `/${lang}/atolye`, 'left')}
           onMouseEnter={() => soundFx.playHover()}
-          className="group flex items-center gap-2 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 [writing-mode:vertical-rl] rotate-180 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
+          className="group flex flex-row items-center gap-2 sm:gap-2.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
         >
-          <span
-            className={`w-1 h-1 rounded-full transition-all duration-300 ${
-              isWorkshopActive
-                ? 'bg-white scale-125'
-                : 'bg-white/80 group-hover:scale-125'
-            }`}
-          />
-          <span>WORKSHOP</span>
+          <span className="[writing-mode:vertical-rl]">WORKSHOP</span>
+          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
         </Link>
       </motion.aside>
 
@@ -260,16 +259,10 @@ export default function SpatialLayoutShell({
           href={`/${lang}/shop`}
           onClick={(e) => handleNavigate(e, `/${lang}/shop`, 'right')}
           onMouseEnter={() => soundFx.playHover()}
-          className="group flex items-center gap-2 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 [writing-mode:vertical-rl] rotate-180 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
+          className="group flex flex-row items-center gap-2 sm:gap-2.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
         >
-          <span
-            className={`w-1 h-1 rounded-full transition-all duration-300 ${
-              isShopActive
-                ? 'bg-white scale-125'
-                : 'bg-white/80 group-hover:scale-125'
-            }`}
-          />
-          <span>SHOP</span>
+          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <span className="[writing-mode:vertical-rl] rotate-180">SHOP</span>
         </Link>
       </motion.aside>
 
@@ -284,15 +277,9 @@ export default function SpatialLayoutShell({
           href={`/${lang}/arsiv`}
           onClick={(e) => handleNavigate(e, `/${lang}/arsiv`, 'down')}
           onMouseEnter={() => soundFx.playHover()}
-          className="group flex flex-col items-center gap-1.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 py-1.5 px-4 mix-blend-difference text-white"
+          className="group flex flex-col items-center gap-2 sm:gap-2.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 py-1.5 px-4 mix-blend-difference text-white"
         >
-          <span
-            className={`w-1 h-1 rounded-full transition-all duration-300 ${
-              isArchiveActive
-                ? 'bg-white scale-125'
-                : 'bg-white/80 group-hover:scale-125'
-            }`}
-          />
+          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
           <span>ARCHIVE</span>
         </Link>
       </motion.footer>
