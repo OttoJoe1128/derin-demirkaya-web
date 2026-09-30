@@ -194,18 +194,21 @@ export default function SpatialLayoutShell({
               href={`/${lang}/hakkinda`}
               onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
               onMouseEnter={() => soundFx.playHover()}
-              className="group flex flex-col items-center cursor-pointer"
+              className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 -mt-2 sm:-mt-4"
               title="nonvalue — Manifesto & About"
             >
-              <Image
-                src="/nvlogotext.png"
-                alt="Manifesto"
-                width={200}
-                height={50}
-                className="w-40 sm:w-56 lg:w-64 h-auto object-contain opacity-70 hover:opacity-100 transition-opacity invert"
-                unoptimized={true}
-              />
-              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110 -mt-8 sm:-mt-12 z-10" />
+              {/* Şeffaf boşlukları tıraşlayan sıkı kapsayıcı (Clipping Mask) */}
+              <div className="relative w-28 sm:w-36 h-6 sm:h-8 flex items-center justify-center overflow-hidden">
+                <Image
+                  src="/nvlogotext.png"
+                  alt="Manifesto"
+                  width={250}
+                  height={150}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] sm:w-[180%] max-w-none h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity invert"
+                  unoptimized={true}
+                />
+              </div>
+              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110 z-10" />
             </Link>
           </motion.div>
         </motion.div>
