@@ -194,15 +194,15 @@ export default function SpatialLayoutShell({
               href={`/${lang}/hakkinda`}
               onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
               onMouseEnter={() => soundFx.playHover()}
-              className="group flex flex-col items-center cursor-pointer"
+              className="group flex flex-col items-center cursor-pointer gap-1.5 sm:gap-2"
               title="nonvalue — Manifesto & About"
             >
               <Image
                 src="/nvlogotext.png"
                 alt="Manifesto"
-                width={120}
-                height={30}
-                className="object-contain opacity-70 hover:opacity-100 transition-opacity my-2 invert"
+                width={200}
+                height={50}
+                className="w-24 sm:w-36 h-auto object-contain opacity-70 hover:opacity-100 transition-opacity invert"
                 unoptimized={true}
               />
               <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
