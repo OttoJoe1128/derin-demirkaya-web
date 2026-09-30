@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function LocalizedHakkindaPage() {
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 select-none selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-start pt-40 sm:pt-48 pb-20 p-6 select-none selection:bg-white selection:text-black overflow-y-auto">
       {/* Ekranın tam merkezindeki manifesto görseli */}
       <div className="relative flex items-center justify-center max-w-full">
         <Image

@@ -202,10 +202,10 @@ export default function SpatialLayoutShell({
                 alt="Manifesto"
                 width={200}
                 height={50}
-                className="w-24 sm:w-36 h-auto object-contain opacity-70 hover:opacity-100 transition-opacity invert"
+                className="w-40 sm:w-56 lg:w-64 h-auto object-contain opacity-70 hover:opacity-100 transition-opacity invert"
                 unoptimized={true}
               />
-              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
+              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110 -mt-2 sm:-mt-4" />
             </Link>
           </motion.div>
         </motion.div>
