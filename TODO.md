@@ -26,43 +26,45 @@
   - [x] Perspektif & Görsel Anatomi çoklu açı galerisi, tam ekran zoom modalı.
   - [x] Zanaat Felsefesi & Resmi Eser Kaydı teknik şartnamesi.
   - [x] Doğrudan Satın Alma / Rezervasyon Talebi akışı (Mevcut sipariş amacı ve form yapısı korundu).
+- [x] **Faz 3: Globalleşme, SEO & Mikro Etkileşimler**:
+  - [x] Çoklu Dil Desteği (TR / EN): Uluslararası küratörler ve koleksiyonerler için tüm site iki dilli olarak entegre edildi.
+  - [x] Gelişmiş Schema.org & SEO: Global layout, Eser detay ve Atölye takvimi için Rich Snippet şemaları.
+  - [x] Atölye ve Eser Arama & Filtreleme: Global `Cmd+K` / `Ctrl+K` QuickSearchModal.
+- [x] **Faz 4.1: Sanatçı CMS / Eser & Medya Havuzu Yönetimi (`/admin`)**:
+  - [x] Eser ekleme / düzenleme / silme modalı (TR/EN Başlık, Malzeme, Boyutlar, Teknik, Fiyat, Stok, Edisyon).
+  - [x] Tek tıkla Vitrin (`isFeatured`) yönetimi ve canlı medya havuzu.
+  - [x] Anlık stok güncelleme (+/-) sayaçları ve dijital COA Özgünlük Sertifikası motoru.
+- [x] **Faz 4.2: Tek Ekran Analitik Dashboard (`/admin`)**:
+  - [x] Toplam Ciro, Eser Gelirleri ve Atölye Bilet Gelirleri ayrımı.
+  - [x] Atölye Kapasite & Doluluk Isı Haritası (Kayıtlı katılımcı, kalan kontenjan ve interaktif +1/-1 kontrolü).
+  - [x] Kritik Stok & Edisyon Alarmları (Stoku ≤ 1 olan heykelsi eserler ve hızlı takviye).
+  - [x] Canlı Sipariş & QR Bilet Akışı (Ödeme ve kargolama aşaması değiştirici).
+- [x] **Faz 4.3: Gizli Stüdyo Sayfası & Kriptografik Giriş Bariyeri (`/admin`)**:
+  - [x] `/api/admin/auth` güvenli kimlik doğrulama rotası (AES-256 / SHA-256 JWT, HttpOnly `admin_session` çerezleri).
+  - [x] `AdminLoginGate` brutalist gizli giriş kartı: Yetkisiz kişilere paneli tamamen kilitleyen monokrom güvenlik duvarı.
+  - [x] Site sahibi için hızlı stüdyo parolası doğrulaması (`derinsem2026` / `nonvalue2026!`).
+  - [x] Panel başlığında aktif "Studio Master" rozeti ve tek tıkla "Güvenli Çıkış" (Logout) butonu.
+  - [x] Gizli klavye kısayolu: `Ctrl + Shift + A` veya `Cmd + Shift + A` ile sitenin her yerinden doğrudan gizli `/admin` sayfasına geçiş.
 
 ---
 
 ## 🚀 Sırada Olan Öncelikli Maddeler (In Progress & Up Next)
 
-### Faz 2: Müşteri Portali, Auth Arayüzü & Profil
-- [ ] **Müşteri Giriş & Kayıt Sayfası / Modalı (`/giris`)**:
-  - [ ] Mevcut JWT auth API'sine (`/api/auth/login`, `/api/auth/register`) bağlı zarif brutalist giriş formu.
+### Faz 4.4: Kalıcı Veritabanı Entegrasyonu (Persistence)
+- [ ] **Drizzle ORM & Cloud SQL / PostgreSQL / Supabase Entegrasyonu**:
+  - [ ] `lib/admin-store.ts` içindeki bellek içi (in-memory) yapıyı gerçek veritabanı tablolarına bağlama.
+  - [ ] Panelden eklenen eserlerin, silinen kayıtların ve stok değişimlerinin sunucu yeniden başlasa dahi kalıcı olması.
+
+### Faz 4.5: Dinamik Vitrin Senkronizasyonu (Storefront Sync)
+- [ ] **Eser Detay (`/shop/[id]`) Dinamik Bağlantısı**:
+  - [ ] Statik `ARTWORKS_DATA` yerine API/veritabanı sorgusu ile yeni eklenen eserlerin detay sayfalarının sorunsuz açılması.
+- [ ] **Atölye Takvimi (`/atolye`) Dinamik Bağlantısı**:
+  - [ ] `WorkshopCalendarView` bileşenini `/api/workshops` endpoint'ine bağlayarak stüdyo panelinden eklenen yeni atölyelerin takvimde anında belirmesi.
+- [ ] **Arşiv Tuvali (`/arsiv`) Dinamik Koordinat Senkronizasyonu**:
+  - [ ] Paneldeki $X/Y$ tuval konumlandırmalarının interaktif uzayda canlı güncellenmesi.
+
+### Faz 4.6: Müşteri Portali & Koleksiyoner Girişi
+- [ ] **Müşteri Giriş & Kayıt Sayfası (`/giris`)**:
+  - [ ] Müşteriler için JWT auth formları ve sipariş takip ekranı.
 - [ ] **Müşteri Profil & Rezervasyonlarım (`/profil`)**:
-  - [ ] Kayıtlı olunan atölye etkinlikleri, rezervasyon durumları ve bilet bilgileri.
-
-### Faz 3: Globalleşme, SEO & Mikro Etkileşimler (Tamamlandı)
-- [x] **Çoklu Dil Desteği (TR / EN)**: Uluslararası küratörler ve koleksiyonerler için tüm site (Eserler, Atölyeler, Hakkında, İletişim, Filtreler, Arama, Biletler) iki dilli olarak entegre edildi.
-- [x] **Gelişmiş Schema.org & SEO**: 
-  - [x] Global layout için `Person`, `VisualArtist`, `JewelryStore` / `ArtGallery`, `WebSite` JSON-LD tanımları.
-  - [x] Eser detay sayfası (`/koleksiyon/[id]`) için `VisualArtwork` & `Product` Rich Snippet şeması.
-  - [x] Atölye takvimi (`/atolye`) için `EducationEvent` / `Event` ve `Offer` Rich Snippet şeması.
-- [x] **Atölye ve Eser Arama & Filtreleme**: 
-  - [x] Global `Cmd+K` / `Ctrl+K` erişimli Command Palette modalı (`QuickSearchModal`).
-  - [x] Eserler ve atölyeler arasında anlık başlık, teknik, malzeme ve kategori filtreleme.
-  - [x] Atölye takviminde yerleşik arama çubuğu ve durum filtreleri.
-
----
-
-### Faz 4: B2B Sanatçı Yönetim Paneli ve CMS (`/admin`)
-- [x] **4.1. Sanatçı CMS / Eser & Medya Havuzu Yönetimi**:
-  - [x] Supabase arayüzüne girmeden doğrudan stüdyodan yönetilebilen entegre CRUD mimarisi (`/api/admin/artworks`).
-  - [x] Eser ekleme / düzenleme / silme modalı (TR/EN Başlık, Malzeme, Boyutlar, Teknik, Fiyat, Stok, Edisyon).
-  - [x] Tek tıkla Vitrin (`isFeatured`) yönetimi ile ana sayfa brutalist kırık ızgara senkronizasyonu.
-  - [x] Medya havuzu: Çoklu görsel URL yönetimi, hazır stüdyo fotoğraf kütüphanesinden hızlı seçim ve canlı görsel önizlemesi.
-  - [x] Hızlı anlık stok güncelleme (+/-) kontrolleri.
-- [x] **4.2. Tek Ekran Analitik Dashboard (Single-Screen Analytics)**:
-  - [x] Tek bakışta stüdyo nabzını gösteren monokrom lüks brutalist kontrol merkezi (`/admin`).
-  - [x] Toplam Ciro, Eser Gelirleri ve Atölye Bilet Gelirleri ayrımı.
-  - [x] Atölye Kapasite & Doluluk Isı Haritası (Kayıtlı katılımcı, kalan kontenjan ve interaktif +1/-1 kayıt kontrolü).
-  - [x] Kritik Stok & Edisyon Alarmları (Stoku ≤ 1 olan heykelsi eserler ve hızlı takviye).
-  - [x] Canlı Sipariş & QR Bilet Akışı (Ödeme ve kargolama aşaması değiştirici).
-- [ ] **4.3. Sürükle-Bırak Vitrin Blok Yönetimi**: Sıradaki adım.
-- [ ] **4.4. Arşiv Tuval İnteraktif Sürükle-Bırak Konumlandırma**: Sıradaki adım (önizlemesi entegre edildi).
-
+  - [ ] Kayıtlı olunan atölye biletleri ve QR kodları.

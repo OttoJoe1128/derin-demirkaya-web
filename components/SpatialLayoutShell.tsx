@@ -59,6 +59,19 @@ export default function SpatialLayoutShell({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // GİZLİ STÜDYO ERİŞİM KISAYOLU: Ctrl+Shift+A veya Cmd+Shift+A
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        soundFx.playSuccess();
+        router.push('/admin');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [router]);
+
   const handleNavigate = (e: React.MouseEvent, href: string, dir: Direction) => {
     if (pathname === href) return;
     e.preventDefault();

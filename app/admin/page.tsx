@@ -30,6 +30,7 @@ import {
   Star,
   UploadCloud,
   ShieldCheck,
+  LogOut,
 } from "lucide-react";
 import { soundFx } from "@/lib/sound-fx";
 import { useAuth } from "@/lib/auth-context";
@@ -37,6 +38,7 @@ import type { ArtworkDetail } from "@/lib/artworks-data";
 import type { WorkshopItem } from "@/lib/workshops-data";
 import type { AdminOrder, AdminBooking } from "@/lib/admin-store";
 import CertificateOfAuthenticityModal from "@/components/CertificateOfAuthenticityModal";
+import AdminLoginGate from "@/components/AdminLoginGate";
 
 // Hazır Yüksek Çözünürlüklü Stüdyo Fotoğrafı Kütüphanesi (Hızlı Seçim İçin)
 const PRESET_STUDIO_IMAGES = [
@@ -51,6 +53,14 @@ const PRESET_STUDIO_IMAGES = [
 
 export default function AdminStudioPage() {
   const { user } = useAuth();
+
+  // Güvenli Stüdyo Giriş Durumu
+  const [adminUser, setAdminUser] = useState<{
+    fullName: string;
+    email: string;
+    role: string;
+  } | null>(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // Aktif Sekme: 'analytics' | 'artworks' | 'workshops' | 'orders' | 'canvas'
   const [activeTab, setActiveTab] = useState<"analytics" | "artworks" | "workshops" | "orders" | "canvas">("analytics");
@@ -158,8 +168,21 @@ export default function AdminStudioPage() {
     }
   }, []);
 
+  // Güvenli Stüdyo Çıkışı (Oturumu sonlandır ve kilitle)
+  const handleAdminLogout = async () => {
+    soundFx.playClick();
+    try {
+      await fetch("/api/admin/auth", { method: "DELETE" });
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+    setAdminUser(null);
+    showToast("Stüdyo oturumu güvenli şekilde kapatıldı.");
+  };
+
   useEffect(() => {
     let isMounted = true;
+
     const loadInitialData = async () => {
       try {
         const [statsRes, artworksRes, workshopsRes, ordersRes] = await Promise.all([
@@ -196,7 +219,31 @@ export default function AdminStudioPage() {
       }
     };
 
-    loadInitialData();
+    // Önce Studio Admin kimliğini doğrula
+    const checkAuthAndInit = async () => {
+      try {
+        const authRes = await fetch("/api/admin/auth");
+        if (authRes.ok) {
+          const authData = await authRes.json();
+          if (authData.authenticated && authData.user) {
+            if (isMounted) {
+              setAdminUser(authData.user);
+              await loadInitialData();
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Admin auth check error:", err);
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
+      }
+    };
+
+    checkAuthAndInit();
+
     return () => {
       isMounted = false;
     };
@@ -380,6 +427,26 @@ export default function AdminStudioPage() {
     });
   }, [artworks, searchQuery, categoryFilter, featuredOnly]);
 
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-6 text-neutral-400 font-mono text-xs select-none">
+        <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin mb-4" />
+        <div className="tracking-[0.2em] uppercase text-neutral-300">nonvalue studio // kimlik doğrulanıyor...</div>
+      </div>
+    );
+  }
+
+  if (!adminUser) {
+    return (
+      <AdminLoginGate
+        onSuccess={(authenticatedUser) => {
+          setAdminUser(authenticatedUser);
+          fetchAllData(false);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#111111] text-[#ECECEC] font-sans antialiased pb-24">
       {/* TOAST BİLDİRİMİ */}
@@ -432,14 +499,17 @@ export default function AdminStudioPage() {
 
             {/* Sanatçı & Yönetici Bilgisi */}
             <div className="hidden lg:flex items-center gap-2 border-l border-neutral-800 pl-4 text-xs font-mono text-neutral-400">
-              <span className="text-amber-400 font-bold">●</span>
+              <span className="text-emerald-400 font-bold">●</span>
               <span className="text-neutral-200 font-serif">
-                {user?.name || "Derin Buse Demirkaya"}
+                {adminUser?.fullName || user?.name || "Derin Buse Demirkaya"}
+              </span>
+              <span className="text-[9px] px-1.5 py-0.5 bg-neutral-800 text-neutral-300 border border-neutral-700 uppercase tracking-widest">
+                Master
               </span>
             </div>
           </div>
 
-          {/* Sağ Eylemler: Yenile, Ön Yüze Git, Profil */}
+          {/* Sağ Eylemler: Yenile, Ön Yüze Git, Çıkış */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
@@ -465,6 +535,15 @@ export default function AdminStudioPage() {
               <span>Ön Yüzü Aç</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
+
+            <button
+              onClick={handleAdminLogout}
+              className="px-3 py-1.5 border border-red-900/60 bg-red-950/30 hover:bg-red-900/50 text-red-300 font-mono text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Stüdyo oturumunu kapat ve paneli kilitle"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Güvenli Çıkış</span>
+            </button>
           </div>
         </div>
 
