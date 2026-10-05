@@ -183,7 +183,7 @@ export default function SpatialLayoutShell({
             </div>
           </Link>
 
-          {/* 2. MANİFESTO BUTONU (nvlogotext.png) & EN ALTTA YEŞİL NOKTA: Hakkında Rotasına (/[lang]/hakkinda) Gider */}
+          {/* 2. MANİFESTO BUTONU (nonvaluejewel) & EN ALTTA #C1FF72 NOKTA: Hakkında Rotasına (/[lang]/hakkinda) Gider */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -194,21 +194,22 @@ export default function SpatialLayoutShell({
               href={`/${lang}/hakkinda`}
               onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
               onMouseEnter={() => soundFx.playHover()}
-              className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 -mt-2 sm:-mt-4"
+              className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 -mt-1 sm:-mt-2"
               title="nonvalue — Manifesto & About"
             >
-              {/* Şeffaf boşlukları tıraşlayan sıkı kapsayıcı (Clipping Mask) */}
-              <div className="relative w-28 sm:w-36 h-6 sm:h-8 flex items-center justify-center overflow-hidden">
+              {/* nonvaluejewel Logosu (#C1FF72 renginde) */}
+              <div className="relative w-28 sm:w-36 h-auto flex items-center justify-center">
                 <Image
-                  src="/nvlogotext.png"
-                  alt="Manifesto"
-                  width={250}
-                  height={150}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] sm:w-[180%] max-w-none h-auto object-contain opacity-70 group-hover:opacity-100 transition-opacity invert"
+                  src="/nonvaluejewel-lime.png"
+                  alt="nonvalue jewel"
+                  width={360}
+                  height={167}
+                  className="w-full h-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_12px_rgba(193,255,114,0.35)]"
                   unoptimized={true}
+                  priority
                 />
               </div>
-              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110 z-10" />
+              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#C1FF72] shrink-0 transition-transform duration-300 group-hover:scale-110 z-10 shadow-[0_0_12px_rgba(193,255,114,0.45)]" />
             </Link>
           </motion.div>
         </motion.div>
@@ -246,7 +247,7 @@ export default function SpatialLayoutShell({
           className="group flex flex-row items-center gap-2 sm:gap-2.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
         >
           <span className="[writing-mode:vertical-rl]">WORKSHOP</span>
-          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#C1FF72] shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-[0_0_12px_rgba(193,255,114,0.45)]" />
         </Link>
       </motion.aside>
 
@@ -264,7 +265,7 @@ export default function SpatialLayoutShell({
           onMouseEnter={() => soundFx.playHover()}
           className="group flex flex-row items-center gap-2 sm:gap-2.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 whitespace-nowrap py-4 px-1.5 mix-blend-difference text-white"
         >
-          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#C1FF72] shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-[0_0_12px_rgba(193,255,114,0.45)]" />
           <span className="[writing-mode:vertical-rl] rotate-180">SHOP</span>
         </Link>
       </motion.aside>
@@ -282,7 +283,7 @@ export default function SpatialLayoutShell({
           onMouseEnter={() => soundFx.playHover()}
           className="group flex flex-col items-center gap-2 sm:gap-2.5 text-[9px] sm:text-[10px] font-mono tracking-[0.34em] uppercase transition-all duration-300 py-1.5 px-4 mix-blend-difference text-white"
         >
-          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#00FF66] shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#C1FF72] shrink-0 transition-transform duration-300 group-hover:scale-110 shadow-[0_0_12px_rgba(193,255,114,0.45)]" />
           <span>ARCHIVE</span>
         </Link>
       </motion.footer>
