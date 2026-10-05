@@ -3,6 +3,7 @@ import {
   getStoredWorkshops,
   saveWorkshopToStore,
   updateWorkshopEnrollmentInStore,
+  deleteWorkshopFromStore,
 } from "@/lib/admin-store";
 import type { WorkshopItem } from "@/lib/workshops-data";
 
@@ -83,5 +84,20 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     console.error("PUT /api/admin/workshops error:", error);
     return NextResponse.json({ error: "Atölye güncellenemedi." }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ error: "Atölye ID gereklidir." }, { status: 400 });
+    }
+    const success = deleteWorkshopFromStore(id);
+    return NextResponse.json({ success });
+  } catch (error) {
+    console.error("DELETE /api/admin/workshops error:", error);
+    return NextResponse.json({ error: "Atölye silinemedi." }, { status: 500 });
   }
 }

@@ -14,12 +14,10 @@ import {
   Eye,
   Layers,
   Calendar,
-  Package,
   Search,
   ChevronRight,
   Database,
   ExternalLink,
-  Activity,
   DollarSign,
   Users,
   MapPin,
@@ -62,8 +60,8 @@ export default function AdminStudioPage() {
   } | null>(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  // Aktif Sekme: 'analytics' | 'artworks' | 'workshops' | 'orders' | 'canvas'
-  const [activeTab, setActiveTab] = useState<"analytics" | "artworks" | "workshops" | "orders" | "canvas">("analytics");
+  // Aktif Sekme: 'analytics' | 'artworks' | 'workshops' | 'orders' | 'canvas' (analitik nabız geçici olarak gizlendi, varsayılan artworks)
+  const [activeTab, setActiveTab] = useState<"analytics" | "artworks" | "workshops" | "orders" | "canvas">("artworks");
 
   // Veri Durumları
   const [isLoading, setIsLoading] = useState(true);
@@ -386,6 +384,26 @@ export default function AdminStudioPage() {
     }
   };
 
+  // Atölye Silme
+  const handleDeleteWorkshop = async (id: string, title: string) => {
+    if (!window.confirm(`"${title}" atölyesini stüdyo programından silmek istediğinize emin misiniz?`)) {
+      return;
+    }
+    soundFx.playClick();
+    try {
+      const res = await fetch(`/api/admin/workshops?id=${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        showToast(`"${title}" atölyesi silindi.`);
+        fetchAllData(true);
+      }
+    } catch (err) {
+      console.error("Delete workshop error:", err);
+      showToast("Atölye silinirken bir hata oluştu.");
+    }
+  };
+
   // Sipariş / Bilet Durumu Güncelleme
   const handleOrderStatusChange = async (
     orderId: string,
@@ -549,20 +567,7 @@ export default function AdminStudioPage() {
 
         {/* SEKME ÇUBUĞU (BRUTALIST NAV) */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 border-t border-neutral-800/80 flex overflow-x-auto no-scrollbar gap-1 py-1.5">
-          <button
-            onClick={() => {
-              soundFx.playClick();
-              setActiveTab("analytics");
-            }}
-            className={`px-4 py-2 font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-2 shrink-0 ${
-              activeTab === "analytics"
-                ? "bg-neutral-100 text-neutral-950 font-bold shadow-[2px_2px_0px_#D4AF37]"
-                : "text-neutral-400 hover:text-neutral-100 hover:bg-neutral-900"
-            }`}
-          >
-            <Activity className="w-3.5 h-3.5" />
-            <span>4.2 Analitik & Nabız</span>
-          </button>
+          {/* Analitik Nabız sekmesi geçici olarak gizlendi (Satışlar eser detayındaki satın al butonu linkiyle yürütülecektir) */}
 
           <button
             onClick={() => {
@@ -611,10 +616,10 @@ export default function AdminStudioPage() {
                 : "text-neutral-400 hover:text-neutral-100 hover:bg-neutral-900"
             }`}
           >
-            <Package className="w-3.5 h-3.5" />
-            <span>Siparişler & Kayıtlar</span>
+            <Users className="w-3.5 h-3.5" />
+            <span>Atölye Kayıtları</span>
             <span className="text-[10px] px-1.5 py-0.2 bg-neutral-800 text-neutral-300 rounded">
-              {orders.length + bookings.length}
+              {bookings.length}
             </span>
           </button>
 
@@ -1307,20 +1312,20 @@ export default function AdminStudioPage() {
                         title: "",
                         titleEn: "",
                         category: "casting",
-                        categoryTitle: "Raku & Döküm",
+                        categoryTitle: "Kayıp Mum & Gümüş Döküm",
                         instructor: "Derin Buse Demirkaya",
-                        location: "Galata Açık Hava Heykel Stüdyosu, İstanbul",
-                        locationEn: "Galata Open-Air Studio, Istanbul",
-                        durationMinutes: 240,
-                        price: "₺4.500",
-                        rawPrice: 4500,
-                        capacity: 8,
+                        location: "Galata Heykel Stüdyosu, İstanbul",
+                        locationEn: "Galata Studio, Istanbul",
+                        durationMinutes: 180,
+                        price: "₺3.500",
+                        rawPrice: 3500,
+                        capacity: 6,
                         enrolledCount: 0,
                         dateOffsetDays: 7,
                         hour: 13,
                         description: "",
-                        materialsIncluded: "Tüm zanaat malzemeleri dahildir.",
-                        imageUrl: PRESET_STUDIO_IMAGES[3].url,
+                        materialsIncluded: "Modelaj mumu, döküm gümüşü ve bitmiş eser teslimi dahildir.",
+                        imageUrl: "/artworks/744a7950cff34beaff3f06e308a540a0.jpg",
                       });
                       setIsWorkshopModalOpen(true);
                     }}
@@ -1331,189 +1336,204 @@ export default function AdminStudioPage() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {workshops.map((w) => (
-                    <div
-                      key={w.id}
-                      className="bg-[#171717] border border-neutral-800 p-5 shadow-[3px_3px_0px_#000] flex flex-col justify-between"
+                {workshops.length === 0 ? (
+                  <div className="bg-[#171717] border border-neutral-800 p-12 text-center shadow-[3px_3px_0px_#000]">
+                    <Calendar className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
+                    <h3 className="font-serif text-lg text-neutral-200 uppercase tracking-wide">
+                      Aktif Atölye Seansı Bulunmuyor
+                    </h3>
+                    <p className="font-mono text-xs text-neutral-400 max-w-md mx-auto mt-2 mb-6 leading-relaxed">
+                      Örnek atölyeler kaldırıldı. Kayıp mum tekniği, gümüş döküm veya heykel seanslarınızı stüdyo programına eklemek için yeni bir atölye oluşturun.
+                    </p>
+                    <button
+                      onClick={() => {
+                        soundFx.playClick();
+                        setEditingWorkshop({
+                          title: "",
+                          titleEn: "",
+                          category: "casting",
+                          categoryTitle: "Kayıp Mum & Gümüş Döküm",
+                          instructor: "Derin Buse Demirkaya",
+                          location: "Galata Heykel Stüdyosu, İstanbul",
+                          locationEn: "Galata Studio, Istanbul",
+                          durationMinutes: 180,
+                          price: "₺3.500",
+                          rawPrice: 3500,
+                          capacity: 6,
+                          enrolledCount: 0,
+                          dateOffsetDays: 7,
+                          hour: 13,
+                          description: "",
+                          materialsIncluded: "Modelaj mumu, döküm gümüşü ve bitmiş eser teslimi dahildir.",
+                          imageUrl: "/artworks/744a7950cff34beaff3f06e308a540a0.jpg",
+                        });
+                        setIsWorkshopModalOpen(true);
+                      }}
+                      className="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-neutral-950 font-mono text-xs font-bold uppercase tracking-wider inline-flex items-center gap-2 shadow-[2px_2px_0px_#000]"
                     >
-                      <div>
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <div>
-                            <span className="text-[10px] font-mono px-2 py-0.5 bg-neutral-800 text-amber-400 uppercase tracking-wider">
-                              {w.categoryTitle || w.category}
+                      <Plus className="w-4 h-4" />
+                      <span>İlk Atölyeyi Aç</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {workshops.map((w) => (
+                      <div
+                        key={w.id}
+                        className="bg-[#171717] border border-neutral-800 p-5 shadow-[3px_3px_0px_#000] flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div>
+                              <span className="text-[10px] font-mono px-2 py-0.5 bg-neutral-800 text-amber-400 uppercase tracking-wider">
+                                {w.categoryTitle || w.category}
+                              </span>
+                              <h3 className="font-serif text-lg text-neutral-100 font-bold mt-1">
+                                {w.title}
+                              </h3>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-sm font-bold text-neutral-200">
+                                {w.price}
+                              </span>
+                              <button
+                                onClick={() => {
+                                  soundFx.playClick();
+                                  setEditingWorkshop({ ...w });
+                                  setIsWorkshopModalOpen(true);
+                                }}
+                                className="p-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white border border-neutral-700 transition-colors"
+                                title="Atölyeyi Düzenle"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteWorkshop(w.id, w.title)}
+                                className="p-1.5 bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-200 border border-red-900/50 transition-colors"
+                                title="Atölyeyi Sil"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <p className="text-xs text-neutral-400 font-sans line-clamp-2 mb-4">
+                            {w.description}
+                          </p>
+
+                          <div className="space-y-1.5 text-xs font-mono text-neutral-400 border-t border-neutral-800 pt-3">
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-3.5 h-3.5 text-neutral-500" />
+                              <span className="truncate">{w.location}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-3.5 h-3.5 text-neutral-500" />
+                              <span>{w.durationMinutes} Dakika • Saat {w.hour}:00</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="w-3.5 h-3.5 text-neutral-500" />
+                              <span>Eğitmen: {w.instructor}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-5 pt-3 border-t border-neutral-800 flex items-center justify-between">
+                          <div className="text-xs font-mono">
+                            <span className="text-neutral-400">Kontenjan: </span>
+                            <span className="text-neutral-100 font-bold">
+                              {w.enrolledCount} / {w.capacity}
                             </span>
-                            <h3 className="font-serif text-lg text-neutral-100 font-bold mt-1">
-                              {w.title}
-                            </h3>
-                          </div>
-                          <span className="font-mono text-sm font-bold text-neutral-200">
-                            {w.price}
-                          </span>
-                        </div>
-
-                        <p className="text-xs text-neutral-400 font-sans line-clamp-2 mb-4">
-                          {w.description}
-                        </p>
-
-                        <div className="space-y-1.5 text-xs font-mono text-neutral-400 border-t border-neutral-800 pt-3">
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-3.5 h-3.5 text-neutral-500" />
-                            <span className="truncate">{w.location}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Clock className="w-3.5 h-3.5 text-neutral-500" />
-                            <span>{w.durationMinutes} Dakika • Saat {w.hour}:00</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="w-3.5 h-3.5 text-neutral-500" />
-                            <span>Eğitmen: {w.instructor}</span>
+                            <button
+                              onClick={() => handleWorkshopEnrollmentDelta(w.id, -1)}
+                              disabled={w.enrolledCount <= 0}
+                              className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-mono text-xs border border-neutral-700 disabled:opacity-40"
+                            >
+                              -1 Katılımcı
+                            </button>
+                            <button
+                              onClick={() => handleWorkshopEnrollmentDelta(w.id, 1)}
+                              disabled={w.enrolledCount >= w.capacity}
+                              className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-mono text-xs border border-neutral-700 disabled:opacity-40"
+                            >
+                              +1 Katılımcı
+                            </button>
                           </div>
                         </div>
                       </div>
-
-                      <div className="mt-5 pt-3 border-t border-neutral-800 flex items-center justify-between">
-                        <div className="text-xs font-mono">
-                          <span className="text-neutral-400">Kontenjan: </span>
-                          <span className="text-neutral-100 font-bold">
-                            {w.enrolledCount} / {w.capacity}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleWorkshopEnrollmentDelta(w.id, -1)}
-                            disabled={w.enrolledCount <= 0}
-                            className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-mono text-xs border border-neutral-700 disabled:opacity-40"
-                          >
-                            -1 Katılımcı
-                          </button>
-                          <button
-                            onClick={() => handleWorkshopEnrollmentDelta(w.id, 1)}
-                            disabled={w.enrolledCount >= w.capacity}
-                            className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-white font-mono text-xs border border-neutral-700 disabled:opacity-40"
-                          >
-                            +1 Katılımcı
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
             {/* ========================================================================= */}
-            {/* SEKMELER: 4. SİPARİŞLER & BİLETLER                                         */}
+            {/* SEKMELER: 4. ATÖLYE KATILIMCI KAYITLARI (Siparişler kısmı gizlendi)          */}
             {/* ========================================================================= */}
             {activeTab === "orders" && (
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="pb-4 border-b border-neutral-800">
-                  <h2 className="font-serif text-xl text-neutral-100">Siparişler ve Katılımcı Listesi</h2>
+                  <h2 className="font-serif text-xl text-neutral-100">Atölye Katılımcı Kayıtları</h2>
                   <p className="text-xs font-mono text-neutral-400">
-                    E-ticaret eser siparişleri ve atölye dijital biletleri
+                    Atölye ve masterclass seanslarına kayıt yaptıran katılımcı listesi ve rezervasyon biletleri
                   </p>
                 </div>
 
-                <div className="space-y-8">
-                  {/* Eser Siparişleri */}
+                <div className="space-y-6">
+                  {/* Katılımcı Kayıt Biletleri */}
                   <div>
                     <h3 className="font-mono text-xs text-amber-400 uppercase tracking-wider mb-3">
-                      Eser Siparişleri ({orders.length})
+                      Kayıtlı Katılımcılar ({bookings.length})
                     </h3>
-                    <div className="bg-[#171717] border border-neutral-800 shadow-[3px_3px_0px_#000] overflow-x-auto">
-                      <table className="w-full text-left font-mono text-xs">
-                        <thead>
-                          <tr className="border-b border-neutral-800 text-neutral-400 uppercase text-[10px]">
-                            <th className="py-2.5 px-3">Sipariş No</th>
-                            <th className="py-2.5 px-3">Tarih</th>
-                            <th className="py-2.5 px-3">Koleksiyoner</th>
-                            <th className="py-2.5 px-3">Adres</th>
-                            <th className="py-2.5 px-3">Tutar</th>
-                            <th className="py-2.5 px-3">Durum</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-800/60">
-                          {orders.map((o) => (
-                            <tr key={o.id}>
-                              <td className="py-3 px-3 font-bold text-neutral-200">{o.orderNumber}</td>
-                              <td className="py-3 px-3 text-neutral-400">
-                                {new Date(o.createdAt).toLocaleDateString("tr-TR")}
-                              </td>
-                              <td className="py-3 px-3">
-                                <div>{o.customerName}</div>
-                                <div className="text-[10px] text-neutral-500">{o.customerEmail}</div>
-                              </td>
-                              <td className="py-3 px-3 max-w-[200px] truncate text-neutral-400">
-                                {o.shippingAddress}
-                              </td>
-                              <td className="py-3 px-3 font-bold text-neutral-100">
-                                ₺{o.totalAmount.toLocaleString("tr-TR")}
-                              </td>
-                              <td className="py-3 px-3">
-                                <select
-                                  value={o.status}
-                                  onChange={(e) =>
-                                    handleOrderStatusChange(
-                                      o.id,
-                                      e.target.value as AdminOrder["status"]
-                                    )
-                                  }
-                                  className="bg-neutral-900 border border-neutral-700 text-neutral-200 text-xs px-2 py-1 font-mono focus:border-amber-400 outline-none"
-                                >
-                                  <option value="pending">BEKLİYOR</option>
-                                  <option value="paid">ÖDENDİ</option>
-                                  <option value="shipped">KARGOLANDI</option>
-                                  <option value="completed">TAMAMLANDI</option>
-                                  <option value="cancelled">İPTAL</option>
-                                </select>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
 
-                  {/* Bilet Rezervasyonları */}
-                  <div>
-                    <h3 className="font-mono text-xs text-amber-400 uppercase tracking-wider mb-3">
-                      Atölye Rezervasyon Biletleri ({bookings.length})
-                    </h3>
-                    <div className="bg-[#171717] border border-neutral-800 shadow-[3px_3px_0px_#000] overflow-x-auto">
-                      <table className="w-full text-left font-mono text-xs">
-                        <thead>
-                          <tr className="border-b border-neutral-800 text-neutral-400 uppercase text-[10px]">
-                            <th className="py-2.5 px-3">Bilet Kodu</th>
-                            <th className="py-2.5 px-3">Atölye</th>
-                            <th className="py-2.5 px-3">Katılımcı</th>
-                            <th className="py-2.5 px-3">Kişi Sayısı</th>
-                            <th className="py-2.5 px-3">Tutar</th>
-                            <th className="py-2.5 px-3">Durum</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-neutral-800/60">
-                          {bookings.map((b) => (
-                            <tr key={b.id}>
-                              <td className="py-3 px-3 font-bold text-amber-300">{b.ticketCode}</td>
-                              <td className="py-3 px-3 text-neutral-200">{b.workshopTitle}</td>
-                              <td className="py-3 px-3">
-                                <div>{b.attendeeName}</div>
-                                <div className="text-[10px] text-neutral-500">{b.attendeeEmail}</div>
-                              </td>
-                              <td className="py-3 px-3">{b.seatCount} Kişi</td>
-                              <td className="py-3 px-3 font-bold text-neutral-100">
-                                ₺{b.totalPrice.toLocaleString("tr-TR")}
-                              </td>
-                              <td className="py-3 px-3">
-                                <span className="px-2 py-0.5 bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-[10px]">
-                                  {b.status.toUpperCase()}
-                                </span>
-                              </td>
+                    {bookings.length === 0 ? (
+                      <div className="bg-[#171717] border border-neutral-800 p-12 text-center shadow-[3px_3px_0px_#000]">
+                        <Users className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
+                        <h4 className="font-serif text-base text-neutral-200 uppercase tracking-wide">
+                          Henüz Katılımcı Kaydı Bulunmuyor
+                        </h4>
+                        <p className="font-mono text-xs text-neutral-500 max-w-md mx-auto mt-2">
+                          Atölye sayfasından yapılan katılımcı rezervasyonları burada anlık olarak listelenecektir.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-[#171717] border border-neutral-800 shadow-[3px_3px_0px_#000] overflow-x-auto">
+                        <table className="w-full text-left font-mono text-xs">
+                          <thead>
+                            <tr className="border-b border-neutral-800 text-neutral-400 uppercase text-[10px]">
+                              <th className="py-2.5 px-3">Bilet Kodu</th>
+                              <th className="py-2.5 px-3">Atölye</th>
+                              <th className="py-2.5 px-3">Katılımcı</th>
+                              <th className="py-2.5 px-3">Kişi Sayısı</th>
+                              <th className="py-2.5 px-3">Tutar</th>
+                              <th className="py-2.5 px-3">Durum</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody className="divide-y divide-neutral-800/60">
+                            {bookings.map((b) => (
+                              <tr key={b.id}>
+                                <td className="py-3 px-3 font-bold text-amber-300">{b.ticketCode}</td>
+                                <td className="py-3 px-3 text-neutral-200">{b.workshopTitle}</td>
+                                <td className="py-3 px-3">
+                                  <div>{b.attendeeName}</div>
+                                  <div className="text-[10px] text-neutral-500">{b.attendeeEmail}</div>
+                                </td>
+                                <td className="py-3 px-3">{b.seatCount} Kişi</td>
+                                <td className="py-3 px-3 font-bold text-neutral-100">
+                                  ₺{b.totalPrice.toLocaleString("tr-TR")}
+                                </td>
+                                <td className="py-3 px-3">
+                                  <span className="px-2 py-0.5 bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-[10px]">
+                                    {b.status.toUpperCase()}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

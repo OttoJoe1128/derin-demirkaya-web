@@ -15,7 +15,7 @@ import {
   ChevronRight,
   Sparkles,
 } from 'lucide-react';
-import { WORKSHOPS_DATA, type WorkshopItem } from '@/lib/workshops-data';
+import type { WorkshopItem } from '@/lib/workshops-data';
 import { useAuth } from '@/lib/auth-context';
 import { soundFx } from '@/lib/sound-fx';
 import type { Locale } from '@/lib/i18n-config';
@@ -27,6 +27,26 @@ interface WorkshopCalendarViewProps {
 export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarViewProps) {
   const isEn = lang === 'en';
   const { addReservation, user } = useAuth();
+
+  // Canlı Atölye Listesi
+  const [workshopsList, setWorkshopsList] = useState<WorkshopItem[]>([]);
+
+  React.useEffect(() => {
+    async function loadWorkshops() {
+      try {
+        const res = await fetch('/api/workshops');
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.workshops)) {
+            setWorkshopsList(data.workshops);
+          }
+        }
+      } catch (err) {
+        console.error('Workshops load error:', err);
+      }
+    }
+    loadWorkshops();
+  }, []);
 
   // Takvim Ay Durumu (Varsayılan: Kasım 2026)
   const [currentMonthIndex, setCurrentMonthIndex] = useState(10); // 10 = Kasım (0-indexed)
@@ -69,20 +89,19 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
   );
 
   // Atölyeleri Takvim Günlerine Eşleme
-  // WorkshopItem.dateOffsetDays -> Gün (1-30)
   const workshopsByDay = useMemo(() => {
     const map: Record<number, WorkshopItem[]> = {};
-    WORKSHOPS_DATA.forEach((ws) => {
-      const day = ws.dateOffsetDays;
+    workshopsList.forEach((ws) => {
+      const day = ws.dateOffsetDays || 1;
       if (!map[day]) map[day] = [];
       map[day].push(ws);
     });
     return map;
-  }, []);
+  }, [workshopsList]);
 
   // Filtrelenmiş Atölye Listesi
   const displayedWorkshops = useMemo(() => {
-    let list = WORKSHOPS_DATA;
+    let list = workshopsList;
     if (selectedCategory !== 'all') {
       list = list.filter((w) => w.category === selectedCategory);
     }
@@ -90,7 +109,7 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
       list = list.filter((w) => w.dateOffsetDays === selectedDay);
     }
     return list;
-  }, [selectedCategory, selectedDay]);
+  }, [workshopsList, selectedCategory, selectedDay]);
 
   const handleOpenBooking = (ws: WorkshopItem) => {
     soundFx.playClick();
@@ -313,8 +332,20 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {displayedWorkshops.map((ws) => {
+        {displayedWorkshops.length === 0 ? (
+          <div className="py-20 text-center border border-neutral-800 bg-[#0d0d0d] p-8 max-w-xl mx-auto my-6 shadow-[3px_3px_0px_#000]">
+            <p className="font-serif text-sm sm:text-base text-neutral-300 uppercase tracking-widest mb-2 font-normal">
+              {isEn ? "No Scheduled Sessions Available" : "Aktif Planlanan Seans Bulunmuyor"}
+            </p>
+            <p className="font-mono text-xs text-neutral-500 max-w-md mx-auto leading-relaxed">
+              {isEn
+                ? "New contemporary jewelry and lost-wax casting dates will be published by the studio soon."
+                : "Kayıp mum modelleme, gümüş döküm ve zanaat seanslarının yeni dönem tarihleri yakında stüdyo tarafından duyurulacaktır."}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {displayedWorkshops.map((ws) => {
             const remainingCapacity = ws.capacity - ws.enrolledCount;
             const isSoldOut = remainingCapacity <= 0;
             const sessionDate = `${ws.dateOffsetDays} ${monthNames[currentMonthIndex]} ${currentYear}`;
@@ -401,7 +432,8 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
               </article>
             );
           })}
-        </div>
+          </div>
+        )}
       </section>
 
       {/* 4. İNTERAKTİF REZERVASYON MODALI */}

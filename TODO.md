@@ -35,12 +35,15 @@
   - [x] Eser ekleme / düzenleme / silme modalı (TR/EN Başlık, Malzeme, Boyutlar, Teknik, Fiyat, Stok, Edisyon).
   - [x] Tek tıkla Vitrin (`isFeatured`) yönetimi ve canlı medya havuzu.
   - [x] Anlık stok güncelleme (+/-) sayaçları ve dijital COA Özgünlük Sertifikası motoru.
-- [x] **Faz 4.2: Tek Ekran Analitik Dashboard (`/admin`)**:
-  - [x] Toplam Ciro, Eser Gelirleri ve Atölye Bilet Gelirleri ayrımı.
-  - [x] Atölye Kapasite & Doluluk Isı Haritası (Kayıtlı katılımcı, kalan kontenjan ve interaktif +1/-1 kontrolü).
-  - [x] Kritik Stok & Edisyon Alarmları (Stoku ≤ 1 olan heykelsi eserler ve hızlı takviye).
-  - [x] Canlı Sipariş & QR Bilet Akışı (Ödeme ve kargolama aşaması değiştirici).
-- [x] **Faz 4.3: Gizli Stüdyo Sayfası & Kriptografik Giriş Bariyeri (`/admin`)**:
+- [x] **Faz 4.2: Dinamik Atölye & Katılımcı Yönetim Akışı (`/admin`)**:
+  - [x] Örnek seramik/çömlek atölyeleri tamamen temizlendi; stüdyoya özgü gerçek atölye seansı oluşturma (CRUD: Ekle, Düzenle, Sil, Kontenjan) devreye alındı.
+  - [x] `/atolye` sayfası canlı `/api/workshops` endpoint'ine bağlandı; stüdyodan eklenen atölyeler ve kontenjanlar hem takvimde hem listede anında yansıtılıyor.
+  - [x] Aktif oturum olmadığında hem ön yüzde hem admin panelinde şık, brutalist boş durum (empty-state) mesajları sağlandı.
+- [x] **Faz 4.3: Siparişler & Analitik Nabız Bölümü Revizyonu (`/admin`)**:
+  - [x] Satışlar doğrudan ürün detay sayfasındaki "Satın Al" butonuna eklenecek harici link ile yürütüleceğinden, e-ticaret siparişleri ve analitik nabız sekmesi geçici olarak gizlendi.
+  - [x] "Siparişler & Kayıtlar" sekmesi sadeleştirilerek sadece **"Atölye Kayıtları"** (katılımcı listesi, bilet kodları, koltuk sayısı ve rezervasyon durumları) haline getirildi.
+  - [x] Varsayılan stüdyo açılış sekmesi "4.1 Eser CMS & Medya" olarak ayarlandı.
+- [x] **Faz 4.4: Gizli Stüdyo Sayfası & Kriptografik Giriş Bariyeri (`/admin`)**:
   - [x] `/api/admin/auth` güvenli kimlik doğrulama rotası (AES-256 / SHA-256 JWT, HttpOnly `admin_session` çerezleri).
   - [x] `AdminLoginGate` brutalist gizli giriş kartı: Yetkisiz kişilere paneli tamamen kilitleyen monokrom güvenlik duvarı.
   - [x] Site sahibi için hızlı stüdyo parolası doğrulaması (`derinsem2026` / `nonvalue2026!`).
@@ -51,21 +54,14 @@
 
 ## 🚀 Sırada Olan Öncelikli Maddeler (In Progress & Up Next)
 
-### Faz 4.4: Kalıcı Veritabanı Entegrasyonu (Persistence)
+### Faz 4.5: Kalıcı Veritabanı Entegrasyonu (Persistence)
 - [ ] **Drizzle ORM & Cloud SQL / PostgreSQL / Supabase Entegrasyonu**:
   - [ ] `lib/admin-store.ts` içindeki bellek içi (in-memory) yapıyı gerçek veritabanı tablolarına bağlama.
   - [ ] Panelden eklenen eserlerin, silinen kayıtların ve stok değişimlerinin sunucu yeniden başlasa dahi kalıcı olması.
 
-### Faz 4.5: Dinamik Vitrin Senkronizasyonu (Storefront Sync)
-- [ ] **Eser Detay (`/shop/[id]`) Dinamik Bağlantısı**:
-  - [ ] Statik `ARTWORKS_DATA` yerine API/veritabanı sorgusu ile yeni eklenen eserlerin detay sayfalarının sorunsuz açılması.
-- [ ] **Atölye Takvimi (`/atolye`) Dinamik Bağlantısı**:
-  - [ ] `WorkshopCalendarView` bileşenini `/api/workshops` endpoint'ine bağlayarak stüdyo panelinden eklenen yeni atölyelerin takvimde anında belirmesi.
-- [ ] **Arşiv Tuvali (`/arsiv`) Dinamik Koordinat Senkronizasyonu**:
-  - [ ] Paneldeki $X/Y$ tuval konumlandırmalarının interaktif uzayda canlı güncellenmesi.
+### Faz 4.6: Ürün Detay Harici Satın Alma Butonu Entegrasyonu
+- [ ] **Eser Detay Satın Al Butonu Harici Link**:
+  - [ ] Ürün detay sayfasındaki satın al butonuna sanatçının belirleyeceği harici mağaza / ödeme / iletişim linkinin dinamik olarak bağlanması.
 
-### Faz 4.6: Müşteri Portali & Koleksiyoner Girişi
-- [ ] **Müşteri Giriş & Kayıt Sayfası (`/giris`)**:
-  - [ ] Müşteriler için JWT auth formları ve sipariş takip ekranı.
-- [ ] **Müşteri Profil & Rezervasyonlarım (`/profil`)**:
-  - [ ] Kayıtlı olunan atölye biletleri ve QR kodları.
+### Faz 4.7: Arşiv Tuvali (`/arsiv`) Dinamik Koordinat Senkronizasyonu
+- [ ] Paneldeki $X/Y$ tuval konumlandırmalarının interaktif uzayda canlı güncellenmesi.

@@ -42,123 +42,9 @@ interface AdminDataStore {
   bookings: AdminBooking[];
 }
 
-const INITIAL_ORDERS: AdminOrder[] = [
-  {
-    id: "ord-901",
-    orderNumber: "DD-2026-901",
-    customerName: "Canan Altay",
-    customerEmail: "canan.altay@artcurators.org",
-    items: [
-      {
-        title: "selflove (1/1 Heykelsi Yüzük)",
-        quantity: 1,
-        price: 3200,
-        imageUrl: "/artworks/744a7950cff34beaff3f06e308a540a0.jpg",
-      },
-    ],
-    totalAmount: 3200,
-    currency: "TRY",
-    status: "paid",
-    paymentProvider: "Stripe",
-    shippingAddress: "Nişantaşı, Abdi İpekçi Cad. No: 24/6, Şişli / İstanbul",
-    createdAt: "2026-09-15T14:22:00Z",
-  },
-  {
-    id: "ord-902",
-    orderNumber: "DD-2026-902",
-    customerName: "Emre Tandoğan",
-    customerEmail: "emre@tandoganarch.com",
-    items: [
-      {
-        title: "erosion — monolithic vase",
-        quantity: 1,
-        price: 4800,
-        imageUrl: "/artworks/44752606680a4cf18c44863741937f13.jpg",
-      },
-    ],
-    totalAmount: 4800,
-    currency: "TRY",
-    status: "shipped",
-    paymentProvider: "Stripe",
-    shippingAddress: "Alsancak, Kıbrıs Şehitleri Cad. No: 82, Konak / İzmir",
-    createdAt: "2026-09-14T11:05:00Z",
-  },
-  {
-    id: "ord-903",
-    orderNumber: "DD-2026-903",
-    customerName: "Leyla Sencer",
-    customerEmail: "leyla.sencer@designcollective.eu",
-    items: [
-      {
-        title: "brut / molten cuff",
-        quantity: 1,
-        price: 2900,
-        imageUrl: "/artworks/744a7950cff34beaff3f06e308a540a0.jpg",
-      },
-    ],
-    totalAmount: 2900,
-    currency: "TRY",
-    status: "pending",
-    paymentProvider: "Havale / EFT",
-    shippingAddress: "Bebek Mah. Cevdetpaşa Cad. No: 12, Beşiktaş / İstanbul",
-    createdAt: "2026-09-16T09:40:00Z",
-  },
-];
+const INITIAL_ORDERS: AdminOrder[] = [];
 
-const INITIAL_BOOKINGS: AdminBooking[] = [
-  {
-    id: "bk-801",
-    ticketCode: "DM-W26-8821",
-    workshopId: "ws-1",
-    workshopTitle: "Seramik Heykel & Raku Pişirimi",
-    workshopDate: "2026-09-19 13:00",
-    attendeeName: "Sırça Koleksiyoner",
-    attendeeEmail: "derinbusedemirkaya@gmail.com",
-    seatCount: 1,
-    totalPrice: 4500,
-    status: "confirmed",
-    createdAt: "2026-09-12T10:00:00Z",
-  },
-  {
-    id: "bk-802",
-    ticketCode: "DM-W26-8822",
-    workshopId: "ws-1",
-    workshopTitle: "Seramik Heykel & Raku Pişirimi",
-    workshopDate: "2026-09-19 13:00",
-    attendeeName: "Deniz Acar",
-    attendeeEmail: "deniz.acar@studio.com",
-    seatCount: 2,
-    totalPrice: 9000,
-    status: "confirmed",
-    createdAt: "2026-09-13T16:30:00Z",
-  },
-  {
-    id: "bk-803",
-    ticketCode: "DM-W26-8823",
-    workshopId: "ws-2",
-    workshopTitle: "Porselen Çamuru ile İleri Düzey Torna",
-    workshopDate: "2026-09-23 10:00",
-    attendeeName: "Mert Yılmaz",
-    attendeeEmail: "mert.yilmaz@galerie.tr",
-    seatCount: 1,
-    totalPrice: 3800,
-    status: "confirmed",
-    createdAt: "2026-09-14T09:15:00Z",
-  },
-  {
-    id: "bk-804",
-    ticketCode: "DM-W26-8824",
-    workshopId: "ws-3",
-    workshopTitle: "Sır Kimyası & Doğal Kül Pigmentleri",
-    workshopDate: "2026-09-28 14:00",
-    attendeeName: "Ayşe Erdem",
-    attendeeEmail: "ayse@erdemceramics.com",
-    seatCount: 2,
-    totalPrice: 6400,
-    status: "confirmed",
-    createdAt: "2026-09-15T18:00:00Z",
-  },
-];
+const INITIAL_BOOKINGS: AdminBooking[] = [];
 
 declare global {
   var _adminStore: AdminDataStore | undefined;
@@ -252,6 +138,13 @@ export function updateWorkshopEnrollmentInStore(id: string, delta: number): Work
     return item;
   }
   return null;
+}
+
+export function deleteWorkshopFromStore(id: string): boolean {
+  const store = getAdminStore();
+  const initialLength = store.workshops.length;
+  store.workshops = store.workshops.filter((w) => w.id !== id);
+  return store.workshops.length < initialLength;
 }
 
 export function getStoredOrders(): AdminOrder[] {
