@@ -135,12 +135,6 @@ export default function WorkshopCalendarView({ lang = 'tr' }: WorkshopCalendarVi
     <div className="w-full min-h-screen bg-black text-neutral-200 pt-24 sm:pt-28 pb-32 px-4 sm:px-8 max-w-7xl mx-auto selection:bg-white selection:text-black">
       {/* 1. ÜST BAŞLIK */}
       <header className="border-b border-neutral-800 pb-8 mb-10">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-          <span className="font-mono text-[9px] sm:text-[10px] text-amber-400 tracking-[0.3em] uppercase">
-            ATELIER // 2026 CALENDAR & SESSIONS
-          </span>
-        </div>
         <h1 className="font-serif text-[14px] text-white tracking-widest uppercase font-normal">
           {isEn ? 'Atelier & Masterclasses' : 'Atölye & Takvim'}
         </h1>

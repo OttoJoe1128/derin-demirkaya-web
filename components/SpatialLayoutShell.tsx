@@ -148,14 +148,14 @@ export default function SpatialLayoutShell({
 
   // Tam Ekran Merkezleme (Dead-Center) & Cihaza Göre Açılış Büyüklüğü
   const startScale =
-    deviceType === 'mobile' ? 3.2 : deviceType === 'tablet' ? 4.2 : 5.0;
+    deviceType === 'mobile' ? 2.8 : deviceType === 'tablet' ? 3.6 : 4.2;
 
   const startY =
     deviceType === 'mobile'
-      ? 'calc(50vh - 60px)'
+      ? 'calc(50vh - 68px)'
       : deviceType === 'tablet'
-      ? 'calc(50vh - 79px)'
-      : 'calc(50vh - 88px)';
+      ? 'calc(50vh - 89px)'
+      : 'calc(50vh - 100px)';
 
   return (
     <div className="relative min-h-screen w-full bg-black text-neutral-200 overflow-x-hidden selection:bg-white selection:text-black">
@@ -174,7 +174,7 @@ export default function SpatialLayoutShell({
       {/* 4-POINT SPATIAL NAVIGATION                                                */}
       {/* ========================================================================= */}
 
-      {/* TOP (Üst Orta): Marka Logosu (Merkezde Tam Ortada 5x Başlar -> 1.5s Sonra Üste Süzülüp Küçülür) */}
+      {/* TOP (Üst Orta): Marka Logosu (Merkezde Tam Ortada Başlar -> 1.5s Sonra Üste Süzülüp Küçülür) */}
       <header className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-auto select-none bg-transparent">
         <motion.div
           initial={{ y: startY, scale: startScale }}
@@ -186,12 +186,12 @@ export default function SpatialLayoutShell({
           }}
           className="origin-center relative flex items-center justify-center"
         >
-          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider (Ölçek büyütüldü: 88px mobil / 110px tablet / 128px masaüstü) */}
+          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider (Ölçek büyütüldü: 104px mobil / 130px tablet / 152px masaüstü) */}
           <Link
             href={`/${lang}`}
             onClick={(e) => handleNavigate(e, `/${lang}`, 'none')}
             onMouseEnter={() => soundFx.playHover()}
-            className="group flex items-center justify-center tracking-widest transition-opacity duration-300 hover:opacity-100 p-1"
+            className="group flex items-center justify-center tracking-widest transition-opacity duration-300 hover:opacity-100"
             title="nonvalue — Home"
           >
             <div
@@ -199,13 +199,13 @@ export default function SpatialLayoutShell({
                 WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
                 maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
               }}
-              className="relative w-[88px] h-[88px] md:w-[110px] md:h-[110px] lg:w-[128px] lg:h-[128px] flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
+              className="relative w-[104px] h-[104px] md:w-[130px] md:h-[130px] lg:w-[152px] lg:h-[152px] flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
             >
               <Image
                 src="/nv_logo.png"
                 alt="nonvalue"
-                width={128}
-                height={128}
+                width={152}
+                height={152}
                 quality={100}
                 unoptimized={true}
                 priority
@@ -219,7 +219,7 @@ export default function SpatialLayoutShell({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
-            className="absolute top-full left-1/2 -translate-x-1/2 pt-1.5 sm:pt-2 flex flex-col items-center"
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 sm:mt-2.5 flex flex-col items-center"
           >
             <Link
               href={`/${lang}/hakkinda`}

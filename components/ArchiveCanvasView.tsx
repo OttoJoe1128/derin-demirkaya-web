@@ -137,11 +137,7 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
       {/* 1. HUD & VİEWFİNDER TELEMETRİ KATMANI (Fixed) */}
       <div className="pointer-events-none fixed inset-0 z-20 flex flex-col justify-between p-4 sm:p-8 font-mono text-[9px] sm:text-[10px] text-neutral-500">
         {/* Üst Telemetri */}
-        <div className="flex justify-between items-start uppercase tracking-widest pt-12 sm:pt-14">
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-neutral-400">REC [ + ] 24 FPS // CINEMATIC CANVAS</span>
-          </div>
+        <div className="flex justify-end items-start uppercase tracking-widest pt-12 sm:pt-14">
           <div className="text-right">
             <span className="text-neutral-400">PAN X:{Math.round(pan.x)} Y:{Math.round(pan.y)}</span>
             <span className="text-neutral-600 block">ZOOM: {Math.round(zoom * 100)}%</span>
@@ -149,11 +145,7 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
         </div>
 
         {/* Alt Telemetri */}
-        <div className="flex justify-between items-end uppercase tracking-widest pb-12 sm:pb-14">
-          <div>
-            <span className="text-neutral-400">CINEMASCOPE 2.39:1 // 925K STERLING SILVER</span>
-            <span className="text-neutral-600 block">LOST-WAX CONTINUUM</span>
-          </div>
+        <div className="flex justify-end items-end uppercase tracking-widest pb-12 sm:pb-14">
           <div className="text-right text-neutral-400">
             [ SÜRÜKLEYİN • TEKERLEKLE YAKINLAŞIN ]
           </div>
