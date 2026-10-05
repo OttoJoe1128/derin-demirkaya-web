@@ -1,18 +1,40 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import CustomCursor from "../components/CustomCursor";
 import Providers from "../components/Providers";
 
-const inter = Inter({ 
-  subsets: ["latin"],
-  variable: "--font-inter",
+const garet = localFont({
+  src: [
+    {
+      path: "../public/fonts/Garet-Book.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/Garet-Heavy.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-garet",
   display: "swap",
 });
 
-const playfair = Playfair_Display({ 
-  subsets: ["latin"],
-  variable: "--font-playfair",
+const providenceSans = localFont({
+  src: [
+    {
+      path: "../public/fonts/providence-sans.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../public/fonts/providence-sans.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-providence",
   display: "swap",
 });
 
@@ -114,7 +136,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="tr" className={`${garet.variable} ${providenceSans.variable}`}>
       <head>
         <script
           type="application/ld+json"

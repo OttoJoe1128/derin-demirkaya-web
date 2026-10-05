@@ -2,7 +2,7 @@
 
 ## 📌 Tamamlanan Aşamalar (Completed)
 - [x] **Tasarım Sistemi & Temel Mimarisi**:
-  - [x] Next.js 15 App Router, Tailwind CSS v4, font entegrasyonları (Playfair Display + Inter).
+  - [x] Next.js 15 App Router, Tailwind CSS v4, tipografi sistemi (Garet gövde metinleri + FF Providence Sans başlıklar).
   - [x] Header, Hero, Footer, CollectionCard ve FeaturedCollection bileşenleri.
   - [x] Sinematik interaktif tuval: `/arsiv` (Arşiv uzay keşfi ve sürükleme).
 - [x] **Ödüllü Minimalist İmleç (CustomCursor)**:
