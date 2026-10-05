@@ -10,8 +10,8 @@
   - [x] Yüksek frame hızı (donanım frekansında 0ms gecikmeli GPU translate3d ve akıcı ölçekleme).
   - [x] Masaüstünde kaybolma hatası kalıcı olarak çözüldü (kesintisiz hareket ve sınır kontrolü, metin alanı I-beam geçişleri).
 - [x] **4 Yönlü Uzamsal Portalı & Marka Vurgusu**:
-  - [x] 4 yönlü kategori gösterge noktaları ve mühür altı `nonvaluejewel` logosu asit yeşili `#C1FF72` tonuyla güncellendi (zarif orantı).
-  - [x] Yüksek çözünürlüklü `/nv_logo.png` açılış mühürü entegre edildi; merkezde 4x+ devasa başlangıç, pürüzsüz süzülme ve +2px dinlenme boyutu (66px/82px).
+  - [x] 4 yönlü kategori gösterge noktaları ve mühür altı `nonvaluejewel` logosu asit yeşili `#C1FF72` tonuyla güncellendi (11px net tipografik yükseklik).
+  - [x] Yüksek çözünürlüklü `/nv_logo.png` açılış mühürü entegre edildi; masaüstünde 5x (640px) ve tablette 4.2x (462px) tam ekran merkezli başlangıç, pürüzsüz süzülme ve büyütülmüş dinlenme ölçeği (88px/110px/128px).
 - [x] **Veritabanı & Altyapı**:
   - [x] Drizzle ORM + PostgreSQL şemaları (`db/schema.ts`: workshops, workshopBookings, artworks, artworkImages, collections, customers).
 - [x] **Kimlik Doğrulama & Yetkilendirme**:

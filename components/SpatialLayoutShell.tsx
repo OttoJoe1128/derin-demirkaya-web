@@ -40,11 +40,20 @@ export default function SpatialLayoutShell({
   const pathname = usePathname();
   const router = useRouter();
 
-  const [isMobile, setIsMobile] = useState(false);
+  const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
   const [direction, setDirection] = useState<Direction>('none');
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 640) {
+        setDeviceType('mobile');
+      } else if (width < 1024) {
+        setDeviceType('tablet');
+      } else {
+        setDeviceType('desktop');
+      }
+    };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -124,8 +133,16 @@ export default function SpatialLayoutShell({
     },
   };
 
-  const startY = isMobile ? '38vh' : '40vh';
-  const startScale = isMobile ? 3.8 : 4.5;
+  // Tam Ekran Merkezleme (Dead-Center) & Cihaza Göre Açılış Büyüklüğü
+  const startScale =
+    deviceType === 'mobile' ? 3.2 : deviceType === 'tablet' ? 4.2 : 5.0;
+
+  const startY =
+    deviceType === 'mobile'
+      ? 'calc(50vh - 60px)'
+      : deviceType === 'tablet'
+      ? 'calc(50vh - 79px)'
+      : 'calc(50vh - 88px)';
 
   return (
     <div className="relative min-h-screen w-full bg-black text-neutral-200 overflow-x-hidden selection:bg-white selection:text-black">
@@ -144,19 +161,19 @@ export default function SpatialLayoutShell({
       {/* 4-POINT SPATIAL NAVIGATION                                                */}
       {/* ========================================================================= */}
 
-      {/* TOP (Üst Orta): Marka Logosu (Merkezde 4x+ Başlar -> 1.5s Sonra Üste Süzülüp Küçülür) */}
+      {/* TOP (Üst Orta): Marka Logosu (Merkezde Tam Ortada 5x Başlar -> 1.5s Sonra Üste Süzülüp Küçülür) */}
       <header className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-auto select-none bg-transparent">
         <motion.div
           initial={{ y: startY, scale: startScale }}
-          animate={{ y: '0vh', scale: 1 }}
+          animate={{ y: '0px', scale: 1 }}
           transition={{
             delay: 1.5,
             duration: 1.2,
             ease: [0.16, 1, 0.3, 1] as const,
           }}
-          className="origin-center flex flex-col items-center justify-center"
+          className="origin-center relative flex items-center justify-center"
         >
-          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider (+2px artırılmış: 66px mobil / 82px masaüstü) */}
+          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider (Ölçek büyütüldü: 88px mobil / 110px tablet / 128px masaüstü) */}
           <Link
             href={`/${lang}`}
             onClick={(e) => handleNavigate(e, `/${lang}`, 'none')}
@@ -169,13 +186,13 @@ export default function SpatialLayoutShell({
                 WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
                 maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
               }}
-              className="relative w-[66px] h-[66px] sm:w-[82px] sm:h-[82px] flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
+              className="relative w-[88px] h-[88px] md:w-[110px] md:h-[110px] lg:w-[128px] lg:h-[128px] flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
             >
               <Image
                 src="/nv_logo.png"
                 alt="nonvalue"
-                width={82}
-                height={82}
+                width={128}
+                height={128}
                 quality={100}
                 unoptimized={true}
                 priority
@@ -189,23 +206,23 @@ export default function SpatialLayoutShell({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
-            className="flex flex-col items-center"
+            className="absolute top-full left-1/2 -translate-x-1/2 pt-1.5 sm:pt-2 flex flex-col items-center"
           >
             <Link
               href={`/${lang}/hakkinda`}
               onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
               onMouseEnter={() => soundFx.playHover()}
-              className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 -mt-1 sm:-mt-2"
+              className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 whitespace-nowrap"
               title="nonvalue — Manifesto & About"
             >
-              {/* nonvaluejewel Logosu (#C1FF72 renginde, zarif küçültülmüş boyut) */}
-              <div className="relative h-[19px] sm:h-[23px] w-auto flex items-center justify-center">
+              {/* nonvaluejewel Logosu (#C1FF72 renginde, 11px optik metin büyüklüğünde) */}
+              <div className="relative h-[30px] sm:h-[34px] w-auto flex items-center justify-center">
                 <Image
                   src="/nonvaluejewel-lime.png"
                   alt="nonvalue jewel"
                   width={344}
                   height={151}
-                  className="h-full w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(193,255,114,0.35)]"
+                  className="h-full w-auto object-contain opacity-95 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(193,255,114,0.4)]"
                   unoptimized={true}
                   priority
                 />
