@@ -28,6 +28,7 @@ export interface ArtworkDetail {
   specsEn?: { label: string; value: string }[];
   isFeatured?: boolean;
   archiveCoords?: { x: number; y: number };
+  purchaseUrl?: string;
 }
 
 export const ARTWORKS_DATA: ArtworkDetail[] = [

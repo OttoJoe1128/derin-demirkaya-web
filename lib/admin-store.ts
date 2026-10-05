@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { ARTWORKS_DATA, type ArtworkDetail } from "./artworks-data";
 import { WORKSHOPS_DATA, type WorkshopItem } from "./workshops-data";
 
@@ -46,17 +48,46 @@ const INITIAL_ORDERS: AdminOrder[] = [];
 
 const INITIAL_BOOKINGS: AdminBooking[] = [];
 
+const STORE_FILE_PATH = path.join(process.cwd(), "data", "studio-store.json");
+
+function loadPersistedStore(): Partial<AdminDataStore> | null {
+  try {
+    if (typeof window === "undefined" && fs.existsSync(STORE_FILE_PATH)) {
+      const raw = fs.readFileSync(STORE_FILE_PATH, "utf8");
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.warn("Failed to load persisted studio store from file:", err);
+  }
+  return null;
+}
+
+function persistStore(store: AdminDataStore): void {
+  try {
+    if (typeof window === "undefined") {
+      const dir = path.dirname(STORE_FILE_PATH);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(STORE_FILE_PATH, JSON.stringify(store, null, 2), "utf8");
+    }
+  } catch (err) {
+    console.warn("Failed to persist studio store to file:", err);
+  }
+}
+
 declare global {
   var _adminStore: AdminDataStore | undefined;
 }
 
 export function getAdminStore(): AdminDataStore {
   if (!globalThis._adminStore) {
+    const saved = loadPersistedStore();
     globalThis._adminStore = {
-      artworks: [...ARTWORKS_DATA],
-      workshops: [...WORKSHOPS_DATA],
-      orders: [...INITIAL_ORDERS],
-      bookings: [...INITIAL_BOOKINGS],
+      artworks: saved?.artworks && Array.isArray(saved.artworks) && saved.artworks.length > 0 ? saved.artworks : [...ARTWORKS_DATA],
+      workshops: saved?.workshops && Array.isArray(saved.workshops) ? saved.workshops : [...WORKSHOPS_DATA],
+      orders: saved?.orders && Array.isArray(saved.orders) ? saved.orders : [...INITIAL_ORDERS],
+      bookings: saved?.bookings && Array.isArray(saved.bookings) ? saved.bookings : [...INITIAL_BOOKINGS],
     };
   }
   return globalThis._adminStore;
@@ -75,6 +106,7 @@ export function saveArtworkToStore(artwork: ArtworkDetail): ArtworkDetail {
   } else {
     store.artworks.unshift({ ...artwork });
   }
+  persistStore(store);
   return artwork;
 }
 
@@ -82,7 +114,11 @@ export function deleteArtworkFromStore(id: string): boolean {
   const store = getAdminStore();
   const initialLength = store.artworks.length;
   store.artworks = store.artworks.filter((a) => a.id !== id);
-  return store.artworks.length < initialLength;
+  const wasDeleted = store.artworks.length < initialLength;
+  if (wasDeleted) {
+    persistStore(store);
+  }
+  return wasDeleted;
 }
 
 export function updateArtworkStockInStore(id: string, newStock: number): ArtworkDetail | null {
@@ -90,6 +126,7 @@ export function updateArtworkStockInStore(id: string, newStock: number): Artwork
   const item = store.artworks.find((a) => a.id === id);
   if (item) {
     item.stock = Math.max(0, newStock);
+    persistStore(store);
     return item;
   }
   return null;
@@ -100,6 +137,7 @@ export function toggleArtworkFeaturedInStore(id: string): boolean {
   const item = store.artworks.find((a) => a.id === id);
   if (item) {
     item.isFeatured = !item.isFeatured;
+    persistStore(store);
     return item.isFeatured;
   }
   return false;
@@ -110,9 +148,26 @@ export function updateArtworkCoordsInStore(id: string, coords: { x: number; y: n
   const item = store.artworks.find((a) => a.id === id);
   if (item) {
     item.archiveCoords = coords;
+    persistStore(store);
     return true;
   }
   return false;
+}
+
+export function batchUpdateArtworkCoordsInStore(items: { id: string; coords: { x: number; y: number } }[]): boolean {
+  const store = getAdminStore();
+  let modified = false;
+  items.forEach(({ id, coords }) => {
+    const item = store.artworks.find((a) => a.id === id);
+    if (item) {
+      item.archiveCoords = coords;
+      modified = true;
+    }
+  });
+  if (modified) {
+    persistStore(store);
+  }
+  return modified;
 }
 
 export function getStoredWorkshops(): WorkshopItem[] {
@@ -127,6 +182,7 @@ export function saveWorkshopToStore(workshop: WorkshopItem): WorkshopItem {
   } else {
     store.workshops.unshift({ ...workshop });
   }
+  persistStore(store);
   return workshop;
 }
 
@@ -135,6 +191,7 @@ export function updateWorkshopEnrollmentInStore(id: string, delta: number): Work
   const item = store.workshops.find((w) => w.id === id);
   if (item) {
     item.enrolledCount = Math.max(0, Math.min(item.capacity, item.enrolledCount + delta));
+    persistStore(store);
     return item;
   }
   return null;
@@ -144,7 +201,11 @@ export function deleteWorkshopFromStore(id: string): boolean {
   const store = getAdminStore();
   const initialLength = store.workshops.length;
   store.workshops = store.workshops.filter((w) => w.id !== id);
-  return store.workshops.length < initialLength;
+  const wasDeleted = store.workshops.length < initialLength;
+  if (wasDeleted) {
+    persistStore(store);
+  }
+  return wasDeleted;
 }
 
 export function getStoredOrders(): AdminOrder[] {
@@ -156,6 +217,7 @@ export function updateOrderStatusInStore(orderId: string, status: AdminOrder["st
   const order = store.orders.find((o) => o.id === orderId);
   if (order) {
     order.status = status;
+    persistStore(store);
     return true;
   }
   return false;
@@ -170,6 +232,7 @@ export function updateBookingStatusInStore(bookingId: string, status: AdminBooki
   const booking = store.bookings.find((b) => b.id === bookingId);
   if (booking) {
     booking.status = status;
+    persistStore(store);
     return true;
   }
   return false;

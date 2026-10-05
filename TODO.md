@@ -46,7 +46,7 @@
 - [x] **Faz 4.4: Gizli Stüdyo Sayfası & Kriptografik Giriş Bariyeri (`/admin`)**:
   - [x] `/api/admin/auth` güvenli kimlik doğrulama rotası (AES-256 / SHA-256 JWT, HttpOnly `admin_session` çerezleri).
   - [x] `AdminLoginGate` brutalist gizli giriş kartı: Yetkisiz kişilere paneli tamamen kilitleyen monokrom güvenlik duvarı.
-  - [x] Site sahibi için hızlı stüdyo parolası doğrulaması (`derinsem2026` / `nonvalue2026!`).
+  - [x] Stüdyo parolası `nonvalue2026!` olarak sabitlendi; giriş ekranındaki şifre öneri butonları tamamen gizlendi.
   - [x] Panel başlığında aktif "Studio Master" rozeti ve tek tıkla "Güvenli Çıkış" (Logout) butonu.
   - [x] Gizli klavye kısayolu: `Ctrl + Shift + A` veya `Cmd + Shift + A` ile sitenin her yerinden doğrudan gizli `/admin` sayfasına geçiş.
 
@@ -54,14 +54,32 @@
 
 ## 🚀 Sırada Olan Öncelikli Maddeler (In Progress & Up Next)
 
-### Faz 4.5: Kalıcı Veritabanı Entegrasyonu (Persistence)
-- [ ] **Drizzle ORM & Cloud SQL / PostgreSQL / Supabase Entegrasyonu**:
-  - [ ] `lib/admin-store.ts` içindeki bellek içi (in-memory) yapıyı gerçek veritabanı tablolarına bağlama.
-  - [ ] Panelden eklenen eserlerin, silinen kayıtların ve stok değişimlerinin sunucu yeniden başlasa dahi kalıcı olması.
+- [x] **Faz 4.5: Kalıcı Veri Altyapısı (Persistence)**:
+  - [x] `lib/admin-store.ts` üzerinde dosya tabanlı (JSON) yerel kalıcılık katmanı (`data/studio-store.json`) devreye alındı.
+  - [x] Sunucu veya konteyner yeniden başlasa bile eklenen/düzenlenen eserler, atölyeler ve stok değişimleri diske kaydedilir ve başlangıçta diskten okunur.
+  - [x] `/shop/[id]` eser detay sayfası `getStoredArtworks()` üzerinden dinamikleştirildi; admin panelinden eklenen yeni eserlerin detay sayfaları anında ve hatasız açılır.
+- [x] **Faz 4.6: Ürün Detay Harici Satın Alma Butonu Entegrasyonu**:
+  - [x] `ArtworkDetail` ve `/api/admin/artworks` rotalarına `purchaseUrl` (Shopier, Etsy, WhatsApp vb.) alanı eklendi.
+  - [x] Stüdyo yönetim paneli eser modalına "Harici Satın Alma Linki" giriş alanı ve CMS tablosuna harici link rozeti yerleştirildi.
+  - [x] Ürün detay sayfasındaki (`/shop/[id]`) "Satın Al" butonu, tanımlı bir link varsa doğrudan yeni sekmede harici mağazaya yönlendirir; link yoksa klasik sipariş talep modalı devreye girer.
+- [x] **Faz 4.7: Arşiv Tuvali (`/arsiv`) Dinamik Koordinat Senkronizasyonu & Sürükle-Bırak Kompozisyon**:
+  - [x] `ArchiveCanvasView` bileşeni canlı `/api/artworks` endpoint'ine bağlandı; stüdyodan güncellenen $X/Y$ tuval koordinatları ve yeni eserler 3D tuvalde canlı render edilir.
+  - [x] Arşiv çekmecesinde hem eser detay sayfasına doğrudan geçiş hem de harici mağaza linki desteği sağlandı.
+  - [x] **Stüdyo İnteraktif Tuval Kompozisyon Editörü (`/admin` -> 4.7)**:
+    - [x] Manuel sayısal koordinat girmek yerine fareyle veya dokunmatik olarak eserleri 2D tuval üzerinde serbestçe sürükleyip bırakarak kompozisyon oluşturma.
+    - [x] Akıllı dağıtım şablonları (Organik Saçılma, Dairesel Galeri, Merkeze Topla, Izgara Hizala).
+    - [x] Gerçek zamanlı koordinat HUD göstergesi, aktif sürükleme vurgusu ve tek tıkla toplu kaydetme (`batch-coords` API).
+    - [x] Kaydedilen kompozisyonun hem diske (`data/studio-store.json`) hem de canlı 3D `/arsiv` tuvaline anında yansıması.
 
-### Faz 4.6: Ürün Detay Harici Satın Alma Butonu Entegrasyonu
-- [ ] **Eser Detay Satın Al Butonu Harici Link**:
-  - [ ] Ürün detay sayfasındaki satın al butonuna sanatçının belirleyeceği harici mağaza / ödeme / iletişim linkinin dinamik olarak bağlanması.
+---
 
-### Faz 4.7: Arşiv Tuvali (`/arsiv`) Dinamik Koordinat Senkronizasyonu
-- [ ] Paneldeki $X/Y$ tuval konumlandırmalarının interaktif uzayda canlı güncellenmesi.
+## 🚀 Sırada Olan Öncelikli Maddeler (In Progress & Up Next)
+
+### Faz 4.8: Bulut Veritabanı (Cloud SQL / PostgreSQL) Hazırlığı
+- [ ] Kullanıcı isteği doğrultusunda Cloud SQL veya harici PostgreSQL bağlantı dizesi (.env DATABASE_URL) tanımlandığında Drizzle ORM otomatik senkronizasyonunun devreye girmesi.
+
+### Faz 5: Müşteri Portali & Koleksiyoner Girişi
+- [ ] **Müşteri Giriş & Kayıt Sayfası (`/giris`)**:
+  - [ ] Müşteriler için JWT auth formları ve sipariş/rezervasyon takip ekranı.
+- [ ] **Müşteri Profil & Rezervasyonlarım (`/profil`)**:
+  - [ ] Kayıtlı olunan atölye biletleri ve QR kodları.

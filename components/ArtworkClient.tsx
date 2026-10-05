@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Send,
   X,
+  ExternalLink,
 } from 'lucide-react';
 import type { ArtworkDetail } from '@/lib/artworks-data';
 import { getLocalizedArtwork } from '@/lib/artworks-data';
@@ -224,18 +225,31 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
 
         {/* Alt Aksiyon Butonu */}
         <div className="pt-1.5 sm:pt-4">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              soundFx.playClick();
-              setIsOrderModalOpen(true);
-            }}
-            className="w-full py-2.5 sm:py-3 px-4 bg-white hover:bg-neutral-200 text-black font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
-          >
-            <span>{t('artwork.orderBtn')}</span>
-            <ChevronRight className="w-3.5 h-3.5" />
-          </a>
+          {localizedArtwork.purchaseUrl ? (
+            <a
+              href={localizedArtwork.purchaseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => soundFx.playClick()}
+              className="w-full py-2.5 sm:py-3 px-4 bg-white hover:bg-neutral-200 text-black font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
+            >
+              <span>{isEn ? 'BUY DIRECTLY // STORE' : 'SATIN AL // MAĞAZA'}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          ) : (
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                soundFx.playClick();
+                setIsOrderModalOpen(true);
+              }}
+              className="w-full py-2.5 sm:py-3 px-4 bg-white hover:bg-neutral-200 text-black font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99]"
+            >
+              <span>{t('artwork.orderBtn')}</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </a>
+          )}
         </div>
       </aside>
 
@@ -374,6 +388,24 @@ export default function ArtworkClient({ artwork }: ArtworkClientProps) {
                     {isEn ? 'Price:' : 'Tutar:'}{' '}
                     <span className="text-white font-semibold">{localizedArtwork.price}</span>
                   </p>
+
+                  {localizedArtwork.purchaseUrl && (
+                    <div className="mb-6 p-3 bg-neutral-900 border border-neutral-700 flex items-center justify-between gap-3">
+                      <div className="text-[10px] font-mono text-neutral-300">
+                        {isEn ? 'Direct online checkout is active:' : 'Doğrudan online mağazadan satın alabilirsiniz:'}
+                      </div>
+                      <a
+                        href={localizedArtwork.purchaseUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => soundFx.playClick()}
+                        className="px-2.5 py-1 bg-white hover:bg-neutral-200 text-black font-bold uppercase tracking-wider text-[9px] flex items-center gap-1.5 shrink-0 transition-colors"
+                      >
+                        <span>{isEn ? 'Go to Store' : 'Mağazayı Aç'}</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </div>
+                  )}
 
                   <form onSubmit={handleOrderSubmit} className="space-y-4 font-mono text-[10px]">
                     <div>

@@ -6,6 +6,7 @@ import {
   updateArtworkStockInStore,
   toggleArtworkFeaturedInStore,
   updateArtworkCoordsInStore,
+  batchUpdateArtworkCoordsInStore,
 } from "@/lib/admin-store";
 import type { ArtworkDetail } from "@/lib/artworks-data";
 
@@ -98,6 +99,7 @@ export async function POST(req: NextRequest) {
       ],
       isFeatured: Boolean(body.isFeatured),
       archiveCoords: body.archiveCoords || { x: 50, y: 50 },
+      purchaseUrl: body.purchaseUrl ? String(body.purchaseUrl).trim() : undefined,
     };
 
     const saved = saveArtworkToStore(newArtwork);
@@ -111,7 +113,13 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
-    const { id, action, stock, coords } = body;
+    const { id, action, stock, coords, items } = body;
+
+    // Toplu koordinat güncellemesi (Admin Tuval Sürükle-Bırak)
+    if (action === "batch-coords" && Array.isArray(items)) {
+      const ok = batchUpdateArtworkCoordsInStore(items);
+      return NextResponse.json({ success: ok, count: items.length });
+    }
 
     if (!id) {
       return NextResponse.json({ error: "Eser ID'si belirtilmelidir." }, { status: 400 });

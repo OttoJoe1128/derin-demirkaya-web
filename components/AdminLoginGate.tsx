@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Lock, ArrowRight, Eye, EyeOff, Sparkles, KeyRound, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, ArrowRight, Eye, EyeOff, KeyRound, AlertCircle } from 'lucide-react';
 import { soundFx } from '@/lib/sound-fx';
 
 interface AdminLoginGateProps {
@@ -52,11 +52,6 @@ export default function AdminLoginGate({ onSuccess }: AdminLoginGateProps) {
       setErrorMessage('Bağlantı hatası oluştu. Lütfen tekrar deneyin.');
       setIsLoading(false);
     }
-  };
-
-  const handleQuickFill = (key: string) => {
-    setPassword(key);
-    soundFx.playHover();
   };
 
   return (
@@ -184,30 +179,6 @@ export default function AdminLoginGate({ onSuccess }: AdminLoginGateProps) {
               )}
             </button>
           </form>
-
-          {/* Stüdyo Hızlı Erişim İpuçları (Site Sahibine Kolaylık) */}
-          <div className="mt-8 pt-6 border-t border-neutral-800/80 font-mono text-[10px] text-neutral-400">
-            <div className="flex items-center gap-1.5 text-neutral-300 mb-2 font-medium">
-              <Sparkles className="w-3 h-3 text-amber-400" />
-              <span>Stüdyo Anahtarları (Tıklayıp Doldurun):</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickFill('derinsem2026')}
-                className="px-2.5 py-1 bg-neutral-900 border border-neutral-700/80 hover:border-neutral-400 text-neutral-300 hover:text-white transition-colors cursor-pointer"
-              >
-                derinsem2026
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickFill('nonvalue2026!')}
-                className="px-2.5 py-1 bg-neutral-900 border border-neutral-700/80 hover:border-neutral-400 text-neutral-300 hover:text-white transition-colors cursor-pointer"
-              >
-                nonvalue2026!
-              </button>
-            </div>
-          </div>
         </motion.div>
       </main>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -29,6 +29,9 @@ import {
   UploadCloud,
   ShieldCheck,
   LogOut,
+  Save,
+  Move,
+  Shuffle,
 } from "lucide-react";
 import { soundFx } from "@/lib/sound-fx";
 import { useAuth } from "@/lib/auth-context";
@@ -122,6 +125,134 @@ export default function AdminStudioPage() {
       setToastMessage(null);
     }, 4000);
   }, []);
+
+  // Tuval Kompozisyon Sürükle-Bırak & Koordinat Yönetimi (Faz 4.7)
+  const [draggingArtworkId, setDraggingArtworkId] = useState<string | null>(null);
+  const [activeArtworkId, setActiveArtworkId] = useState<string | null>(null);
+  const [hasUnsavedCanvasChanges, setHasUnsavedCanvasChanges] = useState(false);
+  const [isSavingCanvas, setIsSavingCanvas] = useState(false);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleArtworkDragStart = (e: React.MouseEvent | React.TouchEvent, id: string) => {
+    e.stopPropagation();
+    soundFx.playClick();
+    setDraggingArtworkId(id);
+    setActiveArtworkId(id);
+  };
+
+  const updateCoordFromPointer = useCallback((clientX: number, clientY: number) => {
+    if (!draggingArtworkId || !canvasContainerRef.current) return;
+    const rect = canvasContainerRef.current.getBoundingClientRect();
+    const rawX = ((clientX - rect.left) / rect.width) * 100;
+    const rawY = ((clientY - rect.top) / rect.height) * 100;
+    const clampedX = Math.round(Math.max(6, Math.min(94, rawX)));
+    const clampedY = Math.round(Math.max(8, Math.min(92, rawY)));
+
+    setArtworks((prev) =>
+      prev.map((a) =>
+        a.id === draggingArtworkId
+          ? { ...a, archiveCoords: { x: clampedX, y: clampedY } }
+          : a
+      )
+    );
+    setHasUnsavedCanvasChanges(true);
+  }, [draggingArtworkId]);
+
+  const handleCanvasPointerMove = (e: React.MouseEvent) => {
+    if (!draggingArtworkId) return;
+    updateCoordFromPointer(e.clientX, e.clientY);
+  };
+
+  const handleCanvasTouchMove = (e: React.TouchEvent) => {
+    if (!draggingArtworkId || e.touches.length === 0) return;
+    updateCoordFromPointer(e.touches[0].clientX, e.touches[0].clientY);
+  };
+
+  const handleCanvasPointerUp = () => {
+    if (draggingArtworkId) {
+      setDraggingArtworkId(null);
+    }
+  };
+
+  // Kompozisyon Şablonları (Akıllı Dağıtımlar)
+  const handleApplyLayoutPreset = (type: "organic" | "circle" | "cluster" | "grid") => {
+    soundFx.playClick();
+    const count = artworks.length;
+    if (count === 0) return;
+
+    setArtworks((prev) =>
+      prev.map((a, idx) => {
+        let x = 50;
+        let y = 50;
+        if (type === "organic") {
+          x = Math.round(15 + ((idx * 27) % 70) + (Math.sin(idx * 1.5) * 6));
+          y = Math.round(18 + ((idx * 33) % 64) + (Math.cos(idx * 1.2) * 6));
+        } else if (type === "circle") {
+          const angle = (idx / count) * 2 * Math.PI - Math.PI / 2;
+          const radius = 32;
+          x = Math.round(50 + Math.cos(angle) * radius);
+          y = Math.round(50 + Math.sin(angle) * (radius * 0.75));
+        } else if (type === "cluster") {
+          const angle = idx * 2.4;
+          const dist = 8 + (idx * 3.5);
+          x = Math.round(50 + Math.cos(angle) * dist);
+          y = Math.round(50 + Math.sin(angle) * (dist * 0.75));
+        } else if (type === "grid") {
+          const cols = Math.ceil(Math.sqrt(count));
+          const row = Math.floor(idx / cols);
+          const col = idx % cols;
+          x = Math.round(20 + (col * (60 / Math.max(1, cols - 1))));
+          y = Math.round(25 + (row * (50 / Math.max(1, Math.ceil(count / cols) - 1))));
+        }
+        return {
+          ...a,
+          archiveCoords: {
+            x: Math.max(8, Math.min(92, x)),
+            y: Math.max(10, Math.min(90, y)),
+          },
+        };
+      })
+    );
+    setHasUnsavedCanvasChanges(true);
+    showToast(`"${type.toUpperCase()}" kompozisyon şablonu uygulandı.`);
+  };
+
+  // Kompozisyonu Veritabanına / Diske Kaydet
+  const handleSaveCanvasComposition = async () => {
+    soundFx.playClick();
+    setIsSavingCanvas(true);
+    try {
+      const items = artworks.map((a, idx) => ({
+        id: a.id,
+        coords: a.archiveCoords || {
+          x: (idx * 22) % 80 + 10,
+          y: ((idx * 17) % 70) + 15,
+        },
+      }));
+
+      const res = await fetch("/api/admin/artworks", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "batch-coords",
+          items,
+        }),
+      });
+
+      if (res.ok) {
+        soundFx.playSuccess();
+        setHasUnsavedCanvasChanges(false);
+        showToast("Tuval kompozisyonu başarıyla kaydedildi ve /arsiv ile senkronize edildi.");
+      } else {
+        showToast("Koordinatlar kaydedilirken bir hata oluştu.");
+      }
+    } catch (err) {
+      console.error("Save canvas coords error:", err);
+      showToast("Bağlantı hatası oluştu.");
+    } finally {
+      setIsSavingCanvas(false);
+    }
+  };
 
   // API'den tüm stüdyo verilerini yükle
   const fetchAllData = useCallback(async (isSilent = false) => {
@@ -635,7 +766,10 @@ export default function AdminStudioPage() {
             }`}
           >
             <Compass className="w-3.5 h-3.5" />
-            <span>4.4 Tuval Koordinatları</span>
+            <span>4.7 Arşiv Tuval Editörü</span>
+            {hasUnsavedCanvasChanges && (
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            )}
           </button>
         </div>
       </header>
@@ -1126,6 +1260,7 @@ export default function AdminStudioPage() {
                         images: [PRESET_STUDIO_IMAGES[0].url],
                         isFeatured: false,
                         archiveCoords: { x: 50, y: 50 },
+                        purchaseUrl: "",
                       });
                       setIsArtworkModalOpen(true);
                     }}
@@ -1181,6 +1316,18 @@ export default function AdminStudioPage() {
                             <div className="text-[10px] text-neutral-400">
                               {a.isUniquePiece ? "1/1 — Tek ve Eşsiz Eser" : "Limitli Edisyon"}
                             </div>
+                            {a.purchaseUrl ? (
+                              <a
+                                href={a.purchaseUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[9px] text-amber-400 hover:underline mt-0.5"
+                                title={`Harici Mağaza Linki: ${a.purchaseUrl}`}
+                              >
+                                <ExternalLink className="w-2.5 h-2.5" />
+                                <span>Harici Link</span>
+                              </a>
+                            ) : null}
                           </td>
 
                           {/* Koleksiyon & Malzeme */}
@@ -1540,52 +1687,163 @@ export default function AdminStudioPage() {
             )}
 
             {/* ========================================================================= */}
-            {/* SEKMELER: 5. ARŞİV TUVALİ KOORDİNAT EDİTÖRÜ ÖNİZLEMESİ (FAZ 4.4)            */}
+            {/* SEKMELER: 5. İNTERAKTİF ARŞİV TUVALİ KOMPOZİSYON EDİTÖRÜ (FAZ 4.7)          */}
             {/* ========================================================================= */}
             {activeTab === "canvas" && (
               <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="pb-4 border-b border-neutral-800 flex items-center justify-between">
+                {/* ÜST BAR: Başlık & Eylemler */}
+                <div className="pb-4 border-b border-neutral-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <h2 className="font-serif text-xl text-neutral-100">
-                      Faz 4.4: Arşiv Tuval Konumlandırma & Uzamsal Izgara
-                    </h2>
-                    <p className="text-xs font-mono text-neutral-400">
-                      /arsiv sayfasındaki 3D sonsuz tuval üzerinde her eserin X ve Y koordinatları
+                    <div className="flex items-center gap-2">
+                      <h2 className="font-serif text-xl text-neutral-100">
+                        Faz 4.7: İnteraktif Arşiv Tuvali Kompozisyon Editörü
+                      </h2>
+                      {hasUnsavedCanvasChanges && (
+                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/50 font-mono text-[10px] animate-pulse">
+                          ● Kaydedilmemiş Değişiklikler
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs font-mono text-neutral-400 mt-1">
+                      Eserleri tuvalde serbestçe sürükleyip bırakarak özgün bir küratöryel kompozisyon oluşturun ve kaydedin.
                     </p>
                   </div>
-                  <Link
-                    href="/arsiv"
-                    target="_blank"
-                    className="px-3 py-1.5 bg-neutral-900 border border-neutral-700 hover:border-amber-400 text-neutral-200 font-mono text-xs flex items-center gap-1.5"
-                  >
-                    <span>Canlı Tuvali Aç</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-                  </Link>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Kompozisyonu Kaydet Butonu */}
+                    <button
+                      type="button"
+                      onClick={handleSaveCanvasComposition}
+                      disabled={isSavingCanvas}
+                      className={`px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer shadow-[2px_2px_0px_#000] disabled:opacity-50 ${
+                        hasUnsavedCanvasChanges
+                          ? "bg-amber-400 hover:bg-amber-300 text-black border border-amber-300 ring-2 ring-amber-400/40 animate-pulse"
+                          : "bg-white hover:bg-neutral-200 text-black border border-neutral-300"
+                      }`}
+                    >
+                      {isSavingCanvas ? (
+                        <>
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                          <span>Kaydediliyor...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-3.5 h-3.5" />
+                          <span>{hasUnsavedCanvasChanges ? "Kompozisyonu Kaydet *" : "Kaydedildi"}</span>
+                        </>
+                      )}
+                    </button>
+
+                    <Link
+                      href="/arsiv"
+                      target="_blank"
+                      onClick={() => soundFx.playClick()}
+                      className="px-3 py-2 bg-neutral-900 border border-neutral-700 hover:border-neutral-400 text-neutral-200 font-mono text-xs flex items-center gap-1.5 transition-colors"
+                      title="/arsiv 3D uzamsal tuvalini yeni sekmede aç"
+                    >
+                      <span>Canlı Tuvali Aç</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
+                    </Link>
+                  </div>
                 </div>
 
-                {/* İnteraktif Mini Tuval Önizleme Sahnesi */}
-                <div className="bg-[#161616] border border-neutral-800 p-4 shadow-[3px_3px_0px_#000]">
-                  <div className="text-[11px] font-mono text-neutral-400 mb-3 flex items-center justify-between">
-                    <span>Tuval Koordinat Sahnesi (Önizleme 100x100 Izgara)</span>
-                    <span className="text-amber-400">Eserlerin uzamsal dağılım haritası</span>
+                {/* ŞABLON & DAĞITIM KONTROLLERİ */}
+                <div className="bg-[#171717] border border-neutral-800 p-3 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <Shuffle className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="text-[11px] uppercase tracking-wider">Hızlı Düzen Şablonları:</span>
                   </div>
 
-                  <div className="relative w-full h-[460px] bg-[#0E0E0E] border border-neutral-800 overflow-hidden">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleApplyLayoutPreset("organic")}
+                      className="px-2.5 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px]"
+                    >
+                      ✦ Organik Saçılma
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleApplyLayoutPreset("circle")}
+                      className="px-2.5 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px]"
+                    >
+                      ◎ Dairesel Galeri
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleApplyLayoutPreset("cluster")}
+                      className="px-2.5 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px]"
+                    >
+                      ◈ Merkeze Topla
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleApplyLayoutPreset("grid")}
+                      className="px-2.5 py-1 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white transition-colors cursor-pointer text-[11px]"
+                    >
+                      ▦ Izgara Hizala
+                    </button>
+                  </div>
+
+                  <div className="text-[11px] text-neutral-500">
+                    Toplam: <strong className="text-neutral-300">{artworks.length}</strong> Eser
+                  </div>
+                </div>
+
+                {/* SÜRÜKLENEBİLİR İNTERAKTİF TUVAL SAHNESİ */}
+                <div className="bg-[#141414] border border-neutral-800 p-4 shadow-[4px_4px_0px_#000] relative">
+                  {/* Tuval Üst Bilgi Barı */}
+                  <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 mb-3 pb-2 border-b border-neutral-800/80">
+                    <div className="flex items-center gap-2">
+                      <Move className="w-3.5 h-3.5 text-amber-400" />
+                      <span>SÜRÜKLE & BIRAK ALANI (0% - 100% Koordinat Düzlemi)</span>
+                    </div>
+                    {activeArtworkId ? (
+                      <span className="text-amber-300 font-bold">
+                        Aktif Eser: {artworks.find((a) => a.id === activeArtworkId)?.title} (
+                        {artworks.find((a) => a.id === activeArtworkId)?.archiveCoords?.x ?? 50}%,{" "}
+                        {artworks.find((a) => a.id === activeArtworkId)?.archiveCoords?.y ?? 50}%)
+                      </span>
+                    ) : (
+                      <span className="text-neutral-500">Bir esere tıklayıp istediğiniz yere sürükleyin</span>
+                    )}
+                  </div>
+
+                  {/* Tuval Gövdesi (Sürükleme Konteyneri) */}
+                  <div
+                    ref={canvasContainerRef}
+                    onMouseMove={handleCanvasPointerMove}
+                    onMouseUp={handleCanvasPointerUp}
+                    onMouseLeave={handleCanvasPointerUp}
+                    onTouchMove={handleCanvasTouchMove}
+                    onTouchEnd={handleCanvasPointerUp}
+                    className="relative w-full h-[540px] bg-[#0A0A0A] border-2 border-neutral-800 overflow-hidden select-none touch-none cursor-crosshair"
+                  >
                     {/* Arka plan ızgara çizgileri */}
                     <div
-                      className="absolute inset-0 opacity-15 pointer-events-none"
+                      className="absolute inset-0 opacity-20 pointer-events-none"
                       style={{
                         backgroundImage: "radial-gradient(#FFF 1px, transparent 1px)",
-                        backgroundSize: "24px 24px",
+                        backgroundSize: "32px 32px",
                       }}
                     />
 
+                    {/* Çeyrek Çizgileri ve Merkez Noktası */}
+                    <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-neutral-800/60 pointer-events-none" />
+                    <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-neutral-800/60 pointer-events-none" />
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center opacity-40">
+                      <div className="w-6 h-6 rounded-full border border-dashed border-amber-400 animate-spin" style={{ animationDuration: "25s" }} />
+                      <span className="font-mono text-[7px] text-amber-400 mt-1 tracking-widest">[ MERKEZ ORIGIN ]</span>
+                    </div>
+
+                    {/* Sürüklenebilir Eser Kartları */}
                     {artworks.map((a, idx) => {
-                      // Varsayılan koordinatlar
                       const defaultX = (idx * 22) % 80 + 10;
                       const defaultY = ((idx * 17) % 70) + 15;
                       const x = a.archiveCoords?.x ?? defaultX;
                       const y = a.archiveCoords?.y ?? defaultY;
+                      const isDraggingThis = draggingArtworkId === a.id;
+                      const isActiveThis = activeArtworkId === a.id;
 
                       return (
                         <div
@@ -1594,31 +1852,79 @@ export default function AdminStudioPage() {
                             left: `${x}%`,
                             top: `${y}%`,
                             transform: "translate(-50%, -50%)",
+                            zIndex: isDraggingThis ? 50 : isActiveThis ? 30 : 10,
                           }}
-                          className="absolute z-10 group cursor-pointer"
-                          onClick={() => {
-                            soundFx.playClick();
-                            setEditingArtwork({ ...a });
-                            setIsArtworkModalOpen(true);
-                          }}
+                          onMouseDown={(e) => handleArtworkDragStart(e, a.id)}
+                          onTouchStart={(e) => handleArtworkDragStart(e, a.id)}
+                          className={`absolute group cursor-grab active:cursor-grabbing transition-transform ${
+                            isDraggingThis ? "scale-125" : "hover:scale-110"
+                          }`}
                         >
-                          <div className="w-14 h-14 bg-neutral-900 border border-neutral-700 group-hover:border-amber-400 group-hover:scale-110 transition-all shadow-md relative overflow-hidden">
-                            {a.images?.[0] && (
+                          {/* Eser Kare Kartı */}
+                          <div
+                            className={`w-16 h-16 sm:w-20 sm:h-20 bg-neutral-900 border-2 relative overflow-hidden transition-all shadow-xl ${
+                              isDraggingThis
+                                ? "border-amber-400 shadow-[0_0_25px_rgba(245,158,11,0.6)]"
+                                : isActiveThis
+                                ? "border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                                : "border-neutral-700 hover:border-amber-400/80"
+                            }`}
+                          >
+                            {a.images?.[0] ? (
                               <Image
                                 src={a.images[0]}
                                 alt={a.title}
                                 fill
-                                className="object-cover"
-                                sizes="56px"
+                                draggable={false}
+                                className="object-cover pointer-events-none"
+                                sizes="80px"
                               />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-neutral-600 font-mono text-[9px]">
+                                FOTO YOK
+                              </div>
                             )}
+
+                            {/* Sürükleme Tutamacı Rozeti */}
+                            <div className="absolute top-1 right-1 w-4 h-4 bg-black/80 rounded-full flex items-center justify-center pointer-events-none">
+                              <Move className="w-2.5 h-2.5 text-amber-400" />
+                            </div>
                           </div>
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-black/90 border border-neutral-700 px-1.5 py-0.5 whitespace-nowrap text-[9px] font-mono text-neutral-200 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                            {a.title} ({x}, {y})
+
+                          {/* Koordinat & Başlık Bilgisi (Pill) */}
+                          <div
+                            className={`absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-2 py-0.5 whitespace-nowrap font-mono text-[9px] pointer-events-none transition-all ${
+                              isDraggingThis
+                                ? "bg-amber-400 text-black font-bold shadow-md opacity-100"
+                                : "bg-black/90 text-neutral-200 border border-neutral-700 opacity-90 group-hover:opacity-100"
+                            }`}
+                          >
+                            <span>{a.title}</span>
+                            <span className="opacity-75 ml-1 font-semibold">({x}%, {y}%)</span>
                           </div>
                         </div>
                       );
                     })}
+                  </div>
+
+                  {/* Tuval Alt Şerit / Yardımcı Bilgiler */}
+                  <div className="mt-4 pt-3 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-neutral-400">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                      <span>Fare veya parmağınızla tutarak serbestçe hareket ettirin. Bıraktığınız an konum kaydedilir.</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveCanvasComposition}
+                        disabled={isSavingCanvas}
+                        className="px-3 py-1 bg-amber-400 hover:bg-amber-300 text-black font-bold uppercase text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                        <span>Tümünü Kaydet</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1858,6 +2164,29 @@ export default function AdminStudioPage() {
                   className="w-full bg-[#111] border border-neutral-700 px-3 py-2 text-white focus:border-amber-400 outline-none"
                   placeholder="Eserin kavramsal felsefesi ve üretim hikayesi..."
                 />
+              </div>
+
+              {/* 5. Harici Satın Alma Linki (Shopier / Etsy / WhatsApp vb.) */}
+              <div className="p-3 bg-neutral-900 border border-neutral-800 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-amber-400 font-bold flex items-center gap-1.5">
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>Harici Satın Alma Linki (Shopier, Etsy veya WhatsApp)</span>
+                  </label>
+                  <span className="text-[10px] text-neutral-500">Opsiyonel</span>
+                </div>
+                <input
+                  type="url"
+                  value={editingArtwork.purchaseUrl || ""}
+                  onChange={(e) =>
+                    setEditingArtwork((prev) => ({ ...prev, purchaseUrl: e.target.value }))
+                  }
+                  className="w-full bg-[#111] border border-neutral-700 px-3 py-2 text-white focus:border-amber-400 outline-none font-mono text-xs placeholder:text-neutral-600"
+                  placeholder="https://shopier.com/... veya https://wa.me/..."
+                />
+                <p className="text-[10px] text-neutral-400 font-mono leading-relaxed">
+                  Bu alana bir link girilirse, ziyaretçi ürün detay sayfasındaki &quot;Satın Al&quot; butonuna bastığında doğrudan bu adrese yönlendirilir. Boş bırakılırsa klasik sipariş talep modalı açılır.
+                </p>
               </div>
 
               {/* 5. Görsel / Medya Havuzu */}

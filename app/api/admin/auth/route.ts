@@ -12,13 +12,10 @@ function getJwtSecretKey(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-// Master Studio Geçerli Şifreleri (Çevre değişkeni veya yerel stüdyo anahtarları)
+// Master Studio Sabit Şifresi
 const VALID_PASSWORDS = [
   process.env.ADMIN_PASSWORD,
-  process.env.STUDIO_SECRET,
-  "derinsem2026",
   "nonvalue2026!",
-  "derin2026",
 ].filter(Boolean) as string[];
 
 /**

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,6 +13,7 @@ import {
   X,
   ArrowUpRight,
   Sparkles,
+  ExternalLink,
 } from 'lucide-react';
 import { ARTWORKS_DATA, type ArtworkDetail } from '@/lib/artworks-data';
 import { soundFx } from '@/lib/sound-fx';
@@ -24,6 +25,20 @@ interface ArchiveCanvasViewProps {
 
 export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProps) {
   const isEn = lang === 'en';
+
+  const [artworks, setArtworks] = useState<ArtworkDetail[]>(ARTWORKS_DATA);
+
+  // Canlı Stüdyo CMS Eser ve Koordinat Senkronizasyonu
+  useEffect(() => {
+    fetch('/api/artworks')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.artworks && Array.isArray(data.artworks) && data.artworks.length > 0) {
+          setArtworks(data.artworks);
+        }
+      })
+      .catch((err) => console.warn('Could not fetch archive artworks:', err));
+  }, []);
 
   // Tuval Konumu ve Zoom (Mobilde başlangıç ölçeği 0.55)
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -220,7 +235,7 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
         </div>
 
         {/* Eser İğneleri & Koordinat Kartları */}
-        {ARTWORKS_DATA.map((art, idx) => {
+        {artworks.map((art, idx) => {
           // archiveCoords veya dinamik yerleşim
           const defaultX = (idx * 22) % 80 + 10;
           const defaultY = ((idx * 17) % 70) + 15;
@@ -339,15 +354,30 @@ export default function ArchiveCanvasView({ lang = 'tr' }: ArchiveCanvasViewProp
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-neutral-800 flex items-center justify-between">
-                  <Link
-                    href={`/${lang}/shop/${selectedArtwork.id}`}
-                    onClick={() => soundFx.playClick()}
-                    className="bg-white hover:bg-neutral-200 text-black px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider font-semibold flex items-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <span>{isEn ? 'Open Specimen Page' : 'Eser Sayfasını Aç'}</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </Link>
+                <div className="pt-4 border-t border-neutral-800 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/${lang}/shop/${selectedArtwork.slug || selectedArtwork.id}`}
+                      onClick={() => soundFx.playClick()}
+                      className="bg-white hover:bg-neutral-200 text-black px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <span>{isEn ? 'Open Specimen Page' : 'Eser Sayfasını Aç'}</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </Link>
+
+                    {selectedArtwork.purchaseUrl && (
+                      <a
+                        href={selectedArtwork.purchaseUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => soundFx.playClick()}
+                        className="border border-neutral-700 hover:border-white text-neutral-300 hover:text-white px-3 py-2.5 font-mono text-[10px] uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <span>{isEn ? 'Direct Store' : 'Harici Mağaza'}</span>
+                        <ExternalLink className="w-3 h-3 text-amber-400" />
+                      </a>
+                    )}
+                  </div>
 
                   <span className="font-mono text-[9px] text-neutral-500 uppercase">
                     NV-ARCHIVE // ID #{selectedArtwork.id}

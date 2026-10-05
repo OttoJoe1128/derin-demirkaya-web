@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { getArtworkByIdOrSlug, ARTWORKS_DATA } from "@/lib/artworks-data";
+import { getArtworkByIdOrSlug, type ArtworkDetail } from "@/lib/artworks-data";
+import { getStoredArtworks } from "@/lib/admin-store";
 import ArtworkClient from "@/components/ArtworkClient";
 import type { Metadata } from "next";
 
@@ -9,10 +10,20 @@ interface Props {
   params: Promise<{ lang: string; id: string }>;
 }
 
+function findArtwork(idOrSlug: string): ArtworkDetail | undefined {
+  const stored = getStoredArtworks();
+  const match = stored.find(
+    (a) => a.id === idOrSlug || a.slug === idOrSlug
+  );
+  if (match) return match;
+  return getArtworkByIdOrSlug(idOrSlug);
+}
+
 export async function generateStaticParams() {
   const params: { lang: string; id: string }[] = [];
+  const allArtworks = getStoredArtworks();
   for (const lang of ["tr", "en"]) {
-    for (const artwork of ARTWORKS_DATA) {
+    for (const artwork of allArtworks) {
       params.push({ lang, id: String(artwork.id) });
       if (artwork.slug) {
         params.push({ lang, id: String(artwork.slug) });
@@ -26,7 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, lang } = await params;
   const isEn = lang === "en";
   const decodedId = decodeURIComponent(id);
-  const artwork = getArtworkByIdOrSlug(decodedId) || getArtworkByIdOrSlug(id);
+  const artwork = findArtwork(decodedId) || findArtwork(id);
 
   if (!artwork) {
     return {
@@ -58,7 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LocalizedArtworkDetailPage({ params }: Props) {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
-  const artwork = getArtworkByIdOrSlug(decodedId) || getArtworkByIdOrSlug(id);
+  const artwork = findArtwork(decodedId) || findArtwork(id);
 
   if (!artwork) {
     notFound();
