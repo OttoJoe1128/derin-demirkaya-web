@@ -6,8 +6,9 @@
   - [x] Header, Hero, Footer, CollectionCard ve FeaturedCollection bileşenleri.
   - [x] Sinematik interaktif tuval: `/arsiv` (Arşiv uzay keşfi ve sürükleme).
 - [x] **Ödüllü Minimalist İmleç (CustomCursor)**:
-  - [x] `mix-blend-difference` ve dinamik zıtlık sistemi (beyaz zeminlerde saf siyah, koyu zeminlerde ışıldayan ters renk).
-  - [x] Preview ve masaüstü uyumluluğu, pürüzsüz yay animasyonu (`stiffness: 500, damping: 28, mass: 0.5`).
+  - [x] `mix-blend-difference` ve dinamik zıtlık sistemi (beyaz zeminlerde saf siyah, siyah zeminlerde saf beyaz).
+  - [x] Yüksek frame hızı (donanım frekansında 0ms gecikmeli GPU translate3d ve akıcı ölçekleme).
+  - [x] Masaüstünde kaybolma hatası kalıcı olarak çözüldü (kesintisiz hareket ve sınır kontrolü, metin alanı I-beam geçişleri).
 - [x] **Veritabanı & Altyapı**:
   - [x] Drizzle ORM + PostgreSQL şemaları (`db/schema.ts`: workshops, workshopBookings, artworks, artworkImages, collections, customers).
 - [x] **Kimlik Doğrulama & Yetkilendirme**:
