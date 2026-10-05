@@ -11,7 +11,9 @@
   - [x] Masaüstünde kaybolma hatası kalıcı olarak çözüldü (kesintisiz hareket ve sınır kontrolü, metin alanı I-beam geçişleri).
 - [x] **4 Yönlü Uzamsal Portalı & Marka Vurgusu**:
   - [x] 4 yönlü kategori gösterge noktaları ve mühür altı `nonvaluejewel` logosu asit yeşili `#C1FF72` tonuyla güncellendi (11px net tipografik yükseklik).
-  - [x] Yüksek çözünürlüklü `/nv_logo.png` açılış mühürü entegre edildi; tam ekran merkezli başlangıç, büyütülmüş dinlenme ölçeği (104px mobil / 130px tablet / 152px masaüstü) ve `nonvaluejewel` ile altındaki nokta arasındaki mesafeyle birebir eşitlenen simetrik dikey ritim (`mt-2 sm:mt-2.5` = `gap-2 sm:gap-2.5`).
+  - [x] Üst mühür logosunun (`/nv_logo.png`) arkasındaki siyah yuvarlak arka plan ve dairesel maskeleme tamamen kaldırıldı; tıpkı `nonvaluejewel` gibi 100% şeffaf (transparent PNG) hale getirildi.
+  - [x] Üst mühür logosunun ekran ortasından başlayıp yukarı süzülen 1.5s açılış animasyonu geri getirildi ve sayfa geçiş hareketleriyle eşzamanlı kılındı; `nonvaluejewel` logosu ise sayfanın üstündeki yerinde sabit kalacak şekilde ayrıştırıldı.
+  - [x] Üst logo ile `nonvaluejewel` arasındaki mesafe, `nonvaluejewel` ile altındaki asit yeşili nokta arasındaki mesafeyle (`mt-2 sm:mt-2.5` = `gap-2 sm:gap-2.5`, 8px mobil / 10px masaüstü) milimetrik olarak eşitlendi ve standardize edildi.
   - [x] Workshop takvim başlığı üzerindeki etiket (`ATELIER // 2026 CALENDAR & SESSIONS`) ve Arşiv sayfasındaki editoryal telemetri metinleri (`REC 24FPS`, `CINEMASCOPE`) kaldırıldı.
 - [x] **Veritabanı & Altyapı**:
   - [x] Drizzle ORM + PostgreSQL şemaları (`db/schema.ts`: workshops, workshopBookings, artworks, artworkImages, collections, customers).

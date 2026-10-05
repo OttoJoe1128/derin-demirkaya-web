@@ -174,75 +174,86 @@ export default function SpatialLayoutShell({
       {/* 4-POINT SPATIAL NAVIGATION                                                */}
       {/* ========================================================================= */}
 
-      {/* TOP (Üst Orta): Marka Logosu (Merkezde Tam Ortada Başlar -> 1.5s Sonra Üste Süzülüp Küçülür) */}
-      <header className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-auto select-none bg-transparent">
+      {/* TOP (Üst Orta): Marka Logosu & Manifesto */}
+      <header className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-auto select-none bg-transparent flex flex-col items-center">
+        {/* 1. ÜST MÜHÜR LOGO: Ekranın ortasından başlayıp üste süzülen açılış animasyonu ve sayfa hareketiyle eşzamanlı geçiş */}
         <motion.div
-          initial={{ y: startY, scale: startScale }}
-          animate={{ y: '0px', scale: 1 }}
-          transition={{
-            delay: 1.5,
-            duration: 1.2,
-            ease: [0.16, 1, 0.3, 1] as const,
-          }}
+          key={`seal-${pathname}`}
+          initial={
+            direction === 'none'
+              ? { y: startY, scale: startScale, opacity: 1 }
+              : {
+                  x: direction === 'left' ? '20vw' : direction === 'right' ? '-20vw' : 0,
+                  y: direction === 'up' ? '15vh' : direction === 'down' ? '-15vh' : 0,
+                  scale: 1,
+                  opacity: 0.9,
+                }
+          }
+          animate={{ x: 0, y: '0px', scale: 1, opacity: 1 }}
+          transition={
+            direction === 'none'
+              ? {
+                  delay: 1.5,
+                  duration: 1.2,
+                  ease: [0.16, 1, 0.3, 1] as const,
+                }
+              : {
+                  duration: 0.5,
+                  ease: [0.16, 1, 0.3, 1] as const,
+                }
+          }
           className="origin-center relative flex items-center justify-center"
         >
-          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider (Ölçek büyütüldü: 104px mobil / 130px tablet / 152px masaüstü) */}
           <Link
             href={`/${lang}`}
             onClick={(e) => handleNavigate(e, `/${lang}`, 'none')}
             onMouseEnter={() => soundFx.playHover()}
-            className="group flex items-center justify-center tracking-widest transition-opacity duration-300 hover:opacity-100"
+            className="group flex items-center justify-center transition-opacity duration-300 hover:opacity-85"
             title="nonvalue — Home"
           >
-            <div
-              style={{
-                WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
-                maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
-              }}
-              className="relative w-[104px] h-[104px] md:w-[130px] md:h-[130px] lg:w-[152px] lg:h-[152px] flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
-            >
+            <div className="relative w-[84px] h-[84px] sm:w-[98px] sm:h-[98px] lg:w-[110px] lg:h-[110px] flex items-center justify-center">
               <Image
                 src="/nv_logo.png"
                 alt="nonvalue"
-                width={152}
-                height={152}
+                width={110}
+                height={110}
                 quality={100}
                 unoptimized={true}
                 priority
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-contain object-center drop-shadow-[0_2px_16px_rgba(255,255,255,0.12)] group-hover:scale-105 transition-transform duration-300"
               />
             </div>
           </Link>
+        </motion.div>
 
-          {/* 2. MANİFESTO BUTONU (nonvaluejewel) & EN ALTTA #C1FF72 NOKTA: Hakkında Rotasına (/[lang]/hakkinda) Gider */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
-            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 sm:mt-2.5 flex flex-col items-center"
+        {/* 2. MANİFESTO BUTONU (nonvaluejewel) & EN ALTTA #C1FF72 NOKTA: Sayfanın Üstünde Sabit Kalır */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.7, duration: 0.8, ease: 'easeOut' }}
+          className="flex flex-col items-center mt-2 sm:mt-2.5"
+        >
+          <Link
+            href={`/${lang}/hakkinda`}
+            onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
+            onMouseEnter={() => soundFx.playHover()}
+            className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 whitespace-nowrap"
+            title="nonvalue — Manifesto & About"
           >
-            <Link
-              href={`/${lang}/hakkinda`}
-              onClick={(e) => handleNavigate(e, `/${lang}/hakkinda`, 'up')}
-              onMouseEnter={() => soundFx.playHover()}
-              className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 whitespace-nowrap"
-              title="nonvalue — Manifesto & About"
-            >
-              {/* nonvaluejewel Logosu (#C1FF72 renginde, 11px optik metin büyüklüğünde) */}
-              <div className="relative h-[30px] sm:h-[34px] w-auto flex items-center justify-center">
-                <Image
-                  src="/nonvaluejewel-lime.png"
-                  alt="nonvalue jewel"
-                  width={344}
-                  height={151}
-                  className="h-full w-auto object-contain opacity-95 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(193,255,114,0.4)]"
-                  unoptimized={true}
-                  priority
-                />
-              </div>
-              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#C1FF72] shrink-0 transition-transform duration-300 group-hover:scale-110 z-10 shadow-[0_0_12px_rgba(193,255,114,0.45)]" />
-            </Link>
-          </motion.div>
+            {/* nonvaluejewel Logosu (#C1FF72 renginde, 11px optik metin büyüklüğünde, şeffaf arka plan) */}
+            <div className="relative h-[30px] sm:h-[34px] w-auto flex items-center justify-center">
+              <Image
+                src="/nonvaluejewel-lime.png"
+                alt="nonvalue jewel"
+                width={344}
+                height={151}
+                className="h-full w-auto object-contain opacity-95 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(193,255,114,0.4)]"
+                unoptimized={true}
+                priority
+              />
+            </div>
+            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#C1FF72] shrink-0 transition-transform duration-300 group-hover:scale-110 z-10 shadow-[0_0_12px_rgba(193,255,114,0.45)]" />
+          </Link>
         </motion.div>
       </header>
 
