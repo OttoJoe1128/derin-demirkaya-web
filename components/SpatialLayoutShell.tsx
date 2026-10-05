@@ -125,6 +125,7 @@ export default function SpatialLayoutShell({
   };
 
   const startY = isMobile ? '38vh' : '40vh';
+  const startScale = isMobile ? 3.8 : 4.5;
 
   return (
     <div className="relative min-h-screen w-full bg-black text-neutral-200 overflow-x-hidden selection:bg-white selection:text-black">
@@ -143,10 +144,10 @@ export default function SpatialLayoutShell({
       {/* 4-POINT SPATIAL NAVIGATION                                                */}
       {/* ========================================================================= */}
 
-      {/* TOP (Üst Orta): Marka Logosu (Merkezden Başlar -> 1.5s Sonra Üste Süzülür) */}
+      {/* TOP (Üst Orta): Marka Logosu (Merkezde 4x+ Başlar -> 1.5s Sonra Üste Süzülüp Küçülür) */}
       <header className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[100] pointer-events-auto select-none bg-transparent">
         <motion.div
-          initial={{ y: startY, scale: 2.5 }}
+          initial={{ y: startY, scale: startScale }}
           animate={{ y: '0vh', scale: 1 }}
           transition={{
             delay: 1.5,
@@ -155,7 +156,7 @@ export default function SpatialLayoutShell({
           }}
           className="origin-center flex flex-col items-center justify-center"
         >
-          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider */}
+          {/* 1. MÜHÜR LOGO: Ana Sayfaya (/[lang]) Gider (+2px artırılmış: 66px mobil / 82px masaüstü) */}
           <Link
             href={`/${lang}`}
             onClick={(e) => handleNavigate(e, `/${lang}`, 'none')}
@@ -168,13 +169,13 @@ export default function SpatialLayoutShell({
                 WebkitMaskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
                 maskImage: 'radial-gradient(circle, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 65%)',
               }}
-              className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
+              className="relative w-[66px] h-[66px] sm:w-[82px] sm:h-[82px] flex items-center justify-center overflow-hidden mix-blend-lighten contrast-[1.1]"
             >
               <Image
-                src="/websites.jpg"
+                src="/nv_logo.png"
                 alt="nonvalue"
-                width={80}
-                height={80}
+                width={82}
+                height={82}
                 quality={100}
                 unoptimized={true}
                 priority
@@ -197,14 +198,14 @@ export default function SpatialLayoutShell({
               className="group flex flex-col items-center cursor-pointer gap-2 sm:gap-2.5 -mt-1 sm:-mt-2"
               title="nonvalue — Manifesto & About"
             >
-              {/* nonvaluejewel Logosu (#C1FF72 renginde) */}
-              <div className="relative w-28 sm:w-36 h-auto flex items-center justify-center">
+              {/* nonvaluejewel Logosu (#C1FF72 renginde, zarif küçültülmüş boyut) */}
+              <div className="relative h-[19px] sm:h-[23px] w-auto flex items-center justify-center">
                 <Image
                   src="/nonvaluejewel-lime.png"
                   alt="nonvalue jewel"
-                  width={360}
-                  height={167}
-                  className="w-full h-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_12px_rgba(193,255,114,0.35)]"
+                  width={344}
+                  height={151}
+                  className="h-full w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(193,255,114,0.35)]"
                   unoptimized={true}
                   priority
                 />
